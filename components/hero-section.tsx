@@ -14,15 +14,6 @@ export function HeroSection() {
     <section className="relative flex items-stretch overflow-hidden bg-gradient-to-b from-parchment to-cream lg:min-h-[100dvh]">
       <div className="grid w-full grid-cols-1 gap-10 px-6 pt-0 pb-6 sm:px-10 sm:pb-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-stretch lg:gap-6 lg:py-0 lg:pl-16 lg:pr-0 xl:pl-24">
         <div className="order-2 lg:order-1 lg:flex lg:min-w-0 lg:max-w-xl lg:flex-col lg:justify-center">
-          <motion.p
-            initial={{ opacity: 0, y: 14 }}
-            animate={settled ? { opacity: 1, y: 0 } : { opacity: 0, y: 14 }}
-            transition={revealTransition}
-            className="mb-4 inline-flex items-center gap-2 rounded-full border border-gold/30 bg-parchment px-3.5 py-1.5 text-xs font-semibold tracking-wide text-gold-deep uppercase"
-          >
-            Türkiye&apos;nin kripto beyan asistanı
-          </motion.p>
-
           <motion.h1
             initial={{ opacity: 0, y: 18 }}
             animate={settled ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
@@ -69,6 +60,15 @@ export function HeroSection() {
               GERCEK render kutusuyla ayni boyuta sahip. */}
           <div className="relative w-full min-w-0 lg:h-full lg:w-auto">
             <HeroScale />
+
+            <motion.span
+              initial={{ opacity: 0, y: -10 }}
+              animate={settled ? { opacity: 1, y: 0 } : { opacity: 0, y: -10 }}
+              transition={revealTransition}
+              className="absolute top-3 left-3 inline-flex max-w-[calc(100%-1.5rem)] items-center gap-1.5 rounded-full border border-gold/30 bg-parchment/95 px-2.5 py-1 text-[10px] font-semibold tracking-wide whitespace-nowrap text-gold-deep uppercase shadow-sm backdrop-blur-sm sm:top-5 sm:left-5 sm:px-3.5 sm:py-1.5 sm:text-xs"
+            >
+              Türkiye&apos;nin ilk kripto vergi asistanı
+            </motion.span>
 
             {/* Hero'daki TEK "Ücretsiz Başla" — bilerek gorselin sol-alt
                 kosesinde, her ekran boyutunda (navbar'da AYRICA yok, bkz.
