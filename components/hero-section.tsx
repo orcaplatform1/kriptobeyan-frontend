@@ -11,9 +11,9 @@ export function HeroSection() {
   const { settled } = useScaleAnimation();
 
   return (
-    <section className="relative flex min-h-[100dvh] items-center overflow-hidden bg-gradient-to-b from-parchment to-cream">
-      <div className="grid w-full grid-cols-1 items-center gap-10 px-6 py-24 sm:px-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-6 lg:py-20 lg:pl-16 lg:pr-0 xl:pl-24">
-        <div className="order-2 lg:order-1 lg:max-w-xl">
+    <section className="relative flex min-h-[100dvh] items-stretch overflow-hidden bg-gradient-to-b from-parchment to-cream">
+      <div className="grid w-full grid-cols-1 items-center gap-10 px-6 py-24 sm:px-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-stretch lg:gap-6 lg:py-0 lg:pl-16 lg:pr-0 xl:pl-24">
+        <div className="order-2 lg:order-1 lg:flex lg:min-w-0 lg:max-w-xl lg:flex-col lg:justify-center">
           <motion.p
             initial={{ opacity: 0, y: 14 }}
             animate={settled ? { opacity: 1, y: 0 } : { opacity: 0, y: 14 }}
@@ -75,8 +75,8 @@ export function HeroSection() {
           </motion.p>
         </div>
 
-        <div className="order-1 lg:order-2">
-          <div className="mx-auto w-[78%] sm:w-[62%] lg:ml-auto lg:w-full xl:w-[112%] 2xl:w-[128%]">
+        <div className="order-1 flex min-w-0 items-center justify-center lg:order-2 lg:h-full lg:justify-end">
+          <div className="w-[78%] min-w-0 sm:w-[62%] lg:h-full lg:w-auto">
             <HeroScale />
           </div>
         </div>

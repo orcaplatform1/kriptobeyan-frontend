@@ -72,14 +72,14 @@ export function HeroScale() {
       initial={{ opacity: 0, scale: 0.97 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-      className="relative aspect-[1536/1024] w-full select-none"
+      className="relative aspect-[1536/1024] w-full max-w-full select-none lg:h-full lg:w-auto"
     >
       <Image
         src="/hero-base.png"
         alt="Kripto varlıklarla vergiyi dengeleyen terazi — arka planda İstanbul, Kız Kulesi siluetiyle mermer bir galeri. KriptoBeyan, kripto kazancınızla vergi yükümlülüğünüz arasındaki dengeyi kurar."
         fill
         priority
-        sizes="(min-width: 1024px) 50vw, 100vw"
+        sizes="(min-width: 1024px) 90vw, 100vw"
         className="object-cover"
       />
       <motion.div
@@ -106,7 +106,7 @@ export function HeroScale() {
           alt=""
           fill
           priority
-          sizes="(min-width: 1024px) 22vw, 44vw"
+          sizes="(min-width: 1024px) 40vw, 44vw"
           className="object-contain"
         />
       </motion.div>
