@@ -51,7 +51,7 @@ export function HeroSection() {
           </motion.div>
         </div>
 
-        <div className="order-1 -mx-6 flex min-w-0 items-center justify-center sm:-mx-10 lg:order-2 lg:mx-0 lg:h-full lg:justify-end">
+        <div className="order-1 -mx-6 flex min-w-0 items-center justify-center sm:-mx-10 lg:order-2 lg:col-start-2 lg:mx-0 lg:h-full lg:justify-end">
           {/* relative burada, dogrudan gorseli saran kutuda — bir onceki
               halde disaridaki flex kapsayicidaydi ve "items-center
               justify-center" gorseli kapsayicinin ortasina hizaladigi icin
