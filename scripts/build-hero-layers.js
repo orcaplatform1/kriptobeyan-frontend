@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 /**
  * hero.png tek bir düz fotoğraf (terazi ayrı bir katman olarak gelmedi).
  * Hero animasyonunun "sadece kefe kolları döner, direk/kaide sabit kalır"

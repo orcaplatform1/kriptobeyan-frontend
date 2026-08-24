@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion, type Transition } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useScaleAnimation } from "./scale-animation-context";
 
@@ -20,9 +20,12 @@ const BEAM_BOX = {
 // expressed as a percentage within the beam layer's own box.
 const PIVOT_ORIGIN = "45.3% 20.2%";
 
+type Stage = "intro" | "loop";
+
 export function HeroScale() {
   const { setSettled } = useScaleAnimation();
   const prefersReducedMotion = useReducedMotion();
+  const [stage, setStage] = useState<Stage>("intro");
   const [isCompact, setIsCompact] = useState(() =>
     typeof window !== "undefined"
       ? window.matchMedia("(max-width: 1023px)").matches
@@ -40,12 +43,29 @@ export function HeroScale() {
     return () => mq.removeEventListener("change", onChange);
   }, []);
 
-  const initialTilt = prefersReducedMotion ? 0 : isCompact ? -5 : -9;
-  const springTransition = prefersReducedMotion
+  const introTilt = isCompact ? -5 : -9;
+  const loopTilt = isCompact ? -4.5 : -6.5;
+
+  // Reduced motion: settle once, no continuous loop afterwards.
+  const rotateTarget = prefersReducedMotion
+    ? 0
+    : stage === "intro"
+      ? 0
+      : [0, loopTilt, 0];
+
+  const transition: Transition = prefersReducedMotion
     ? { duration: 0.01 }
-    : isCompact
-      ? { type: "spring" as const, stiffness: 34, damping: 6.5, mass: 1 }
-      : { type: "spring" as const, stiffness: 22, damping: 3.6, mass: 1 };
+    : stage === "intro"
+      ? isCompact
+        ? { type: "spring", stiffness: 34, damping: 6.5, mass: 1 }
+        : { type: "spring", stiffness: 22, damping: 3.6, mass: 1 }
+      : {
+          duration: 5,
+          times: [0, 0.6, 1],
+          ease: "easeInOut",
+          repeat: Infinity,
+          repeatDelay: 2,
+        };
 
   return (
     <motion.div
@@ -56,17 +76,22 @@ export function HeroScale() {
     >
       <Image
         src="/hero-base.png"
-        alt="Kripto varlıklarla vergiyi dengeleyen terazi — arka planda İstanbul, Kız Kulesi siluetiyle mermer bir galeri"
+        alt="Kripto varlıklarla vergiyi dengeleyen terazi — arka planda İstanbul, Kız Kulesi siluetiyle mermer bir galeri. KriptoBeyan, kripto kazancınızla vergi yükümlülüğünüz arasındaki dengeyi kurar."
         fill
         priority
         sizes="(min-width: 1024px) 50vw, 100vw"
         className="object-cover"
       />
       <motion.div
-        initial={{ rotate: initialTilt }}
-        animate={{ rotate: 0 }}
-        transition={springTransition}
-        onAnimationComplete={() => setSettled(true)}
+        initial={{ rotate: introTilt }}
+        animate={{ rotate: rotateTarget }}
+        transition={transition}
+        onAnimationComplete={() => {
+          if (stage === "intro") {
+            setSettled(true);
+            setStage("loop");
+          }
+        }}
         style={{
           position: "absolute",
           left: `${BEAM_BOX.leftPct}%`,

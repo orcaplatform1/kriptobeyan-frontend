@@ -1,7 +1,9 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Playfair_Display, Inter } from "next/font/google";
 import { ScaleAnimationProvider } from "@/components/scale-animation-context";
 import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
+import { SITE_URL, SITE_NAME, SITE_DESCRIPTION, SITE_KEYWORDS } from "@/lib/site-config";
 import "./globals.css";
 
 const displayFont = Playfair_Display({
@@ -15,10 +17,32 @@ const bodyFont = Inter({
   subsets: ["latin"],
 });
 
+export const viewport: Viewport = {
+  themeColor: "#f6efe1",
+  colorScheme: "light",
+};
+
 export const metadata: Metadata = {
-  title: "KriptoBeyan — Kripto Varlık Vergi Beyan Asistanı",
-  description:
-    "Borsa hesaplarınızı ve cüzdanlarınızı bağlayın, kripto varlık kazançlarınızı otomatik hesaplayın ve beyan dönemine taslak raporla hazırlanın.",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: `${SITE_NAME} — Kripto Vergi Hesaplama ve Beyan Asistanı`,
+    template: `%s | ${SITE_NAME}`,
+  },
+  description: SITE_DESCRIPTION,
+  keywords: SITE_KEYWORDS,
+  applicationName: SITE_NAME,
+  icons: {
+    icon: "/icon.png",
+  },
+  openGraph: {
+    type: "website",
+    locale: "tr_TR",
+    siteName: SITE_NAME,
+    url: SITE_URL,
+  },
+  twitter: {
+    card: "summary_large_image",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -31,6 +55,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <ScaleAnimationProvider>
           <SiteHeader />
           {children}
+          <SiteFooter />
         </ScaleAnimationProvider>
       </body>
     </html>

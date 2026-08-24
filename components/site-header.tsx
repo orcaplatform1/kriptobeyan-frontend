@@ -6,9 +6,10 @@ import { motion } from "framer-motion";
 import { useScaleAnimation } from "./scale-animation-context";
 
 const navLinks = [
-  { href: "#nasil-calisir", label: "Nasıl Çalışır" },
-  { href: "#fiyatlandirma", label: "Fiyatlandırma" },
-  { href: "#muhasebeciler", label: "Mali Müşavirler İçin" },
+  { href: "/#nasil-calisir", label: "Nasıl Çalışır" },
+  { href: "/fiyatlandirma", label: "Fiyatlandırma" },
+  { href: "/#muhasebeciler", label: "Mali Müşavirler İçin" },
+  { href: "/sss", label: "SSS" },
 ];
 
 export function SiteHeader() {
@@ -45,13 +46,13 @@ export function SiteHeader() {
 
         <nav className="hidden items-center gap-8 md:flex">
           {navLinks.map((link) => (
-            <a
+            <Link
               key={link.href}
               href={link.href}
               className="text-sm font-medium text-ink-soft transition-colors hover:text-gold-deep"
             >
               {link.label}
-            </a>
+            </Link>
           ))}
         </nav>
 

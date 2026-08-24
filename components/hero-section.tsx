@@ -39,9 +39,10 @@ export function HeroSection() {
             transition={{ ...revealTransition, delay: 0.16 }}
             className="mt-6 max-w-lg text-lg leading-relaxed text-ink-soft"
           >
-            Borsa hesaplarınızı ve cüzdanlarınızı bağlayın; işlemleriniz otomatik
-            olarak birleştirilip FIFO yöntemiyle hesaplansın. Beyan dönemi
-            geldiğinde taslak raporunuz hazır olsun.
+            KriptoBeyan ile kripto vergi hesaplama otomatikleşir: borsa
+            hesaplarınızı ve cüzdanlarınızı bağlayın, işlemleriniz FIFO
+            yöntemiyle hesaplansın. Kripto beyan dönemi geldiğinde taslak
+            raporunuz hazır olsun.
           </motion.p>
 
           <motion.div
