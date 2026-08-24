@@ -13,7 +13,7 @@ export function HeroSection() {
   return (
     <section className="relative flex items-stretch overflow-hidden bg-gradient-to-b from-parchment to-cream lg:min-h-[100dvh]">
       <div className="grid w-full grid-cols-1 gap-10 px-6 pt-0 pb-6 sm:px-10 sm:pb-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-stretch lg:gap-6 lg:py-0 lg:pl-16 lg:pr-0 xl:pl-24">
-        <div className="order-2 lg:order-1 lg:flex lg:min-w-0 lg:max-w-xl lg:flex-col lg:justify-center">
+        <div className="order-2 lg:order-1 lg:hidden">
           <motion.h1
             initial={{ opacity: 0, y: 18 }}
             animate={settled ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
@@ -70,10 +70,49 @@ export function HeroSection() {
               Türkiye&apos;nin ilk kripto vergi asistanı
             </motion.span>
 
+            {/* Masaustunde baslik+alt yazi+butonlar, ust etiketin hemen
+                altina, gorselin uzerine bindirilmis bir panel olarak —
+                kullanicinin acik istegi ("bu etiket hep kalacak, alt
+                yaziyi bu etikete yaz"). Mobilde DOKUNULMADI, ayni icerik
+                yukarida solo bir blok olarak zaten var (order-2). */}
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={settled ? { opacity: 1, y: 0 } : { opacity: 0, y: -10 }}
+              transition={{ ...revealTransition, delay: 0.08 }}
+              className="absolute top-14 left-3 hidden max-w-[calc(100%-1.5rem)] rounded-2xl border border-gold/20 bg-parchment/95 p-5 shadow-lg backdrop-blur-sm sm:top-16 sm:left-5 lg:block lg:max-w-sm lg:p-6 xl:max-w-md"
+            >
+              <h2 className="font-serif text-xl leading-[1.15] font-semibold text-ink lg:text-2xl xl:text-3xl">
+                Kripto kazancınız ile vergi arasındaki
+                <span className="text-gold-deep"> dengeyi</span> siz kurmayın.
+              </h2>
+              <p className="mt-3 text-sm leading-relaxed text-ink-soft xl:text-base">
+                KriptoBeyan ile kripto vergi hesaplama otomatikleşir: borsa
+                hesaplarınızı ve cüzdanlarınızı bağlayın, işlemleriniz FIFO
+                yöntemiyle hesaplansın. Kripto beyan dönemi geldiğinde
+                taslak raporunuz hazır olsun.
+              </p>
+              <div className="mt-5 flex flex-wrap items-center gap-3">
+                <a
+                  href="#nasil-calisir"
+                  className="inline-flex items-center justify-center rounded-full border border-ink/20 px-5 py-2.5 text-sm font-medium text-ink-soft transition-colors hover:border-gold/40 hover:text-gold-deep"
+                >
+                  Nasıl çalışır?
+                </a>
+                <Link
+                  href="/kayit-ol"
+                  className="inline-flex items-center justify-center rounded-full bg-marble-dark px-5 py-2.5 text-sm font-semibold text-cream shadow-[0_8px_24px_-8px_rgba(28,32,25,0.5)] transition-transform hover:scale-[1.03] hover:bg-marble-dark-2"
+                >
+                  Ücretsiz Başla
+                </Link>
+              </div>
+            </motion.div>
+
             {/* Hero'daki TEK "Ücretsiz Başla" — bilerek gorselin sol-alt
-                kosesinde, her ekran boyutunda (navbar'da AYRICA yok, bkz.
-                site-header.tsx). */}
-            <span className="btn-gold-comet absolute bottom-5 left-5 inline-flex">
+                kosesinde, mobilde tek CTA (masaustunde ayni buton metin
+                sutununda "Nasıl çalışır?" yaninda da var, o yuzden burada
+                lg:hidden — masaustunde ikisi ayni anda gorunmesin diye,
+                bkz. yukaridaki motion.div icindeki Link). */}
+            <span className="btn-gold-comet absolute bottom-5 left-5 inline-flex lg:hidden">
               <Link
                 href="/kayit-ol"
                 className="inline-flex items-center justify-center rounded-full bg-marble-dark px-6 py-3 text-sm font-semibold text-cream shadow-[0_8px_24px_-8px_rgba(28,32,25,0.5)] transition-transform hover:scale-[1.03] hover:bg-marble-dark-2"
