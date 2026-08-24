@@ -226,7 +226,13 @@ export default function MusavirPaneliPage() {
             </h2>
             <p className="mt-1 text-sm text-ink-soft">
               Müşteri davet edebilmek için müşavirlik belgeni ve vergi
-              levhanı yükleyip admin onayı almalısın.
+              levhanı (ya da SGK dökümanı) yükleyip admin onayı almalısın.
+            </p>
+            <p className="mt-1 text-xs text-ink-soft/80">
+              Müşavir olduğuna dair belge kesin gerekli. İkinci belge için:
+              kendi vergi mükellefiyetin varsa vergi levhası, bir müşavirlik
+              ofisinde/odasında çalışıyorsan (kendi vergi levhan yoksa) SGK
+              hizmet dökümanın da kabul edilir.
             </p>
 
             {verification.hasLicenseDoc && verification.hasTaxPlateDoc ? (
@@ -250,7 +256,7 @@ export default function MusavirPaneliPage() {
                   onClick={() => openAccountantVerificationDoc("me", "taxPlate", false)}
                   className="font-medium text-gold-deep hover:underline"
                 >
-                  Yüklenen vergi levhasını görüntüle
+                  Yüklenen vergi levhası/SGK dökümanını görüntüle
                 </button>
               )}
             </div>
@@ -266,7 +272,7 @@ export default function MusavirPaneliPage() {
                 />
               </label>
               <label className="flex cursor-pointer flex-col items-center gap-1.5 rounded-xl border border-dashed border-gold/40 bg-cream p-4 text-center text-sm text-ink-soft">
-                {taxPlateFile ? taxPlateFile.name : "Vergi levhası (PDF/görsel)"}
+                {taxPlateFile ? taxPlateFile.name : "Vergi levhası veya SGK dökümanı (PDF/görsel)"}
                 <input
                   type="file"
                   accept="image/*,application/pdf"

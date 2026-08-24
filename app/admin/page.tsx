@@ -527,10 +527,13 @@ function UserDetailPanel({
 }) {
   const [user, setUser] = useState<AdminUserDetail | null>(null);
   const [loading, setLoading] = useState(true);
+  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [role, setRole] = useState<UserRole>("INDIVIDUAL");
   const [emailVerified, setEmailVerified] = useState(false);
+  const [phoneVerified, setPhoneVerified] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -540,10 +543,13 @@ function UserDetailPanel({
     try {
       const u = await adminGetUser(userId);
       setUser(u);
+      setEmail(u.email);
+      setUsername(u.username);
       setFullName(u.fullName ?? "");
       setPhone(u.phone ?? "");
       setRole(u.role);
       setEmailVerified(u.emailVerified);
+      setPhoneVerified(u.phoneVerified);
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Kullanıcı yüklenemedi.");
     } finally {
@@ -560,7 +566,15 @@ function UserDetailPanel({
     setSaving(true);
     setError(null);
     try {
-      await adminUpdateUser(userId, { fullName, phone, role, emailVerified });
+      await adminUpdateUser(userId, {
+        email,
+        username,
+        fullName,
+        phone,
+        role,
+        emailVerified,
+        phoneVerified,
+      });
       await load();
       onChanged();
     } catch (err) {
@@ -636,9 +650,6 @@ function UserDetailPanel({
           ) : (
             <div className="flex flex-col gap-4">
               <div>
-                <p className="text-sm text-ink-soft">
-                  {user.email} · @{user.username}
-                </p>
                 <p className="mt-1 text-xs text-ink-soft">
                   Kayıt: {new Date(user.createdAt).toLocaleDateString("tr-TR")}
                   {user.lastSeenAt && ` · Son görülme: ${new Date(user.lastSeenAt).toLocaleString("tr-TR")}`}
@@ -648,6 +659,27 @@ function UserDetailPanel({
                     Hesap kilitli ({new Date(user.lockedUntil).toLocaleString("tr-TR")}&apos;e kadar)
                   </p>
                 )}
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold tracking-wide text-ink-soft uppercase">
+                  E-posta
+                </label>
+                <input
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="mt-1.5 w-full rounded-lg border border-gold/25 bg-parchment px-3 py-2 text-sm text-ink outline-none focus:border-gold"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold tracking-wide text-ink-soft uppercase">
+                  Kullanıcı Adı
+                </label>
+                <input
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  className="mt-1.5 w-full rounded-lg border border-gold/25 bg-parchment px-3 py-2 text-sm text-ink outline-none focus:border-gold"
+                />
               </div>
 
               <div className="grid grid-cols-2 gap-3 rounded-xl border border-gold/15 bg-parchment p-3 text-xs text-ink-soft">
@@ -704,6 +736,15 @@ function UserDetailPanel({
                   className="h-4 w-4 rounded border-gold/40 accent-gold-deep"
                 />
                 E-posta doğrulanmış
+              </label>
+              <label className="flex items-center gap-2 text-sm text-ink-soft">
+                <input
+                  type="checkbox"
+                  checked={phoneVerified}
+                  onChange={(e) => setPhoneVerified(e.target.checked)}
+                  className="h-4 w-4 rounded border-gold/40 accent-gold-deep"
+                />
+                Telefon doğrulanmış
               </label>
 
               {error && <p className="text-sm text-red-700">{error}</p>}
@@ -869,6 +910,7 @@ function UsersSection() {
                   </td>
                   <td className="px-4 py-3 text-xs text-ink-soft">
                     {u.emailVerified ? "E-posta ✓" : "E-posta ✗"}
+                    {u.phone && ` · Tel ${u.phoneVerified ? "✓" : "✗"}`}
                     {u.lockedUntil && new Date(u.lockedUntil) > new Date() && (
                       <span className="ml-1.5 text-red-700">· Kilitli</span>
                     )}
@@ -1332,7 +1374,7 @@ function AccountantVerificationsSection() {
     <div>
       <h2 className="font-serif text-lg font-semibold text-ink">Onay bekleyen müşavirler</h2>
       <p className="mt-1 text-sm text-ink-soft">
-        Müşavirlik belgesi ve/veya vergi levhası yüklenmiş, henüz onaylanmamış hesaplar.
+        Müşavirlik belgesi ve/veya vergi levhası ya da SGK dökümanı yüklenmiş, henüz onaylanmamış hesaplar.
       </p>
 
       <div className="mt-4 overflow-hidden rounded-2xl border border-gold/20">
@@ -1362,7 +1404,7 @@ function AccountantVerificationsSection() {
                       onClick={() => openAccountantVerificationDoc(r.id, "taxPlate", true)}
                       className="text-xs font-semibold text-gold-deep hover:underline"
                     >
-                      Vergi levhası
+                      Vergi levhası/SGK
                     </button>
                   )}
                   <div className="ml-auto flex gap-2">

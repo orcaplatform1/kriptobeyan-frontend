@@ -749,6 +749,7 @@ export interface AdminUserRow {
   phoneCountryCode: string | null;
   role: UserRole;
   emailVerified: boolean;
+  phoneVerified: boolean;
   createdAt: string;
   lastSeenAt: string | null;
   lockedUntil: string | null;
@@ -798,10 +799,13 @@ export async function adminGetUser(id: string) {
 export async function adminUpdateUser(
   id: string,
   data: Partial<{
+    email: string;
+    username: string;
     fullName: string;
     phone: string;
     role: UserRole;
     emailVerified: boolean;
+    phoneVerified: boolean;
     unlock: boolean;
   }>,
 ) {
