@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { getPlans, formatTRY } from "@/lib/api";
+import { AuthAwareCta } from "@/components/auth-aware-cta";
 import { JsonLd } from "@/components/json-ld";
 import { SITE_URL, SITE_NAME } from "@/lib/site-config";
 
@@ -12,12 +12,14 @@ export const metadata: Metadata = {
 };
 
 function PlanCard({
+  planId,
   name,
   priceTRY,
   limitLabel,
   highlighted,
   discountPercent,
 }: {
+  planId: string;
   name: string;
   priceTRY: string;
   limitLabel: string;
@@ -61,8 +63,8 @@ function PlanCard({
       <p className={`mt-3 text-sm ${highlighted ? "text-cream/70" : "text-ink-soft"}`}>
         {limitLabel}
       </p>
-      <Link
-        href="/kayit-ol"
+      <AuthAwareCta
+        planId={planId}
         className={`mt-6 inline-flex w-full items-center justify-center rounded-full px-5 py-3 text-sm font-semibold transition-transform hover:scale-[1.02] ${
           highlighted
             ? "bg-cream text-marble-dark"
@@ -70,7 +72,7 @@ function PlanCard({
         }`}
       >
         Bu planla başla
-      </Link>
+      </AuthAwareCta>
     </div>
   );
 }
@@ -140,6 +142,7 @@ export default async function FiyatlandirmaPage() {
               {individual.map((plan, i) => (
                 <PlanCard
                   key={plan.id}
+                  planId={plan.id}
                   name={plan.name}
                   priceTRY={plan.priceTRY}
                   limitLabel={
@@ -169,6 +172,7 @@ export default async function FiyatlandirmaPage() {
               {accountant.map((plan, i) => (
                 <PlanCard
                   key={plan.id}
+                  planId={plan.id}
                   name={plan.name}
                   priceTRY={plan.priceTRY}
                   limitLabel={

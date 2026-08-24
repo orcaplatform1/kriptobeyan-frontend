@@ -1,9 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import { motion } from "framer-motion";
 import { useScaleAnimation } from "./scale-animation-context";
 import { HeroScale } from "./hero-scale";
+import { AuthAwareCta } from "./auth-aware-cta";
 
 const revealTransition = { duration: 0.7, ease: [0.22, 1, 0.36, 1] as const };
 
@@ -98,12 +98,9 @@ export function HeroSection() {
                 >
                   Nasıl çalışır?
                 </a>
-                <Link
-                  href="/kayit-ol"
-                  className="inline-flex items-center justify-center rounded-full bg-marble-dark px-5 py-2.5 text-sm font-semibold text-cream shadow-[0_8px_24px_-8px_rgba(28,32,25,0.5)] transition-transform hover:scale-[1.03] hover:bg-marble-dark-2"
-                >
+                <AuthAwareCta className="inline-flex items-center justify-center rounded-full bg-marble-dark px-5 py-2.5 text-sm font-semibold text-cream shadow-[0_8px_24px_-8px_rgba(28,32,25,0.5)] transition-transform hover:scale-[1.03] hover:bg-marble-dark-2">
                   Ücretsiz Başla
-                </Link>
+                </AuthAwareCta>
               </div>
             </motion.div>
 
@@ -113,12 +110,9 @@ export function HeroSection() {
                 lg:hidden — masaustunde ikisi ayni anda gorunmesin diye,
                 bkz. yukaridaki motion.div icindeki Link). */}
             <span className="btn-gold-comet absolute bottom-5 left-5 inline-flex lg:hidden">
-              <Link
-                href="/kayit-ol"
-                className="inline-flex items-center justify-center rounded-full bg-marble-dark px-6 py-3 text-sm font-semibold text-cream shadow-[0_8px_24px_-8px_rgba(28,32,25,0.5)] transition-transform hover:scale-[1.03] hover:bg-marble-dark-2"
-              >
+              <AuthAwareCta className="inline-flex items-center justify-center rounded-full bg-marble-dark px-6 py-3 text-sm font-semibold text-cream shadow-[0_8px_24px_-8px_rgba(28,32,25,0.5)] transition-transform hover:scale-[1.03] hover:bg-marble-dark-2">
                 Ücretsiz Başla
-              </Link>
+              </AuthAwareCta>
             </span>
           </div>
         </div>

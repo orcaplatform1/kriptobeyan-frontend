@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { AuthAwareCta } from "./auth-aware-cta";
 
 export function FinalCtaSection() {
   return (
@@ -12,12 +12,9 @@ export function FinalCtaSection() {
           görün.
         </p>
         <span className="btn-gold-comet relative mt-8 inline-flex">
-          <Link
-            href="/kayit-ol"
-            className="inline-flex items-center justify-center rounded-full bg-marble-dark px-8 py-4 text-base font-semibold text-cream shadow-[0_8px_24px_-8px_rgba(28,32,25,0.45)] transition-transform hover:scale-[1.02] hover:bg-marble-dark-2"
-          >
+          <AuthAwareCta className="inline-flex items-center justify-center rounded-full bg-marble-dark px-8 py-4 text-base font-semibold text-cream shadow-[0_8px_24px_-8px_rgba(28,32,25,0.45)] transition-transform hover:scale-[1.02] hover:bg-marble-dark-2">
             Ücretsiz Başla
-          </Link>
+          </AuthAwareCta>
         </span>
       </div>
     </section>
