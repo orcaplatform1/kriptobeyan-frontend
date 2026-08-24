@@ -24,6 +24,7 @@ export function SiteHeader() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [isAccountant, setIsAccountant] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     setLoggedIn(isLoggedIn());
@@ -92,7 +93,7 @@ export function SiteHeader() {
               )}
               <Link
                 href={isAccountant ? "/musavir-paneli" : "/panel"}
-                className="rounded-full bg-marble-dark px-4 py-2 text-sm font-semibold text-cream transition-colors hover:bg-marble-dark-2"
+                className="hidden rounded-full bg-marble-dark px-4 py-2 text-sm font-semibold text-cream transition-colors hover:bg-marble-dark-2 sm:inline-flex"
               >
                 {isAccountant ? "Müşavir Paneli" : "Panele git"}
               </Link>
@@ -107,14 +108,91 @@ export function SiteHeader() {
               </Link>
               <Link
                 href="/kayit-ol"
-                className="rounded-full bg-marble-dark px-4 py-2 text-sm font-semibold text-cream transition-colors hover:bg-marble-dark-2"
+                className="hidden rounded-full bg-marble-dark px-4 py-2 text-sm font-semibold text-cream transition-colors hover:bg-marble-dark-2 sm:inline-flex"
               >
                 Ücretsiz Başla
               </Link>
             </>
           )}
+
+          <button
+            type="button"
+            onClick={() => setMenuOpen((v) => !v)}
+            aria-label={menuOpen ? "Menüyü kapat" : "Menüyü aç"}
+            aria-expanded={menuOpen}
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-gold/25 text-ink transition-colors hover:border-gold/50 md:hidden"
+          >
+            <span className="relative flex h-4 w-4 flex-col items-center justify-center">
+              <span
+                className={`absolute h-[1.5px] w-4 bg-current transition-transform ${menuOpen ? "translate-y-0 rotate-45" : "-translate-y-1.5"}`}
+              />
+              <span
+                className={`absolute h-[1.5px] w-4 bg-current transition-opacity ${menuOpen ? "opacity-0" : "opacity-100"}`}
+              />
+              <span
+                className={`absolute h-[1.5px] w-4 bg-current transition-transform ${menuOpen ? "translate-y-0 -rotate-45" : "translate-y-1.5"}`}
+              />
+            </span>
+          </button>
         </div>
       </div>
+
+      {menuOpen && (
+        <div className="border-t border-gold/15 bg-cream px-6 py-4 md:hidden">
+          <nav className="flex flex-col gap-1">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={() => setMenuOpen(false)}
+                className="rounded-lg px-3 py-2.5 text-sm font-medium text-ink-soft transition-colors hover:bg-parchment hover:text-gold-deep"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
+
+          <div className="mt-3 flex flex-col gap-2 border-t border-gold/15 pt-3">
+            {loggedIn ? (
+              <>
+                {isAdmin && (
+                  <Link
+                    href="/admin"
+                    onClick={() => setMenuOpen(false)}
+                    className="rounded-lg px-3 py-2.5 text-sm font-medium text-ink-soft hover:bg-parchment hover:text-gold-deep"
+                  >
+                    Admin
+                  </Link>
+                )}
+                <Link
+                  href={isAccountant ? "/musavir-paneli" : "/panel"}
+                  onClick={() => setMenuOpen(false)}
+                  className="rounded-full bg-marble-dark px-4 py-2.5 text-center text-sm font-semibold text-cream transition-colors hover:bg-marble-dark-2"
+                >
+                  {isAccountant ? "Müşavir Paneli" : "Panele git"}
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/giris"
+                  onClick={() => setMenuOpen(false)}
+                  className="rounded-lg px-3 py-2.5 text-sm font-medium text-ink-soft hover:bg-parchment hover:text-gold-deep"
+                >
+                  Giriş Yap
+                </Link>
+                <Link
+                  href="/kayit-ol"
+                  onClick={() => setMenuOpen(false)}
+                  className="rounded-full bg-marble-dark px-4 py-2.5 text-center text-sm font-semibold text-cream transition-colors hover:bg-marble-dark-2"
+                >
+                  Ücretsiz Başla
+                </Link>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </header>
   );
 }

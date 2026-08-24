@@ -48,18 +48,7 @@ export function SiteFooter() {
           ))}
         </div>
 
-        <div className="mt-14 rounded-xl border border-cream/10 bg-white/[0.03] px-5 py-4 text-xs leading-relaxed text-cream/55">
-          <strong className="text-cream/80">Vergi uyarısı:</strong> KriptoBeyan
-          bir vergi danışmanlık hizmeti değildir. Platformdaki tüm hesaplamalar
-          taslak/tahmini niteliktedir ve resmi beyan yerine geçmez. Kesin
-          rakamlar için mutlaka bir mali müşavire danışın. Ayrıntılar için{" "}
-          <Link href="/sorumluluk-reddi" className="underline hover:text-cream">
-            Sorumluluk Reddi
-          </Link>{" "}
-          sayfamıza bakın.
-        </div>
-
-        <div className="mt-8 flex flex-col gap-3 border-t border-cream/10 pt-6 text-xs text-cream/45 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-14 flex flex-col gap-3 border-t border-cream/10 pt-6 text-xs text-cream/45 sm:flex-row sm:items-center sm:justify-between">
           <p>© {new Date().getFullYear()} KriptoBeyan. Tüm hakları saklıdır.</p>
           <a href={`mailto:${SUPPORT_EMAIL}`} className="hover:text-cream/80">
             {SUPPORT_EMAIL}

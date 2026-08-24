@@ -15,7 +15,7 @@ const faqGroups: { title: string; items: { q: string; a: string }[] }[] = [
     items: [
       {
         q: "KriptoBeyan bana vergi tavsiyesi mi veriyor?",
-        a: "Hayır. KriptoBeyan bir vergi danışmanlık hizmeti değildir ve mali müşavirlik faaliyeti yürütmez. Platformdaki tüm hesaplamalar taslak/tahmini niteliktedir; resmi beyanınız için mutlaka bir mali müşavire danışmalısınız. Ayrıntılar için Sorumluluk Reddi sayfamıza bakın.",
+        a: "Hayır. KriptoBeyan bir vergi danışmanlık hizmeti değil, bir vergi hesaplama hizmetidir: işlemlerini FIFO yöntemiyle ve güncel mevzuata göre hesaplar. Kişiye özel danışmanlık gerektiren durumlarda ya da nihai beyanında bir mali müşavirle birlikte çalışmanı öneririz. Ayrıntılar için Sorumluluk Reddi sayfamıza bakın.",
       },
       {
         q: "Hangi hesaplama yöntemini kullanıyorsunuz?",

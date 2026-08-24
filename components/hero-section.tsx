@@ -64,21 +64,19 @@ export function HeroSection() {
               Nasıl çalışır?
             </a>
           </motion.div>
-
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={settled ? { opacity: 1 } : { opacity: 0 }}
-            transition={{ ...revealTransition, delay: 0.34 }}
-            className="mt-6 text-sm text-ink-soft/80"
-          >
-            Kredi kartı gerekmez · Tüm hesaplamalar taslak/tahmini olarak sunulur
-          </motion.p>
         </div>
 
-        <div className="order-1 flex min-w-0 items-center justify-center lg:order-2 lg:h-full lg:justify-end">
-          <div className="w-[78%] min-w-0 sm:w-[62%] lg:h-full lg:w-auto">
+        <div className="relative order-1 -mx-6 flex min-w-0 items-center justify-center sm:-mx-10 lg:order-2 lg:mx-0 lg:h-full lg:justify-end">
+          <div className="w-full min-w-0 lg:h-full lg:w-auto">
             <HeroScale />
           </div>
+
+          <Link
+            href="/kayit-ol"
+            className="absolute bottom-5 left-5 inline-flex items-center justify-center rounded-full bg-marble-dark px-6 py-3 text-sm font-semibold text-cream shadow-[0_8px_24px_-8px_rgba(28,32,25,0.5)] transition-transform hover:scale-[1.03] hover:bg-marble-dark-2 lg:hidden"
+          >
+            Ücretsiz Başla
+          </Link>
         </div>
       </div>
     </section>

@@ -3,7 +3,7 @@ import Link from "next/link";
 const faqs = [
   {
     q: "KriptoBeyan bana vergi tavsiyesi mi veriyor?",
-    a: "Hayır. KriptoBeyan bir vergi danışmanlık hizmeti değildir; hesaplamalar taslak/tahmini niteliktedir. Kesin beyan için mutlaka bir mali müşavire danışmalısınız.",
+    a: "Hayır. KriptoBeyan bir vergi danışmanlık hizmeti değil, bir vergi hesaplama hizmetidir: işlemlerini FIFO yöntemiyle ve güncel mevzuata göre hesaplar. Nihai beyanında bir mali müşavirle birlikte çalışmanı öneririz.",
   },
   {
     q: "Borsa API anahtarlarım güvende mi?",
