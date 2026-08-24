@@ -1566,12 +1566,12 @@ export default function AdminPage() {
           Yönetim paneli
         </h1>
 
-        <div className="mt-6 flex w-fit gap-1 rounded-xl border border-gold/20 bg-parchment p-1">
+        <div className="mt-6 flex flex-wrap gap-1.5 rounded-xl border border-gold/20 bg-parchment p-1.5">
           {TABS.map((t) => (
             <button
               key={t.id}
               onClick={() => setTab(t.id)}
-              className={`rounded-lg px-4 py-2 text-sm font-semibold transition-colors ${
+              className={`rounded-lg px-3 py-1.5 text-xs font-semibold whitespace-nowrap transition-colors sm:px-4 sm:py-2 sm:text-sm ${
                 tab === t.id ? "bg-marble-dark text-cream" : "text-ink-soft hover:text-ink"
               }`}
             >
