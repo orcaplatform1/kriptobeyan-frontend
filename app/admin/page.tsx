@@ -120,7 +120,9 @@ function PlanRow({ plan }: { plan: AdminPlan }) {
   return (
     <tr className="border-b border-gold/10 last:border-0">
       <td className="px-4 py-3 font-medium text-ink">{plan.name}</td>
-      <td className="px-4 py-3 text-ink-soft">{plan.type}</td>
+      <td className="px-4 py-3 text-ink-soft">
+        {plan.type === "INDIVIDUAL" ? "Bireysel" : "Mali Müşavir"}
+      </td>
       <td className="px-4 py-3">
         <input
           type="number"
