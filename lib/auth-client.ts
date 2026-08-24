@@ -91,6 +91,22 @@ export async function login(
   });
 }
 
+export async function verifyEmail(token: string) {
+  return apiPost<void>("/auth/verify-email", { token });
+}
+
+export async function resendVerification(email: string) {
+  return apiPost<void>("/auth/resend-verification", { email });
+}
+
+export async function requestPasswordReset(email: string) {
+  return apiPost<void>("/auth/request-password-reset", { email });
+}
+
+export async function resetPassword(token: string, newPassword: string) {
+  return apiPost<void>("/auth/reset-password", { token, newPassword });
+}
+
 export async function logout() {
   const refreshToken = getRefreshToken();
   clearTokens();

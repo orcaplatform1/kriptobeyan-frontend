@@ -74,12 +74,20 @@ export default function GirisPage() {
             />
           </div>
           <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-ink"
-            >
-              Parola
-            </label>
+            <div className="flex items-center justify-between">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-ink"
+              >
+                Parola
+              </label>
+              <Link
+                href="/sifre-sifirla"
+                className="text-xs font-medium text-gold-deep hover:underline"
+              >
+                Şifremi unuttum
+              </Link>
+            </div>
             <input
               id="password"
               type="password"
