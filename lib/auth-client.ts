@@ -62,6 +62,15 @@ async function parseErrorMessage(res: Response): Promise<string> {
   return "Bir şeyler ters gitti, lütfen tekrar dene.";
 }
 
+// Nest'te void donen POST uc noktalari (ör. /auth/phone/verify) bos govdeli
+// 201 dondurur, sadece 204 degil — res.json() bos govdede SyntaxError
+// firlatiyordu ve basarili istekler bile "basarisiz" gibi gorunuyordu.
+async function parseJsonBody<T>(res: Response): Promise<T> {
+  if (res.status === 204) return undefined as T;
+  const text = await res.text();
+  return text ? (JSON.parse(text) as T) : (undefined as T);
+}
+
 async function apiPost<T>(path: string, data: unknown): Promise<T> {
   const res = await fetch(`/api${path}`, {
     method: "POST",
@@ -71,8 +80,7 @@ async function apiPost<T>(path: string, data: unknown): Promise<T> {
   if (!res.ok) {
     throw new ApiError(await parseErrorMessage(res), res.status);
   }
-  if (res.status === 204) return undefined as T;
-  return res.json();
+  return parseJsonBody<T>(res);
 }
 
 export type UserRole = "INDIVIDUAL" | "ACCOUNTANT";
@@ -82,8 +90,8 @@ export async function registerAccount(data: {
   username: string;
   password: string;
   fullName?: string;
-  phone?: string;
-  phoneCountryCode?: string;
+  phone: string;
+  phoneCountryCode: string;
   role?: UserRole;
 }) {
   return apiPost<{ id: string; email: string }>("/auth/register", data);
@@ -111,6 +119,14 @@ export async function verifyEmail(token: string) {
 
 export async function resendVerification(email: string) {
   return apiPost<void>("/auth/resend-verification", { email });
+}
+
+export async function verifyPhoneCode(code: string) {
+  return authRequest<void>("POST", "/auth/phone/verify", { code });
+}
+
+export async function resendPhoneCode() {
+  return authRequest<void>("POST", "/auth/phone/resend-code");
 }
 
 export async function requestPasswordReset(email: string) {
@@ -225,8 +241,7 @@ async function authRequest<T>(
   if (!res.ok) {
     throw new ApiError(await parseErrorMessage(res), res.status);
   }
-  if (res.status === 204) return undefined as T;
-  return res.json();
+  return parseJsonBody<T>(res);
 }
 
 async function authGet<T>(path: string): Promise<T> {

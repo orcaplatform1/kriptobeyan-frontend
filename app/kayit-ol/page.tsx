@@ -8,8 +8,10 @@ import {
   login,
   postLoginRedirectPath,
   registerAccount,
+  resendPhoneCode,
   roleFromAccessToken,
   saveTokens,
+  verifyPhoneCode,
   type UserRole,
 } from "@/lib/auth-client";
 import { countryCodes } from "@/lib/data/country-codes";
@@ -28,7 +30,6 @@ function KayitOlContent() {
   const [fullName, setFullName] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
-  const [addPhone, setAddPhone] = useState(false);
   const [phoneCountryCode, setPhoneCountryCode] = useState("+90");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
@@ -39,6 +40,17 @@ function KayitOlContent() {
   const [openDoc, setOpenDoc] = useState<LegalDoc | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  // Kayit basarili olunca panele gitmeden once telefon dogrulama adimi
+  // gosterilir — giris bu adima bakmiyor (email dogrulamayla ayni yumusak
+  // davranis, bkz. AuthService), bu yuzden "daha sonra dogrula" ile
+  // atlanabiliyor.
+  const [step, setStep] = useState<"form" | "verify-phone">("form");
+  const [redirectPath, setRedirectPath] = useState("/panel");
+  const [code, setCode] = useState("");
+  const [codeError, setCodeError] = useState<string | null>(null);
+  const [codeLoading, setCodeLoading] = useState(false);
+  const [resendMessage, setResendMessage] = useState<string | null>(null);
 
   const acceptedTerms = termsRead && privacyRead;
 
@@ -58,7 +70,7 @@ function KayitOlContent() {
       setError("Parolalar birbiriyle uyuşmuyor.");
       return;
     }
-    if (addPhone && phoneNumber && !/^\d{10}$/.test(phoneNumber)) {
+    if (!/^\d{10}$/.test(phoneNumber)) {
       setError("Telefon numarası ülke kodundan sonra tam 10 rakam olmalı.");
       return;
     }
@@ -75,24 +87,24 @@ function KayitOlContent() {
         password,
         role,
         fullName: fullName || undefined,
-        phone: addPhone && phoneNumber ? `${phoneCountryCode}${phoneNumber}` : undefined,
-        phoneCountryCode: addPhone && phoneNumber ? phoneCountryCode : undefined,
+        phone: `${phoneCountryCode}${phoneNumber}`,
+        phoneCountryCode,
       });
       // Hesap dogrulama e-postasi beklemeden de giris yapilabiliyor
       // (bkz. auth.service.ts login — emailVerified kontrolu yok), bu
-      // yuzden kayittan hemen sonra otomatik giris yapip panele yonlendiriyoruz.
+      // yuzden kayittan hemen sonra otomatik giris yapip telefon dogrulama
+      // adimini gosteriyoruz (giris yine engellenmiyor, "daha sonra
+      // dogrula" ile atlanabiliyor).
       const result = await login(email, "email", password);
       if ("twoFactorRequired" in result) {
         router.push("/giris");
         return;
       }
       saveTokens(result);
-      router.push(
-        postLoginRedirectPath(
-          roleFromAccessToken(result.accessToken),
-          redirect,
-        ),
+      setRedirectPath(
+        postLoginRedirectPath(roleFromAccessToken(result.accessToken), redirect),
       );
+      setStep("verify-phone");
     } catch (err) {
       setError(
         err instanceof ApiError
@@ -104,10 +116,106 @@ function KayitOlContent() {
     }
   }
 
+  async function handleVerifyCode(e: FormEvent) {
+    e.preventDefault();
+    setCodeError(null);
+    setCodeLoading(true);
+    try {
+      await verifyPhoneCode(code);
+      router.push(redirectPath);
+    } catch (err) {
+      setCodeError(
+        err instanceof ApiError ? err.message : "Kod doğrulanamadı, tekrar dene.",
+      );
+    } finally {
+      setCodeLoading(false);
+    }
+  }
+
+  async function handleResendCode() {
+    setCodeError(null);
+    setResendMessage(null);
+    try {
+      await resendPhoneCode();
+      setResendMessage("Yeni kod gönderildi.");
+    } catch (err) {
+      setCodeError(
+        err instanceof ApiError ? err.message : "Kod gönderilemedi, tekrar dene.",
+      );
+    }
+  }
+
   function handleApproveDoc() {
     if (openDoc === "terms") setTermsRead(true);
     if (openDoc === "privacy") setPrivacyRead(true);
     setOpenDoc(null);
+  }
+
+  if (step === "verify-phone") {
+    return (
+      <main className="bg-cream">
+        <div className="mx-auto flex min-h-[calc(100vh-4rem)] max-w-md flex-col justify-center px-6 py-16">
+          <p className="text-xs font-semibold tracking-wide text-gold-deep uppercase">
+            Telefon doğrulama
+          </p>
+          <h1 className="mt-3 font-serif text-3xl font-semibold text-ink">
+            Telefonuna gönderilen kodu gir
+          </h1>
+          <p className="mt-3 text-ink-soft">
+            {phoneCountryCode}
+            {phoneNumber} numarasına 6 haneli bir doğrulama kodu gönderdik.
+          </p>
+
+          <form onSubmit={handleVerifyCode} className="mt-8 space-y-4" noValidate>
+            <div>
+              <label htmlFor="code" className="block text-sm font-medium text-ink">
+                Doğrulama kodu
+              </label>
+              <input
+                id="code"
+                inputMode="numeric"
+                required
+                maxLength={6}
+                autoFocus
+                value={code}
+                onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
+                className="mt-1.5 w-full rounded-lg border border-gold/25 bg-parchment px-4 py-2.5 text-center text-lg tracking-[0.3em] text-ink outline-none transition-colors focus:border-gold"
+              />
+            </div>
+
+            {codeError && <p className="text-sm text-red-700">{codeError}</p>}
+            {resendMessage && (
+              <p className="text-sm text-emerald-700">{resendMessage}</p>
+            )}
+
+            <button
+              type="submit"
+              disabled={codeLoading || code.length !== 6}
+              className="w-full rounded-full bg-marble-dark px-5 py-3 text-sm font-semibold text-cream transition-colors hover:bg-marble-dark-2 disabled:opacity-60"
+            >
+              {codeLoading ? "Doğrulanıyor…" : "Doğrula"}
+            </button>
+          </form>
+
+          <div className="mt-6 flex items-center justify-between text-sm">
+            <button
+              type="button"
+              onClick={handleResendCode}
+              className="font-medium text-gold-deep hover:underline"
+            >
+              Kodu tekrar gönder
+            </button>
+            <button
+              type="button"
+              onClick={() => router.push(redirectPath)}
+              className="font-medium text-ink-soft hover:text-ink"
+            >
+              Daha sonra doğrula
+            </button>
+          </div>
+        </div>
+      </main>
+    );
   }
 
   return (
@@ -188,20 +296,9 @@ function KayitOlContent() {
           </div>
 
           <div>
-            <div className="flex items-center justify-between">
-              <label htmlFor="email" className="block text-sm font-medium text-ink">
-                E-posta
-              </label>
-              {!addPhone && (
-                <button
-                  type="button"
-                  onClick={() => setAddPhone(true)}
-                  className="text-xs font-semibold text-gold-deep hover:underline"
-                >
-                  + Telefon numarası ekle (opsiyonel)
-                </button>
-              )}
-            </div>
+            <label htmlFor="email" className="block text-sm font-medium text-ink">
+              E-posta
+            </label>
             <input
               id="email"
               type="email"
@@ -213,44 +310,34 @@ function KayitOlContent() {
             />
           </div>
 
-          {addPhone && (
-            <div>
-              <div className="flex items-center justify-between">
-                <label htmlFor="phoneNumber" className="block text-sm font-medium text-ink">
-                  Telefon
-                </label>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setAddPhone(false);
-                    setPhoneNumber("");
-                  }}
-                  className="text-xs font-semibold text-ink-soft hover:text-ink"
-                >
-                  Kaldır
-                </button>
-              </div>
-              <div className="mt-1.5 flex gap-2">
-                <CustomSelect
-                  value={phoneCountryCode}
-                  onChange={setPhoneCountryCode}
-                  className="w-[100px] shrink-0 rounded-lg border border-gold/25 bg-parchment px-2 py-2.5 text-sm text-ink focus:border-gold"
-                  options={countryCodes.map((c) => ({
-                    value: c.dialCode,
-                    label: `${c.flag} ${c.dialCode}`,
-                  }))}
-                />
-                <input
-                  id="phoneNumber"
-                  inputMode="numeric"
-                  maxLength={10}
-                  value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, ""))}
-                  className="w-full rounded-lg border border-gold/25 bg-parchment px-4 py-2.5 text-ink outline-none transition-colors focus:border-gold"
-                />
-              </div>
+          <div>
+            <label htmlFor="phoneNumber" className="block text-sm font-medium text-ink">
+              Telefon
+            </label>
+            <div className="mt-1.5 flex gap-2">
+              <CustomSelect
+                value={phoneCountryCode}
+                onChange={setPhoneCountryCode}
+                className="w-[100px] shrink-0 rounded-lg border border-gold/25 bg-parchment px-2 py-2.5 text-sm text-ink focus:border-gold"
+                options={countryCodes.map((c) => ({
+                  value: c.dialCode,
+                  label: `${c.flag} ${c.dialCode}`,
+                }))}
+              />
+              <input
+                id="phoneNumber"
+                inputMode="numeric"
+                required
+                maxLength={10}
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, ""))}
+                className="w-full rounded-lg border border-gold/25 bg-parchment px-4 py-2.5 text-ink outline-none transition-colors focus:border-gold"
+              />
             </div>
-          )}
+            <p className="mt-1.5 text-xs text-ink-soft">
+              Kayıttan sonra SMS ile gönderilecek kodla doğrulanacak.
+            </p>
+          </div>
 
           <div>
             <label
