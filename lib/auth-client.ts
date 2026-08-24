@@ -662,6 +662,22 @@ export function paymentReceiptUrl(paymentId: string) {
   return `/api/subscription/payments/${paymentId}/receipt`;
 }
 
+// Dekont/kanıt görüntüleme — endpoint auth gerektirdiği için düz <a href>
+// çalışmaz (Authorization header taşımaz), bu yüzden blob olarak çekip
+// geçici bir object URL açıyoruz.
+export async function openPaymentReceipt(paymentId: string) {
+  const token = getAccessToken();
+  if (!token) throw new ApiError("Oturum bulunamadı, tekrar giriş yap.", 401);
+  const res = await fetch(paymentReceiptUrl(paymentId), {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new ApiError("Dekont açılamadı", res.status);
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  window.open(url, "_blank", "noopener,noreferrer");
+  setTimeout(() => URL.revokeObjectURL(url), 60_000);
+}
+
 // --- Admin: ödeme onayı ---
 
 export interface AdminPayment extends Payment {
@@ -709,4 +725,86 @@ export async function adminApprovePayment(id: string) {
 
 export async function adminRejectPayment(id: string) {
   return authRequest<Payment>("POST", `/subscription/payments/${id}/reject`);
+}
+
+// --- Admin: kullanıcı yönetimi ---
+
+export interface AdminUserRow {
+  id: string;
+  email: string;
+  username: string;
+  fullName: string | null;
+  phone: string | null;
+  phoneCountryCode: string | null;
+  role: UserRole;
+  emailVerified: boolean;
+  createdAt: string;
+  lastSeenAt: string | null;
+  lockedUntil: string | null;
+  failedLoginCount: number;
+  twoFactorEnabled: boolean;
+  staffRecord: { id: string; role: string; addedAt: string } | null;
+}
+
+export interface AdminUserDetail extends AdminUserRow {
+  _count: {
+    exchangeConnections: number;
+    walletAddresses: number;
+    csvImports: number;
+    payments: number;
+  };
+  activeSubscription: {
+    id: string;
+    startDate: string;
+    endDate: string;
+    plan: Plan;
+  } | null;
+}
+
+export interface AdminUserList {
+  data: AdminUserRow[];
+  pagination: { page: number; limit: number; total: number; totalPages: number };
+}
+
+export async function adminListUsers(opts: {
+  role?: UserRole;
+  staffOnly?: boolean;
+  search?: string;
+  page?: number;
+} = {}) {
+  const qs = new URLSearchParams();
+  if (opts.role) qs.set("role", opts.role);
+  if (opts.staffOnly) qs.set("staffOnly", "true");
+  if (opts.search) qs.set("search", opts.search);
+  qs.set("page", String(opts.page ?? 1));
+  return authRequest<AdminUserList>("GET", `/admin/users?${qs.toString()}`);
+}
+
+export async function adminGetUser(id: string) {
+  return authRequest<AdminUserDetail>("GET", `/admin/users/${id}`);
+}
+
+export async function adminUpdateUser(
+  id: string,
+  data: Partial<{
+    fullName: string;
+    phone: string;
+    role: UserRole;
+    emailVerified: boolean;
+    unlock: boolean;
+  }>,
+) {
+  return authRequest<AdminUserRow>("PATCH", `/admin/users/${id}`, data);
+}
+
+export async function adminGrantStaff(id: string) {
+  return authRequest<AdminUserDetail>("POST", `/admin/users/${id}/staff`);
+}
+
+export async function adminRevokeStaff(id: string) {
+  return authRequest<AdminUserDetail>("DELETE", `/admin/users/${id}/staff`);
+}
+
+export async function adminDeleteUser(id: string) {
+  return authRequest<void>("DELETE", `/admin/users/${id}`);
 }
