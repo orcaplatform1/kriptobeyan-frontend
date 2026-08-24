@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { LegalPageShell } from "@/components/legal-page-shell";
 import { LegalNotice } from "@/components/legal-notice";
-import { SITE_URL, SUPPORT_EMAIL } from "@/lib/site-config";
+import { SITE_URL, SUPPORT_EMAIL, COMPANY_INFO } from "@/lib/site-config";
 
 export const metadata: Metadata = {
   title: "Mesafeli Satış Sözleşmesi",
@@ -16,20 +16,22 @@ export default function MesafeliSatisSozlesmesiPage() {
       <LegalNotice>
         <strong>Önemli:</strong> Bu metin, 6502 sayılı Tüketicinin Korunması
         Hakkında Kanun ve Mesafeli Sözleşmeler Yönetmeliği&apos;ne genel
-        yapı olarak uyumlu bir taslaktır — köşeli parantez içindeki satıcı
-        kimlik bilgileri ([ ]) doldurulmadan ve bir hukuk danışmanı
-        tarafından onaylanmadan yürürlüğe konulmamalıdır. Ödeme akışı henüz
-        gerçek bir ödeme kuruluşuna bağlanmamıştır (bkz. Fiyatlandırma
-        sayfası notu); bu sözleşme ödeme entegrasyonu canlıya alınmadan
-        önce nihai hâline getirilmelidir.
+        yapı olarak uyumlu bir taslaktır. Aşağıdaki satıcı kimlik bilgileri
+        (unvan, adres, MERSİS/vergi no) henüz gerçek/doğrulanmış değildir —
+        yer tutucu olarak girilmiştir ve bir hukuk danışmanı tarafından
+        onaylanmadan yürürlüğe konulmamalıdır. Ödeme akışı henüz gerçek bir
+        ödeme kuruluşuna bağlanmamıştır (bkz. Fiyatlandırma sayfası notu);
+        bu sözleşme ödeme entegrasyonu canlıya alınmadan önce nihai hâline
+        getirilmelidir.
       </LegalNotice>
 
       <h2>1. Taraflar</h2>
       <p><strong>Satıcı:</strong></p>
       <ul>
-        <li>Unvan: [Şirket/İşletme Unvanı]</li>
-        <li>Adres: [Adres]</li>
-        <li>Vergi/MERSİS No: [Numara]</li>
+        <li>Unvan: {COMPANY_INFO.unvan}</li>
+        <li>Adres: {COMPANY_INFO.adres}</li>
+        <li>Vergi/MERSİS No: {COMPANY_INFO.vergiNo} / {COMPANY_INFO.mersisNo}</li>
+        <li>Ticaret Sicil No: {COMPANY_INFO.ticaretSicilNo}</li>
         <li>E-posta: <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a></li>
       </ul>
       <p>

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { LegalPageShell } from "@/components/legal-page-shell";
 import { LegalNotice } from "@/components/legal-notice";
-import { SITE_URL, KVKK_EMAIL } from "@/lib/site-config";
+import { SITE_URL, KVKK_EMAIL, COMPANY_INFO } from "@/lib/site-config";
 
 export const metadata: Metadata = {
   title: "KVKK Aydınlatma Metni",
@@ -14,10 +14,11 @@ export default function KvkkAydinlatmaMetniPage() {
   return (
     <LegalPageShell title="KVKK Aydınlatma Metni" updated="24 Ağustos 2026">
       <LegalNotice>
-        Bu metin taslak niteliğindedir ve yayına alınmadan önce bir hukuk
-        danışmanı tarafından gözden geçirilmelidir. Köşeli parantez içindeki
-        veri sorumlusu kimlik bilgileri ([ ]) gerçek unvan/adres/iletişim
-        bilgileriyle doldurulmadan bu sayfa yürürlüğe konulmamalıdır.
+        <strong>Bu sayfadaki şirket kimlik bilgileri (unvan, adres, MERSİS,
+        vergi no) henüz gerçek/doğrulanmış değildir</strong> — herhangi bir
+        tescil sorgusu yapılmadan yer tutucu olarak girilmiştir. Sayfa
+        yayına alınmadan önce gerçek şirket/işletme bilgileriyle
+        güncellenmeli ve bir hukuk danışmanı tarafından onaylanmalıdır.
       </LegalNotice>
 
       <h2>1. Veri Sorumlusunun Kimliği</h2>
@@ -27,9 +28,10 @@ export default function KvkkAydinlatmaMetniPage() {
         tarafından işlenmektedir:
       </p>
       <ul>
-        <li>Unvan: [Şirket/İşletme Unvanı]</li>
-        <li>Adres: [Adres]</li>
-        <li>MERSİS No: [MERSİS Numarası]</li>
+        <li>Unvan: {COMPANY_INFO.unvan}</li>
+        <li>Adres: {COMPANY_INFO.adres}</li>
+        <li>MERSİS No: {COMPANY_INFO.mersisNo}</li>
+        <li>Vergi Dairesi / No: {COMPANY_INFO.vergiDairesi} / {COMPANY_INFO.vergiNo}</li>
         <li>
           E-posta: <a href={`mailto:${KVKK_EMAIL}`}>{KVKK_EMAIL}</a>
         </li>

@@ -16,6 +16,25 @@ export const SITE_KEYWORDS = [
 export const SUPPORT_EMAIL = "destek@kriptobeyan.com";
 export const KVKK_EMAIL = "kvkk@kriptobeyan.com";
 
+/**
+ * UYARI — bunlar GERÇEK şirket bilgileri DEĞİL. Kullanıcının açık isteği
+ * üzerine ("rastgele yap şimdilik") yer tutucu/örnek değerler girildi;
+ * hiçbir tescil/MERSİS/vergi dairesi sorgusu yapılmadı, bu numaralar
+ * uydurmadır. KVKK Aydınlatma Metni ve Mesafeli Satış Sözleşmesi
+ * sayfalarındaki uyarı kutuları bu yüzden kaldırılmadı — gerçek şirket
+ * kurulunca (veya gerçek kişi veri sorumlusu olarak devam edilecekse)
+ * bu blok gerçek bilgilerle değiştirilmeli ve sayfalar bir hukuk
+ * danışmanına onaylatılmalıdır.
+ */
+export const COMPANY_INFO = {
+  unvan: "KriptoBeyan Bilişim Teknolojileri Limited Şirketi",
+  adres: "Barbaros Mahallesi, Begonya Sokak No:1, Ataşehir/İstanbul",
+  mersisNo: "0123456789000015",
+  vergiDairesi: "Ataşehir Vergi Dairesi",
+  vergiNo: "1234567890",
+  ticaretSicilNo: "123456",
+};
+
 export interface FooterLink {
   href: string;
   label: string;
