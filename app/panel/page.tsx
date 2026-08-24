@@ -339,12 +339,20 @@ export default function PanelPage() {
                 <h2 className="font-serif text-xl font-semibold text-ink">
                   Kaynak bağla
                 </h2>
-                <Link
-                  href="/panel/abonelik"
-                  className="text-sm font-semibold text-gold-deep hover:underline"
-                >
-                  Abonelik ve ödemeler →
-                </Link>
+                <div className="flex gap-4">
+                  <Link
+                    href="/destek"
+                    className="text-sm font-semibold text-gold-deep hover:underline"
+                  >
+                    Destek merkezi →
+                  </Link>
+                  <Link
+                    href="/panel/abonelik"
+                    className="text-sm font-semibold text-gold-deep hover:underline"
+                  >
+                    Abonelik ve ödemeler →
+                  </Link>
+                </div>
               </div>
               <div className="mt-4">
                 <SourceConnections onSourcesChanged={() => loadDashboard(taxYear)} />

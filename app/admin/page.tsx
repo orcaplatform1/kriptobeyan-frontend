@@ -8,35 +8,50 @@ import {
   ApiError,
   adminApprovePayment,
   adminDeleteUser,
+  adminGetActiveUsers,
+  adminGetRoleCounts,
   adminGetSalesStats,
   adminGetUser,
+  adminGetVisitorStats,
   adminGrantStaff,
   adminListPayments,
   adminListPlans,
+  adminListSupportTickets,
   adminListUsers,
   adminRejectPayment,
+  adminReplySupportTicket,
   adminRevokeStaff,
+  adminSendAnnouncement,
   adminUpdatePlan,
+  adminUpdateSupportTicketStatus,
   adminUpdateUser,
   getAccessToken,
   openPaymentReceipt,
+  type ActiveUsers,
   type AdminPayment,
   type AdminPlan,
   type AdminUserDetail,
   type AdminUserRow,
   type PaymentStatus,
+  type RoleCounts,
   type SalesStats,
   type SalesStatsRow,
+  type SupportTicketRow,
+  type SupportTicketStatus,
   type UserRole,
+  type VisitorStats,
 } from "@/lib/auth-client";
 
 type Status = "checking" | "forbidden" | "error" | "ready";
-type Tab = "plans" | "payments" | "users";
+type Tab = "overview" | "plans" | "payments" | "users" | "announcements" | "support";
 
 const TABS: { id: Tab; label: string }[] = [
+  { id: "overview", label: "Genel Bakış" },
   { id: "plans", label: "Planlar" },
   { id: "payments", label: "Ödemeler" },
   { id: "users", label: "Kullanıcılar" },
+  { id: "announcements", label: "Duyurular" },
+  { id: "support", label: "Destek" },
 ];
 
 function formatTRY(value: number | string) {
@@ -889,6 +904,370 @@ function UsersSection() {
   );
 }
 
+// ================= Genel Bakış (analitik) =================
+
+function activeUserLabel(u: ActiveUsers["admin"][number]) {
+  return u.fullName || u.email;
+}
+
+function ActiveUsersGroup({ title, users }: { title: string; users: ActiveUsers["admin"] }) {
+  return (
+    <div>
+      <p className="text-xs font-semibold tracking-wide text-ink-soft uppercase">
+        {title} ({users.length})
+      </p>
+      {users.length === 0 ? (
+        <p className="mt-2 text-sm text-ink-soft">Şu an aktif kimse yok.</p>
+      ) : (
+        <ul className="mt-2 flex flex-col gap-1.5">
+          {users.map((u) => (
+            <li
+              key={u.id}
+              className="flex items-center justify-between rounded-lg bg-cream px-3 py-2 text-sm"
+            >
+              <span className="text-ink">{activeUserLabel(u)}</span>
+              <span className="text-xs text-ink-soft">
+                {new Date(u.lastSeenAt).toLocaleTimeString("tr-TR")}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+function OverviewSection() {
+  const [visitors, setVisitors] = useState<VisitorStats | null>(null);
+  const [roles, setRoles] = useState<RoleCounts | null>(null);
+  const [active, setActive] = useState<ActiveUsers | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  async function reload() {
+    setLoading(true);
+    try {
+      const [v, r, a] = await Promise.all([
+        adminGetVisitorStats(),
+        adminGetRoleCounts(),
+        adminGetActiveUsers(),
+      ]);
+      setVisitors(v);
+      setRoles(r);
+      setActive(a);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    reload();
+    const interval = setInterval(reload, 30_000);
+    return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  if (loading && !visitors) return <p className="text-sm text-ink-soft">Yükleniyor…</p>;
+
+  const totalActive = active
+    ? active.admin.length + active.accountant.length + active.individual.length
+    : 0;
+
+  return (
+    <div className="flex flex-col gap-6">
+      <div>
+        <h2 className="font-serif text-lg font-semibold text-ink">Site trafiği</h2>
+        <div className="mt-3 grid grid-cols-3 gap-3 sm:w-[28rem]">
+          <div className="rounded-xl border border-gold/20 bg-parchment p-4">
+            <p className="text-xs text-ink-soft">Bugün</p>
+            <p className="mt-1 font-serif text-2xl font-semibold text-ink">{visitors?.today ?? 0}</p>
+          </div>
+          <div className="rounded-xl border border-gold/20 bg-parchment p-4">
+            <p className="text-xs text-ink-soft">Bu hafta</p>
+            <p className="mt-1 font-serif text-2xl font-semibold text-ink">{visitors?.week ?? 0}</p>
+          </div>
+          <div className="rounded-xl border border-gold/20 bg-parchment p-4">
+            <p className="text-xs text-ink-soft">Bu ay</p>
+            <p className="mt-1 font-serif text-2xl font-semibold text-ink">{visitors?.month ?? 0}</p>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2 className="font-serif text-lg font-semibold text-ink">Kullanıcı dağılımı</h2>
+        <div className="mt-3 grid grid-cols-3 gap-3 sm:w-[28rem]">
+          <div className="rounded-xl border border-gold/20 bg-parchment p-4">
+            <p className="text-xs text-ink-soft">Admin/Staff</p>
+            <p className="mt-1 font-serif text-2xl font-semibold text-ink">{roles?.staff ?? 0}</p>
+          </div>
+          <div className="rounded-xl border border-gold/20 bg-parchment p-4">
+            <p className="text-xs text-ink-soft">Mali Müşavir</p>
+            <p className="mt-1 font-serif text-2xl font-semibold text-ink">{roles?.accountant ?? 0}</p>
+          </div>
+          <div className="rounded-xl border border-gold/20 bg-parchment p-4">
+            <p className="text-xs text-ink-soft">Bireysel</p>
+            <p className="mt-1 font-serif text-2xl font-semibold text-ink">{roles?.individual ?? 0}</p>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2 className="font-serif text-lg font-semibold text-ink">
+          Aktif kullanıcılar ({totalActive})
+        </h2>
+        <p className="text-xs text-ink-soft">Son 5 dakika içinde istek atanlar.</p>
+        <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-3">
+          {active && (
+            <>
+              <ActiveUsersGroup title="Admin/Staff" users={active.admin} />
+              <ActiveUsersGroup title="Mali Müşavir" users={active.accountant} />
+              <ActiveUsersGroup title="Bireysel" users={active.individual} />
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ================= Duyurular =================
+
+function AnnouncementsSection() {
+  const [message, setMessage] = useState("");
+  const [role, setRole] = useState<UserRole | "ALL">("ALL");
+  const [sending, setSending] = useState(false);
+  const [result, setResult] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleSend() {
+    if (!message.trim()) return;
+    setSending(true);
+    setError(null);
+    setResult(null);
+    try {
+      const res = await adminSendAnnouncement(message.trim(), role === "ALL" ? undefined : role);
+      setResult(`${res.sent} kullanıcıya gönderildi.`);
+      setMessage("");
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Gönderilemedi.");
+    } finally {
+      setSending(false);
+    }
+  }
+
+  return (
+    <div className="max-w-xl">
+      <h2 className="font-serif text-lg font-semibold text-ink">Duyuru gönder</h2>
+      <p className="mt-1 text-sm text-ink-soft">
+        Seçtiğin kitleye bildirim paneline düşecek bir duyuru gönder.
+      </p>
+
+      <div className="mt-4">
+        <label className="block text-xs font-semibold tracking-wide text-ink-soft uppercase">
+          Kitle
+        </label>
+        <CustomSelect
+          value={role}
+          onChange={(v) => setRole(v as UserRole | "ALL")}
+          className="mt-1.5 w-56 rounded-lg border border-gold/25 bg-parchment px-3 py-2 text-sm text-ink focus:border-gold"
+          options={[
+            { value: "ALL", label: "Herkes" },
+            { value: "INDIVIDUAL", label: "Sadece bireysel" },
+            { value: "ACCOUNTANT", label: "Sadece mali müşavir" },
+          ]}
+        />
+      </div>
+
+      <div className="mt-4">
+        <label className="block text-xs font-semibold tracking-wide text-ink-soft uppercase">
+          Mesaj
+        </label>
+        <textarea
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          rows={4}
+          maxLength={500}
+          className="mt-1.5 w-full rounded-lg border border-gold/25 bg-parchment px-3 py-2 text-sm text-ink outline-none focus:border-gold"
+        />
+      </div>
+
+      {error && <p className="mt-3 text-sm text-red-700">{error}</p>}
+      {result && <p className="mt-3 text-sm text-emerald-700">{result}</p>}
+
+      <button
+        onClick={handleSend}
+        disabled={sending || !message.trim()}
+        className="mt-4 rounded-full bg-marble-dark px-5 py-2.5 text-sm font-semibold text-cream hover:bg-marble-dark-2 disabled:opacity-60"
+      >
+        {sending ? "Gönderiliyor…" : "Duyuruyu gönder"}
+      </button>
+    </div>
+  );
+}
+
+// ================= Destek merkezi =================
+
+const SUPPORT_STATUS_LABELS: Record<SupportTicketStatus, string> = {
+  OPEN: "Açık",
+  IN_PROGRESS: "İşlemde",
+  RESOLVED: "Çözüldü",
+  CLOSED: "Kapalı",
+};
+
+const SUPPORT_STATUS_TABS: SupportTicketStatus[] = ["OPEN", "IN_PROGRESS", "RESOLVED", "CLOSED"];
+
+function SupportSection() {
+  const [tickets, setTickets] = useState<SupportTicketRow[]>([]);
+  const [status, setStatus] = useState<SupportTicketStatus>("OPEN");
+  const [loading, setLoading] = useState(true);
+  const [openTicket, setOpenTicket] = useState<SupportTicketRow | null>(null);
+  const [reply, setReply] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  async function reload() {
+    setLoading(true);
+    try {
+      const rows = await adminListSupportTickets(status);
+      setTickets(rows);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    reload();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [status]);
+
+  async function handleReply() {
+    if (!openTicket || !reply.trim()) return;
+    setBusy(true);
+    try {
+      const updated = await adminReplySupportTicket(openTicket.id, reply.trim());
+      setOpenTicket(updated);
+      setReply("");
+      await reload();
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function handleStatusChange(next: SupportTicketStatus) {
+    if (!openTicket) return;
+    setBusy(true);
+    try {
+      const updated = await adminUpdateSupportTicketStatus(openTicket.id, next);
+      setOpenTicket(updated);
+      await reload();
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex w-fit overflow-hidden rounded-xl border border-gold/25">
+        {SUPPORT_STATUS_TABS.map((s) => (
+          <button
+            key={s}
+            onClick={() => setStatus(s)}
+            className={`px-4 py-1.5 text-sm font-semibold ${
+              status === s ? "bg-marble-dark text-cream" : "bg-parchment text-ink-soft"
+            }`}
+          >
+            {SUPPORT_STATUS_LABELS[s]}
+          </button>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_1.3fr]">
+        <div className="overflow-hidden rounded-2xl border border-gold/20">
+          {loading ? (
+            <p className="p-6 text-sm text-ink-soft">Yükleniyor…</p>
+          ) : tickets.length === 0 ? (
+            <p className="p-6 text-sm text-ink-soft">Bu durumda bilet yok.</p>
+          ) : (
+            <div className="divide-y divide-gold/10">
+              {tickets.map((t) => (
+                <button
+                  key={t.id}
+                  onClick={() => setOpenTicket(t)}
+                  className={`block w-full bg-parchment p-4 text-left transition-colors hover:bg-cream ${
+                    openTicket?.id === t.id ? "bg-cream" : ""
+                  }`}
+                >
+                  <p className="text-sm font-medium text-ink">{t.subject}</p>
+                  <p className="mt-0.5 text-xs text-ink-soft">
+                    {t.user?.email} · {new Date(t.updatedAt).toLocaleString("tr-TR")}
+                  </p>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="rounded-2xl border border-gold/20 bg-parchment p-4">
+          {!openTicket ? (
+            <p className="text-sm text-ink-soft">Soldan bir bilet seç.</p>
+          ) : (
+            <>
+              <div className="flex items-center justify-between gap-2">
+                <div>
+                  <p className="font-serif text-lg font-semibold text-ink">{openTicket.subject}</p>
+                  <p className="text-xs text-ink-soft">{openTicket.user?.email}</p>
+                </div>
+                <CustomSelect
+                  value={openTicket.status}
+                  onChange={(v) => handleStatusChange(v as SupportTicketStatus)}
+                  disabled={busy}
+                  className="w-36 rounded-lg border border-gold/25 bg-cream px-3 py-1.5 text-xs text-ink focus:border-gold"
+                  options={SUPPORT_STATUS_TABS.map((s) => ({
+                    value: s,
+                    label: SUPPORT_STATUS_LABELS[s],
+                  }))}
+                />
+              </div>
+
+              <div className="mt-4 flex max-h-80 flex-col gap-2 overflow-y-auto">
+                {openTicket.messages.map((m) => (
+                  <div
+                    key={m.id}
+                    className={`max-w-[85%] rounded-xl px-3 py-2 text-sm ${
+                      m.isFromStaff
+                        ? "self-end bg-marble-dark text-cream"
+                        : "self-start bg-cream text-ink"
+                    }`}
+                  >
+                    <p>{m.body}</p>
+                    <p className={`mt-1 text-[10px] ${m.isFromStaff ? "text-cream/70" : "text-ink-soft"}`}>
+                      {new Date(m.createdAt).toLocaleString("tr-TR")}
+                    </p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-4 flex gap-2">
+                <input
+                  value={reply}
+                  onChange={(e) => setReply(e.target.value)}
+                  placeholder="Yanıt yaz…"
+                  className="flex-1 rounded-lg border border-gold/25 bg-cream px-3 py-2 text-sm text-ink outline-none focus:border-gold"
+                />
+                <button
+                  onClick={handleReply}
+                  disabled={busy || !reply.trim()}
+                  className="rounded-full bg-marble-dark px-4 py-2 text-sm font-semibold text-cream hover:bg-marble-dark-2 disabled:opacity-60"
+                >
+                  Gönder
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ================= Sayfa =================
 
 export default function AdminPage() {
@@ -971,9 +1350,12 @@ export default function AdminPage() {
         </div>
 
         <div className="mt-8">
+          {tab === "overview" && <OverviewSection />}
           {tab === "plans" && <PlansSection plans={plans} />}
           {tab === "payments" && <PaymentsSection />}
           {tab === "users" && <UsersSection />}
+          {tab === "announcements" && <AnnouncementsSection />}
+          {tab === "support" && <SupportSection />}
         </div>
       </div>
     </main>

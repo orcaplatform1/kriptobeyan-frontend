@@ -178,3 +178,44 @@ body {
     animation: none;
   }
 }
+
+/* Admin/"M Dashboard" linki icin — bilerek sitenin altin/krem paletinden
+   BAGIMSIZ, ORCA'daki .premium-glow-ring ile ayni mavi/mor "kuyruklu
+   yildiz" tonlari (kullanicinin "temadan bagimsiz, gosterisli" istegi) —
+   bu link normal nav ogelerinden kasitli olarak ayriksi/dikkat cekici
+   dursun diye. Ayni display/position-yok deseni yukaridaki .btn-gold-comet
+   yorumuyla ayni sebepten. */
+.btn-indigo-comet {
+  border-radius: 999px;
+  padding: 2px;
+  overflow: hidden;
+  isolation: isolate;
+  box-shadow: 0 0 18px -6px rgba(59, 91, 255, 0.5);
+}
+.btn-indigo-comet::before {
+  content: "";
+  position: absolute;
+  inset: -100%;
+  background: conic-gradient(
+    from 0deg,
+    #3b5bff 0%,
+    #3b5bff 45%,
+    #8b5cf6 60%,
+    #ffffff 72%,
+    #c4b5fd 80%,
+    #3b5bff 92%,
+    #3b5bff 100%
+  );
+  animation: gold-comet-spin 4.5s linear infinite;
+  will-change: transform;
+}
+.btn-indigo-comet > * {
+  position: relative;
+  z-index: 1;
+  border-radius: inherit;
+}
+@media (prefers-reduced-motion: reduce) {
+  .btn-indigo-comet::before {
+    animation: none;
+  }
+}

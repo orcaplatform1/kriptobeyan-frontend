@@ -16,11 +16,13 @@ function PlanCard({
   priceTRY,
   limitLabel,
   highlighted,
+  discountPercent,
 }: {
   name: string;
   priceTRY: string;
   limitLabel: string;
   highlighted?: boolean;
+  discountPercent?: number;
 }) {
   return (
     <div
@@ -30,11 +32,22 @@ function PlanCard({
           : "border-gold/20 bg-parchment text-ink"
       }`}
     >
-      <h3
-        className={`text-sm font-semibold tracking-wide uppercase ${highlighted ? "text-gold-light" : "text-ink-soft"}`}
-      >
-        {name}
-      </h3>
+      <div className="flex items-center justify-between gap-2">
+        <h3
+          className={`text-sm font-semibold tracking-wide uppercase ${highlighted ? "text-gold-light" : "text-ink-soft"}`}
+        >
+          {name}
+        </h3>
+        {!!discountPercent && discountPercent > 0 && (
+          <span
+            className={`rounded-full px-2 py-0.5 text-[10px] font-bold whitespace-nowrap ${
+              highlighted ? "bg-cream/15 text-gold-light" : "bg-gold/15 text-gold-deep"
+            }`}
+          >
+            Müşteri başı %{discountPercent} indirim
+          </span>
+        )}
+      </div>
       <p className="mt-3 font-serif text-3xl font-semibold">
         {formatTRY(priceTRY)}
         {Number(priceTRY) > 0 && (
@@ -70,6 +83,21 @@ export default async function FiyatlandirmaPage() {
   const accountant = plans
     .filter((p) => p.type === "ACCOUNTANT")
     .sort((a, b) => Number(a.priceTRY) - Number(b.priceTRY));
+
+  // Musteri basi indirim yuzdesi — en kucuk (ilk) paketin musteri basina
+  // fiyati referans alinir, buyuk paketler musteri basina ne kadar daha
+  // ucuza geldigini % olarak gosterir (bkz. kullanicinin "hesapladigimiz
+  // gibi yuzdelik" istegi — sabit bir sayi degil, mevcut fiyatlardan
+  // TURETILIYOR, admin fiyat degistirirse otomatik guncellenir).
+  const basePerClient =
+    accountant.length > 0 && accountant[0].clientLimit
+      ? Number(accountant[0].priceTRY) / accountant[0].clientLimit
+      : null;
+  const accountantDiscounts = accountant.map((plan) => {
+    if (!basePerClient || !plan.clientLimit) return 0;
+    const perClient = Number(plan.priceTRY) / plan.clientLimit;
+    return Math.max(0, Math.round((1 - perClient / basePerClient) * 100));
+  });
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -115,9 +143,11 @@ export default async function FiyatlandirmaPage() {
                   name={plan.name}
                   priceTRY={plan.priceTRY}
                   limitLabel={
-                    plan.transactionLimit
-                      ? `Yılda ${new Intl.NumberFormat("tr-TR").format(plan.transactionLimit)} işleme kadar`
-                      : "Sınırsız işlem"
+                    plan.transactionLimit === null
+                      ? "Sınırsız işlem"
+                      : plan.transactionLimit === 0
+                        ? "Sadece görüntüleme (işlem yapılamaz)"
+                        : `Yılda ${new Intl.NumberFormat("tr-TR").format(plan.transactionLimit)} işleme kadar`
                   }
                   highlighted={i === Math.min(2, individual.length - 1)}
                 />
@@ -136,7 +166,7 @@ export default async function FiyatlandirmaPage() {
               davet bazlı ve sıkı yetkilendirme kontrolüyle sınırlıdır.
             </p>
             <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              {accountant.map((plan) => (
+              {accountant.map((plan, i) => (
                 <PlanCard
                   key={plan.id}
                   name={plan.name}
@@ -146,6 +176,7 @@ export default async function FiyatlandirmaPage() {
                       ? `${plan.clientLimit} müşteriye kadar`
                       : "Sınırsız müşteri"
                   }
+                  discountPercent={accountantDiscounts[i]}
                 />
               ))}
             </div>

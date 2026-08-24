@@ -4,6 +4,7 @@ import { ScaleAnimationProvider } from "@/components/scale-animation-context";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { CookieConsent } from "@/components/cookie-consent";
+import { VisitorTracker } from "@/components/visitor-tracker";
 import { SITE_URL, SITE_NAME, SITE_DESCRIPTION, SITE_KEYWORDS } from "@/lib/site-config";
 import "./globals.css";
 
@@ -58,6 +59,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           {children}
           <SiteFooter />
           <CookieConsent />
+          <VisitorTracker />
         </ScaleAnimationProvider>
       </body>
     </html>

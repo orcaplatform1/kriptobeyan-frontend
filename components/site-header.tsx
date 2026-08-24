@@ -6,10 +6,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { useScaleAnimation } from "./scale-animation-context";
+import { NotificationBell } from "./notification-bell";
+import { useRouter } from "next/navigation";
 import {
   adminListPlans,
   getAccessToken,
   isLoggedIn,
+  logout,
   roleFromAccessToken,
 } from "@/lib/auth-client";
 
@@ -21,6 +24,7 @@ const navLinks = [
 ];
 
 export function SiteHeader() {
+  const router = useRouter();
   const { settled } = useScaleAnimation();
   const [loggedIn, setLoggedIn] = useState(false);
   const [isAccountant, setIsAccountant] = useState(false);
@@ -49,6 +53,13 @@ export function SiteHeader() {
       .then(() => setIsAdmin(true))
       .catch(() => setIsAdmin(false));
   }, []);
+
+  async function handleLogout() {
+    await logout();
+    setMenuOpen(false);
+    setLoggedIn(false);
+    router.push("/");
+  }
 
   return (
     <header className="sticky top-0 z-50 border-b border-gold/15 bg-cream/85 backdrop-blur-md">
@@ -94,13 +105,16 @@ export function SiteHeader() {
         <div className="flex items-center gap-3">
           {loggedIn ? (
             <>
+              <NotificationBell />
               {isAdmin && (
-                <Link
-                  href="/admin"
-                  className="hidden text-sm font-medium text-ink-soft transition-colors hover:text-gold-deep sm:block"
-                >
-                  Admin
-                </Link>
+                <span className="btn-indigo-comet relative hidden sm:inline-flex">
+                  <Link
+                    href="/admin"
+                    className="inline-flex items-center justify-center rounded-full bg-[#0f1230] px-4 py-2 text-sm font-semibold text-white transition-transform hover:scale-[1.03]"
+                  >
+                    M Dashboard
+                  </Link>
+                </span>
               )}
               <Link
                 href={isAccountant ? "/musavir-paneli" : "/panel"}
@@ -192,13 +206,15 @@ export function SiteHeader() {
                     {loggedIn ? (
                       <>
                         {isAdmin && (
-                          <Link
-                            href="/admin"
-                            onClick={() => setMenuOpen(false)}
-                            className="rounded-lg px-3 py-2.5 text-sm font-medium text-ink-soft hover:bg-parchment hover:text-gold-deep"
-                          >
-                            Admin
-                          </Link>
+                          <span className="btn-indigo-comet relative w-full">
+                            <Link
+                              href="/admin"
+                              onClick={() => setMenuOpen(false)}
+                              className="flex w-full items-center justify-center rounded-full bg-[#0f1230] px-4 py-2.5 text-center text-sm font-semibold text-white"
+                            >
+                              M Dashboard
+                            </Link>
+                          </span>
                         )}
                         <Link
                           href={isAccountant ? "/musavir-paneli" : "/panel"}
@@ -207,6 +223,13 @@ export function SiteHeader() {
                         >
                           {isAccountant ? "Müşavir Paneli" : "Panele git"}
                         </Link>
+                        <button
+                          type="button"
+                          onClick={handleLogout}
+                          className="rounded-full bg-ink px-4 py-2.5 text-center text-sm font-semibold text-cream transition-colors hover:bg-ink/85"
+                        >
+                          Çıkış Yap
+                        </button>
                       </>
                     ) : (
                       <>

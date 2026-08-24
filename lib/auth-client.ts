@@ -818,3 +818,164 @@ export async function adminRevokeStaff(id: string) {
 export async function adminDeleteUser(id: string) {
   return authRequest<void>("DELETE", `/admin/users/${id}`);
 }
+
+// --- Admin: analitik (site trafiği + aktif kullanıcılar) ---
+
+export interface VisitorStats {
+  today: number;
+  week: number;
+  month: number;
+}
+
+export interface RoleCounts {
+  individual: number;
+  accountant: number;
+  staff: number;
+  total: number;
+}
+
+export interface ActiveUserRow {
+  id: string;
+  email: string;
+  username: string;
+  fullName: string | null;
+  role: UserRole;
+  lastSeenAt: string;
+  staffRecord: { id: string } | null;
+}
+
+export interface ActiveUsers {
+  admin: ActiveUserRow[];
+  accountant: ActiveUserRow[];
+  individual: ActiveUserRow[];
+}
+
+export async function adminGetVisitorStats() {
+  return authRequest<VisitorStats>("GET", "/admin/analytics/visitors");
+}
+
+export async function adminGetRoleCounts() {
+  return authRequest<RoleCounts>("GET", "/admin/analytics/roles");
+}
+
+export async function adminGetActiveUsers() {
+  return authRequest<ActiveUsers>("GET", "/admin/analytics/active-users");
+}
+
+// Girissiz — herkes tetikleyebilir, kisisel veri icermez (bkz. backend
+// AnalyticsService.trackVisit). auth gerektirmedigi icin authRequest degil
+// duz fetch kullanilir.
+export async function trackVisit(visitorId: string) {
+  try {
+    await fetch("/api/analytics/track", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ visitorId }),
+    });
+  } catch {
+    // sessiz basarisizlik — analitik kritik yol degil
+  }
+}
+
+// --- Admin: duyurular ---
+
+export async function adminSendAnnouncement(message: string, role?: UserRole) {
+  return authRequest<{ sent: number }>("POST", "/admin/announcements", {
+    message,
+    role,
+  });
+}
+
+// --- Bildirimler ---
+
+export type NotificationType =
+  | "DECLARATION_REMINDER"
+  | "DATA_ISSUE"
+  | "ACCOUNTANT_CLIENT_ACTIVITY"
+  | "ANNOUNCEMENT"
+  | "SUPPORT_REPLY";
+
+export interface NotificationRow {
+  id: string;
+  type: NotificationType;
+  message: string;
+  sentAt: string;
+  readAt: string | null;
+}
+
+export async function listMyNotifications() {
+  return authRequest<NotificationRow[]>("GET", "/notifications");
+}
+
+export async function markNotificationRead(id: string) {
+  return authRequest<void>("PATCH", `/notifications/${id}/read`);
+}
+
+// --- Destek merkezi ---
+
+export type SupportTicketStatus = "OPEN" | "IN_PROGRESS" | "RESOLVED" | "CLOSED";
+
+export interface SupportMessageRow {
+  id: string;
+  ticketId: string;
+  senderUserId: string;
+  isFromStaff: boolean;
+  body: string;
+  createdAt: string;
+}
+
+export interface SupportTicketRow {
+  id: string;
+  userId: string;
+  subject: string;
+  status: SupportTicketStatus;
+  createdAt: string;
+  updatedAt: string;
+  messages: SupportMessageRow[];
+  user?: { id: string; email: string; username: string };
+}
+
+export async function createSupportTicket(subject: string, body: string) {
+  return authRequest<SupportTicketRow>("POST", "/support/tickets", {
+    subject,
+    body,
+  });
+}
+
+export async function listMySupportTickets() {
+  return authRequest<SupportTicketRow[]>("GET", "/support/tickets");
+}
+
+export async function addSupportMessage(ticketId: string, body: string) {
+  return authRequest<SupportTicketRow>(
+    "POST",
+    `/support/tickets/${ticketId}/messages`,
+    { body },
+  );
+}
+
+export async function adminListSupportTickets(status?: SupportTicketStatus) {
+  return authRequest<SupportTicketRow[]>(
+    "GET",
+    `/admin/support/tickets${status ? `?status=${status}` : ""}`,
+  );
+}
+
+export async function adminReplySupportTicket(ticketId: string, body: string) {
+  return authRequest<SupportTicketRow>(
+    "POST",
+    `/admin/support/tickets/${ticketId}/messages`,
+    { body },
+  );
+}
+
+export async function adminUpdateSupportTicketStatus(
+  ticketId: string,
+  status: SupportTicketStatus,
+) {
+  return authRequest<SupportTicketRow>(
+    "POST",
+    `/admin/support/tickets/${ticketId}/status`,
+    { status },
+  );
+}
