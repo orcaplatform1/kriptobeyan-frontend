@@ -5,7 +5,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { useScaleAnimation } from "./scale-animation-context";
-import { isLoggedIn } from "@/lib/auth-client";
+import {
+  adminListPlans,
+  getAccessToken,
+  isLoggedIn,
+  roleFromAccessToken,
+} from "@/lib/auth-client";
 
 const navLinks = [
   { href: "/#nasil-calisir", label: "Nasıl Çalışır" },
@@ -17,9 +22,20 @@ const navLinks = [
 export function SiteHeader() {
   const { settled } = useScaleAnimation();
   const [loggedIn, setLoggedIn] = useState(false);
+  const [isAccountant, setIsAccountant] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     setLoggedIn(isLoggedIn());
+    const token = getAccessToken();
+    if (!token) return;
+    setIsAccountant(roleFromAccessToken(token) === "ACCOUNTANT");
+    // Admin olup olmadigini ogrenmenin tek yolu su an admin ucuna gercekten
+    // istek atmak — ayri bir "ben admin miyim" ucu yok. Sonuc yan etkisiz
+    // (GET), bu yuzden guvenli.
+    adminListPlans()
+      .then(() => setIsAdmin(true))
+      .catch(() => setIsAdmin(false));
   }, []);
 
   return (
@@ -65,12 +81,22 @@ export function SiteHeader() {
 
         <div className="flex items-center gap-3">
           {loggedIn ? (
-            <Link
-              href="/panel"
-              className="rounded-full bg-marble-dark px-4 py-2 text-sm font-semibold text-cream transition-colors hover:bg-marble-dark-2"
-            >
-              Panele git
-            </Link>
+            <>
+              {isAdmin && (
+                <Link
+                  href="/admin"
+                  className="hidden text-sm font-medium text-ink-soft transition-colors hover:text-gold-deep sm:block"
+                >
+                  Admin
+                </Link>
+              )}
+              <Link
+                href={isAccountant ? "/musavir-paneli" : "/panel"}
+                className="rounded-full bg-marble-dark px-4 py-2 text-sm font-semibold text-cream transition-colors hover:bg-marble-dark-2"
+              >
+                {isAccountant ? "Müşavir Paneli" : "Panele git"}
+              </Link>
+            </>
           ) : (
             <>
               <Link

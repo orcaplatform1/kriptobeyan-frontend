@@ -1,12 +1,21 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { Suspense, useState, type FormEvent } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { ApiError, login, saveTokens } from "@/lib/auth-client";
+import { useRouter, useSearchParams } from "next/navigation";
+import {
+  ApiError,
+  login,
+  postLoginRedirectPath,
+  roleFromAccessToken,
+  saveTokens,
+} from "@/lib/auth-client";
 
-export default function GirisPage() {
+function GirisContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirect = searchParams.get("redirect");
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [totpCode, setTotpCode] = useState("");
@@ -29,7 +38,8 @@ export default function GirisPage() {
         return;
       }
       saveTokens(result);
-      router.push("/panel");
+      const role = roleFromAccessToken(result.accessToken);
+      router.push(postLoginRedirectPath(role, redirect));
     } catch (err) {
       setError(
         err instanceof ApiError
@@ -152,5 +162,13 @@ export default function GirisPage() {
         </p>
       </div>
     </main>
+  );
+}
+
+export default function GirisPage() {
+  return (
+    <Suspense fallback={null}>
+      <GirisContent />
+    </Suspense>
   );
 }

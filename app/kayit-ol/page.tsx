@@ -1,17 +1,28 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { Suspense, useState, type FormEvent } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { ApiError, login, registerAccount, saveTokens } from "@/lib/auth-client";
+import { useRouter, useSearchParams } from "next/navigation";
+import {
+  ApiError,
+  login,
+  postLoginRedirectPath,
+  registerAccount,
+  roleFromAccessToken,
+  saveTokens,
+  type UserRole,
+} from "@/lib/auth-client";
 
 const MIN_PASSWORD_LENGTH = 10;
 
-export default function KayitOlPage() {
+function KayitOlContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirect = searchParams.get("redirect");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
+  const [role, setRole] = useState<UserRole>("INDIVIDUAL");
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -35,7 +46,7 @@ export default function KayitOlPage() {
 
     setLoading(true);
     try {
-      await registerAccount(email, password);
+      await registerAccount(email, password, role);
       // Hesap dogrulama e-postasi beklemeden de giris yapilabiliyor
       // (bkz. auth.service.ts login — emailVerified kontrolu yok), bu
       // yuzden kayittan hemen sonra otomatik giris yapip panele yonlendiriyoruz.
@@ -45,7 +56,12 @@ export default function KayitOlPage() {
         return;
       }
       saveTokens(result);
-      router.push("/panel");
+      router.push(
+        postLoginRedirectPath(
+          roleFromAccessToken(result.accessToken),
+          redirect,
+        ),
+      );
     } catch (err) {
       setError(
         err instanceof ApiError
@@ -71,6 +87,35 @@ export default function KayitOlPage() {
         </p>
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-4" noValidate>
+          <div>
+            <span className="block text-sm font-medium text-ink">
+              Hesap türü
+            </span>
+            <div className="mt-1.5 grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => setRole("INDIVIDUAL")}
+                className={`rounded-lg border px-4 py-2.5 text-sm font-medium transition-colors ${
+                  role === "INDIVIDUAL"
+                    ? "border-gold bg-marble-dark text-cream"
+                    : "border-gold/25 bg-parchment text-ink-soft"
+                }`}
+              >
+                Bireysel
+              </button>
+              <button
+                type="button"
+                onClick={() => setRole("ACCOUNTANT")}
+                className={`rounded-lg border px-4 py-2.5 text-sm font-medium transition-colors ${
+                  role === "ACCOUNTANT"
+                    ? "border-gold bg-marble-dark text-cream"
+                    : "border-gold/25 bg-parchment text-ink-soft"
+                }`}
+              >
+                Mali Müşavir
+              </button>
+            </div>
+          </div>
           <div>
             <label
               htmlFor="email"
@@ -166,7 +211,11 @@ export default function KayitOlPage() {
         <p className="mt-6 text-center text-sm text-ink-soft">
           Zaten hesabın var mı?{" "}
           <Link
-            href="/giris"
+            href={
+              redirect
+                ? `/giris?redirect=${encodeURIComponent(redirect)}`
+                : "/giris"
+            }
             className="font-medium text-gold-deep hover:underline"
           >
             Giriş yap
@@ -174,5 +223,13 @@ export default function KayitOlPage() {
         </p>
       </div>
     </main>
+  );
+}
+
+export default function KayitOlPage() {
+  return (
+    <Suspense fallback={null}>
+      <KayitOlContent />
+    </Suspense>
   );
 }

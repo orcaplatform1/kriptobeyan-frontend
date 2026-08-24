@@ -72,10 +72,17 @@ async function apiPost<T>(path: string, data: unknown): Promise<T> {
   return res.json();
 }
 
-export async function registerAccount(email: string, password: string) {
+export type UserRole = "INDIVIDUAL" | "ACCOUNTANT";
+
+export async function registerAccount(
+  email: string,
+  password: string,
+  role?: UserRole,
+) {
   return apiPost<{ id: string; email: string }>("/auth/register", {
     email,
     password,
+    role,
   });
 }
 
@@ -120,13 +127,38 @@ export async function logout() {
   }
 }
 
-export function emailFromAccessToken(token: string): string | null {
+export interface AccessTokenPayload {
+  sub: string;
+  email: string;
+  role: UserRole;
+}
+
+export function decodeAccessToken(token: string): AccessTokenPayload | null {
   try {
-    const payload = JSON.parse(atob(token.split(".")[1]));
-    return typeof payload.email === "string" ? payload.email : null;
+    return JSON.parse(atob(token.split(".")[1]));
   } catch {
     return null;
   }
+}
+
+export function emailFromAccessToken(token: string): string | null {
+  return decodeAccessToken(token)?.email ?? null;
+}
+
+export function roleFromAccessToken(token: string): UserRole | null {
+  return decodeAccessToken(token)?.role ?? null;
+}
+
+export function postLoginRedirectPath(
+  role: UserRole | null,
+  explicitRedirect?: string | null,
+): string {
+  // Sadece site-ici gorece yollara izin ver — disariya acik yonlendirme
+  // (open redirect) olmasin.
+  if (explicitRedirect && explicitRedirect.startsWith("/")) {
+    return explicitRedirect;
+  }
+  return role === "ACCOUNTANT" ? "/musavir-paneli" : "/panel";
 }
 
 async function refreshAccessToken(): Promise<boolean> {
@@ -145,37 +177,53 @@ async function refreshAccessToken(): Promise<boolean> {
 // refresh'i paylassin, her biri kendi refresh isteğini atmasin.
 let pendingRefresh: Promise<boolean> | null = null;
 
-async function authFetch(path: string): Promise<Response> {
-  const token = getAccessToken();
-  if (!token) throw new ApiError("Oturum bulunamadı, tekrar giriş yap.", 401);
+type HttpMethod = "GET" | "POST" | "PATCH" | "DELETE";
 
-  const res = await fetch(`/api${path}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  if (res.status !== 401) return res;
-
-  if (!pendingRefresh) {
-    pendingRefresh = refreshAccessToken().finally(() => {
-      pendingRefresh = null;
-    });
-  }
-  const refreshed = await pendingRefresh;
-  if (!refreshed) {
-    clearTokens();
-    throw new ApiError("Oturum süresi doldu, tekrar giriş yap.", 401);
-  }
-
+function doAuthFetch(method: HttpMethod, path: string, token: string, body?: unknown) {
   return fetch(`/api${path}`, {
-    headers: { Authorization: `Bearer ${getAccessToken()}` },
+    method,
+    headers: {
+      Authorization: `Bearer ${token}`,
+      ...(body !== undefined ? { "Content-Type": "application/json" } : {}),
+    },
+    ...(body !== undefined ? { body: JSON.stringify(body) } : {}),
   });
 }
 
-async function authGet<T>(path: string): Promise<T> {
-  const res = await authFetch(path);
+async function authRequest<T>(
+  method: HttpMethod,
+  path: string,
+  body?: unknown,
+): Promise<T> {
+  let token = getAccessToken();
+  if (!token) throw new ApiError("Oturum bulunamadı, tekrar giriş yap.", 401);
+
+  let res = await doAuthFetch(method, path, token, body);
+
+  if (res.status === 401) {
+    if (!pendingRefresh) {
+      pendingRefresh = refreshAccessToken().finally(() => {
+        pendingRefresh = null;
+      });
+    }
+    const refreshed = await pendingRefresh;
+    if (!refreshed) {
+      clearTokens();
+      throw new ApiError("Oturum süresi doldu, tekrar giriş yap.", 401);
+    }
+    token = getAccessToken()!;
+    res = await doAuthFetch(method, path, token, body);
+  }
+
   if (!res.ok) {
     throw new ApiError(await parseErrorMessage(res), res.status);
   }
+  if (res.status === 204) return undefined as T;
   return res.json();
+}
+
+async function authGet<T>(path: string): Promise<T> {
+  return authRequest<T>("GET", path);
 }
 
 export interface DashboardOverview {
@@ -223,4 +271,116 @@ export async function getDashboardPositions() {
 
 export async function getDashboardSources() {
   return authGet<DashboardSources>("/dashboard/sources");
+}
+
+// --- Mali müşavir paneli ---
+
+export type AccountantClientStatus = "PENDING" | "ACTIVE" | "REMOVED";
+
+export interface AccountantClientRow {
+  id: string;
+  accountantUserId: string;
+  clientUserId: string | null;
+  inviteEmail: string;
+  status: AccountantClientStatus;
+  invitedAt: string;
+  acceptedAt: string | null;
+  removedAt: string | null;
+  client: {
+    id: string;
+    email: string;
+    fullName: string | null;
+    activeTaxYear: number;
+  } | null;
+  hasCompletedReport: boolean;
+  unresolvedFlagCount: number;
+}
+
+export async function getAccountantOverview() {
+  return authRequest<AccountantClientRow[]>(
+    "GET",
+    "/accountant/clients/overview",
+  );
+}
+
+export async function inviteAccountantClient(email: string) {
+  return authRequest<{ id: string; email: string; status: string }>(
+    "POST",
+    "/accountant/clients/invite",
+    { email },
+  );
+}
+
+export async function removeAccountantClient(accountantClientId: string) {
+  return authRequest<AccountantClientRow>(
+    "DELETE",
+    `/accountant/clients/${accountantClientId}`,
+  );
+}
+
+export interface AccountantClientSummary {
+  client: {
+    id: string;
+    email: string;
+    fullName: string | null;
+    activeTaxYear: number;
+    taxpayerType: string;
+  } | null;
+  summaries: {
+    taxYear: number;
+    totalRealizedGainTRY: string;
+    totalRealizedLossTRY: string;
+    netCapitalGainTRY: string;
+    occasionalIncomeTRY: string;
+    estimatedTaxableAmountTRY: string;
+    isDraft: boolean;
+    calculatedAt: string;
+  }[];
+  unresolvedFlags: {
+    id: string;
+    type: string;
+    description: string;
+    createdAt: string;
+  }[];
+}
+
+export async function getAccountantClientSummary(clientUserId: string) {
+  return authRequest<AccountantClientSummary>(
+    "GET",
+    `/accountant/clients/${clientUserId}/summary`,
+  );
+}
+
+export async function acceptAccountantInvite(token: string) {
+  return authRequest<unknown>("POST", "/accountant/invites/accept", {
+    token,
+  });
+}
+
+// --- Admin paneli ---
+
+export interface AdminPlan {
+  id: string;
+  name: string;
+  type: UserRole;
+  priceTRY: string;
+  transactionLimit: number | null;
+  clientLimit: number | null;
+  isActive: boolean;
+}
+
+export async function adminListPlans() {
+  return authRequest<AdminPlan[]>("GET", "/admin/plans");
+}
+
+export async function adminUpdatePlan(
+  id: string,
+  data: Partial<{
+    priceTRY: number;
+    transactionLimit: number;
+    clientLimit: number;
+    isActive: boolean;
+  }>,
+) {
+  return authRequest<AdminPlan>("PATCH", `/admin/plans/${id}`, data);
 }

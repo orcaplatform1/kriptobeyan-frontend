@@ -1,0 +1,255 @@
+"use client";
+
+import { useCallback, useEffect, useState, type FormEvent } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import {
+  ApiError,
+  getAccessToken,
+  getAccountantOverview,
+  inviteAccountantClient,
+  logout,
+  removeAccountantClient,
+  roleFromAccessToken,
+  type AccountantClientRow,
+} from "@/lib/auth-client";
+
+const STATUS_LABEL: Record<string, string> = {
+  PENDING: "Davet gönderildi",
+  ACTIVE: "Aktif",
+};
+
+export default function MusavirPaneliPage() {
+  const router = useRouter();
+  const [checked, setChecked] = useState(false);
+  const [authorized, setAuthorized] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
+
+  const [clients, setClients] = useState<AccountantClientRow[] | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [inviteLoading, setInviteLoading] = useState(false);
+  const [inviteError, setInviteError] = useState<string | null>(null);
+  const [inviteSuccess, setInviteSuccess] = useState<string | null>(null);
+
+  const loadClients = useCallback(async () => {
+    setLoading(true);
+    setLoadError(null);
+    try {
+      setClients(await getAccountantOverview());
+    } catch (err) {
+      setLoadError(
+        err instanceof ApiError
+          ? err.message
+          : "Müşteri listesi yüklenemedi.",
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    const token = getAccessToken();
+    if (!token) {
+      router.replace("/giris?redirect=/musavir-paneli");
+      return;
+    }
+    setAuthorized(roleFromAccessToken(token) === "ACCOUNTANT");
+    setChecked(true);
+  }, [router]);
+
+  useEffect(() => {
+    if (checked && authorized) loadClients();
+  }, [checked, authorized, loadClients]);
+
+  async function handleLogout() {
+    setLoggingOut(true);
+    await logout();
+    router.push("/");
+  }
+
+  async function handleInvite(e: FormEvent) {
+    e.preventDefault();
+    setInviteError(null);
+    setInviteSuccess(null);
+    setInviteLoading(true);
+    try {
+      await inviteAccountantClient(inviteEmail);
+      setInviteSuccess(`${inviteEmail} davet edildi.`);
+      setInviteEmail("");
+      await loadClients();
+    } catch (err) {
+      setInviteError(
+        err instanceof ApiError ? err.message : "Davet gönderilemedi.",
+      );
+    } finally {
+      setInviteLoading(false);
+    }
+  }
+
+  async function handleRemove(id: string) {
+    try {
+      await removeAccountantClient(id);
+      await loadClients();
+    } catch {
+      // liste bir sonraki yenilemede tekrar tutarli hale gelir
+    }
+  }
+
+  if (!checked) return null;
+
+  if (!authorized) {
+    return (
+      <main className="bg-cream">
+        <div className="mx-auto flex min-h-[calc(100vh-4rem)] max-w-md flex-col justify-center px-6 py-16">
+          <p className="text-xs font-semibold tracking-wide text-gold-deep uppercase">
+            Müşavir Paneli
+          </p>
+          <h1 className="mt-3 font-serif text-3xl font-semibold text-ink">
+            Bu sayfa sadece mali müşavir hesapları içindir
+          </h1>
+          <p className="mt-3 text-ink-soft">
+            Hesabın bireysel plana kayıtlı görünüyor. Mali müşavir hesabına
+            geçmek için destek ile iletişime geç.
+          </p>
+          <Link
+            href="/panel"
+            className="mt-8 inline-flex w-full items-center justify-center rounded-full bg-marble-dark px-5 py-3 text-sm font-semibold text-cream transition-colors hover:bg-marble-dark-2"
+          >
+            Panele dön
+          </Link>
+        </div>
+      </main>
+    );
+  }
+
+  return (
+    <main className="bg-cream">
+      <div className="mx-auto max-w-5xl px-6 py-16 lg:px-10 lg:py-24">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <p className="text-xs font-semibold tracking-wide text-gold-deep uppercase">
+              Müşavir Paneli
+            </p>
+            <h1 className="mt-3 font-serif text-3xl font-semibold text-ink sm:text-4xl">
+              Müşterilerin
+            </h1>
+          </div>
+          <button
+            onClick={handleLogout}
+            disabled={loggingOut}
+            className="rounded-full border border-gold/30 px-5 py-2.5 text-sm font-semibold text-ink transition-colors hover:bg-parchment disabled:opacity-60"
+          >
+            {loggingOut ? "Çıkış yapılıyor…" : "Çıkış yap"}
+          </button>
+        </div>
+
+        <div className="mt-10 rounded-xl border border-gold/20 bg-parchment p-5">
+          <h2 className="font-serif text-lg font-semibold text-ink">
+            Yeni müşteri davet et
+          </h2>
+          <form
+            onSubmit={handleInvite}
+            className="mt-4 flex flex-col gap-3 sm:flex-row"
+          >
+            <input
+              type="email"
+              required
+              placeholder="musteri@ornek.com"
+              value={inviteEmail}
+              onChange={(e) => setInviteEmail(e.target.value)}
+              className="flex-1 rounded-lg border border-gold/25 bg-cream px-4 py-2.5 text-ink outline-none transition-colors focus:border-gold"
+            />
+            <button
+              type="submit"
+              disabled={inviteLoading}
+              className="rounded-full bg-marble-dark px-5 py-2.5 text-sm font-semibold text-cream transition-colors hover:bg-marble-dark-2 disabled:opacity-60"
+            >
+              {inviteLoading ? "Gönderiliyor…" : "Davet gönder"}
+            </button>
+          </form>
+          {inviteError && (
+            <p className="mt-2 text-sm text-red-700">{inviteError}</p>
+          )}
+          {inviteSuccess && (
+            <p className="mt-2 text-sm text-emerald-700">{inviteSuccess}</p>
+          )}
+        </div>
+
+        <div className="mt-10">
+          {loading && <p className="text-ink-soft">Yükleniyor…</p>}
+          {!loading && loadError && (
+            <p className="text-sm text-red-700">{loadError}</p>
+          )}
+          {!loading && !loadError && clients && clients.length === 0 && (
+            <p className="text-ink-soft">
+              Henüz davet ettiğin bir müşteri yok.
+            </p>
+          )}
+          {!loading && !loadError && clients && clients.length > 0 && (
+            <div className="overflow-x-auto rounded-xl border border-gold/20">
+              <table className="w-full min-w-[720px] text-left text-sm">
+                <thead>
+                  <tr className="border-b border-gold/20 bg-parchment text-xs font-semibold tracking-wide text-ink-soft uppercase">
+                    <th className="px-4 py-3">E-posta</th>
+                    <th className="px-4 py-3">Durum</th>
+                    <th className="px-4 py-3">Vergi yılı</th>
+                    <th className="px-4 py-3">Rapor</th>
+                    <th className="px-4 py-3">Açık uyarı</th>
+                    <th className="px-4 py-3" />
+                  </tr>
+                </thead>
+                <tbody>
+                  {clients.map((c) => (
+                    <tr
+                      key={c.id}
+                      className="border-b border-gold/10 last:border-0"
+                    >
+                      <td className="px-4 py-3 font-medium text-ink">
+                        {c.client?.email ?? c.inviteEmail}
+                      </td>
+                      <td className="px-4 py-3 text-ink-soft">
+                        {STATUS_LABEL[c.status] ?? c.status}
+                      </td>
+                      <td className="px-4 py-3 text-ink-soft">
+                        {c.client?.activeTaxYear ?? "—"}
+                      </td>
+                      <td className="px-4 py-3 text-ink-soft">
+                        {c.status === "ACTIVE"
+                          ? c.hasCompletedReport
+                            ? "Hazır"
+                            : "Bekliyor"
+                          : "—"}
+                      </td>
+                      <td className="px-4 py-3 text-ink-soft">
+                        {c.status === "ACTIVE" ? c.unresolvedFlagCount : "—"}
+                      </td>
+                      <td className="px-4 py-3 text-right whitespace-nowrap">
+                        {c.status === "ACTIVE" && c.clientUserId && (
+                          <Link
+                            href={`/musavir-paneli/${c.clientUserId}`}
+                            className="mr-4 font-medium text-gold-deep hover:underline"
+                          >
+                            Detay
+                          </Link>
+                        )}
+                        <button
+                          onClick={() => handleRemove(c.id)}
+                          className="font-medium text-red-700 hover:underline"
+                        >
+                          Kaldır
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      </div>
+    </main>
+  );
+}
