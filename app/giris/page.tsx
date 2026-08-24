@@ -13,6 +13,7 @@ import {
 } from "@/lib/auth-client";
 import { countryCodes } from "@/lib/data/country-codes";
 import { PasswordInput } from "@/components/password-input";
+import { CustomSelect } from "@/components/custom-select";
 
 const METHODS: { value: LoginMethod; label: string }[] = [
   { value: "username", label: "Kullanıcı Adı" },
@@ -109,18 +110,16 @@ function GirisContent() {
             </label>
             {method === "phone" ? (
               <div className="mt-1.5 flex gap-2">
-                <select
+                <CustomSelect
                   value={phoneCountryCode}
-                  onChange={(e) => setPhoneCountryCode(e.target.value)}
+                  onChange={setPhoneCountryCode}
                   disabled={needsTwoFactor}
-                  className="w-[100px] shrink-0 rounded-lg border border-gold/25 bg-parchment px-2 py-2.5 text-sm text-ink outline-none focus:border-gold disabled:opacity-60"
-                >
-                  {countryCodes.map((c) => (
-                    <option key={c.code} value={c.dialCode}>
-                      {c.flag} {c.dialCode}
-                    </option>
-                  ))}
-                </select>
+                  className="w-[100px] shrink-0 rounded-lg border border-gold/25 bg-parchment px-2 py-2.5 text-sm text-ink focus:border-gold"
+                  options={countryCodes.map((c) => ({
+                    value: c.dialCode,
+                    label: `${c.flag} ${c.dialCode}`,
+                  }))}
+                />
                 <input
                   id="identifier"
                   inputMode="numeric"

@@ -15,6 +15,7 @@ import {
 import { countryCodes } from "@/lib/data/country-codes";
 import { LegalModal, type LegalDoc } from "@/components/legal-modal";
 import { PasswordInput } from "@/components/password-input";
+import { CustomSelect } from "@/components/custom-select";
 
 const MIN_PASSWORD_LENGTH = 6;
 const USERNAME_MIN_LENGTH = 4;
@@ -230,17 +231,15 @@ function KayitOlContent() {
                 </button>
               </div>
               <div className="mt-1.5 flex gap-2">
-                <select
+                <CustomSelect
                   value={phoneCountryCode}
-                  onChange={(e) => setPhoneCountryCode(e.target.value)}
-                  className="w-[100px] shrink-0 rounded-lg border border-gold/25 bg-parchment px-2 py-2.5 text-sm text-ink outline-none focus:border-gold"
-                >
-                  {countryCodes.map((c) => (
-                    <option key={c.code} value={c.dialCode}>
-                      {c.flag} {c.dialCode}
-                    </option>
-                  ))}
-                </select>
+                  onChange={setPhoneCountryCode}
+                  className="w-[100px] shrink-0 rounded-lg border border-gold/25 bg-parchment px-2 py-2.5 text-sm text-ink focus:border-gold"
+                  options={countryCodes.map((c) => ({
+                    value: c.dialCode,
+                    label: `${c.flag} ${c.dialCode}`,
+                  }))}
+                />
                 <input
                   id="phoneNumber"
                   inputMode="numeric"

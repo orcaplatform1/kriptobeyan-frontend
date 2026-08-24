@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { CustomSelect } from "@/components/custom-select";
 import {
   ApiError,
   adminApprovePayment,
@@ -650,14 +651,15 @@ function UserDetailPanel({
                 <label className="block text-xs font-semibold tracking-wide text-ink-soft uppercase">
                   Rol
                 </label>
-                <select
+                <CustomSelect
                   value={role}
-                  onChange={(e) => setRole(e.target.value as UserRole)}
-                  className="mt-1.5 w-full rounded-lg border border-gold/25 bg-parchment px-3 py-2 text-sm text-ink outline-none focus:border-gold"
-                >
-                  <option value="INDIVIDUAL">Bireysel</option>
-                  <option value="ACCOUNTANT">Mali Müşavir</option>
-                </select>
+                  onChange={(v) => setRole(v as UserRole)}
+                  className="mt-1.5 w-full rounded-lg border border-gold/25 bg-parchment px-3 py-2 text-sm text-ink focus:border-gold"
+                  options={[
+                    { value: "INDIVIDUAL", label: "Bireysel" },
+                    { value: "ACCOUNTANT", label: "Mali Müşavir" },
+                  ]}
+                />
               </div>
               <label className="flex items-center gap-2 text-sm text-ink-soft">
                 <input
@@ -761,18 +763,19 @@ function UsersSection() {
           placeholder="E-posta, kullanıcı adı veya isim ara…"
           className="min-w-[220px] flex-1 rounded-lg border border-gold/25 bg-parchment px-3 py-2 text-sm text-ink outline-none focus:border-gold"
         />
-        <select
+        <CustomSelect
           value={roleFilter}
-          onChange={(e) => {
-            setRoleFilter(e.target.value as UserRole | "ALL");
+          onChange={(v) => {
+            setRoleFilter(v as UserRole | "ALL");
             setPage(1);
           }}
-          className="rounded-lg border border-gold/25 bg-parchment px-3 py-2 text-sm text-ink outline-none focus:border-gold"
-        >
-          <option value="ALL">Tüm roller</option>
-          <option value="INDIVIDUAL">Bireysel</option>
-          <option value="ACCOUNTANT">Mali Müşavir</option>
-        </select>
+          className="w-40 rounded-lg border border-gold/25 bg-parchment px-3 py-2 text-sm text-ink focus:border-gold"
+          options={[
+            { value: "ALL", label: "Tüm roller" },
+            { value: "INDIVIDUAL", label: "Bireysel" },
+            { value: "ACCOUNTANT", label: "Mali Müşavir" },
+          ]}
+        />
         <label className="flex items-center gap-2 rounded-lg border border-gold/25 bg-parchment px-3 py-2 text-sm text-ink-soft">
           <input
             type="checkbox"

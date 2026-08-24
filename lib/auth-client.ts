@@ -268,6 +268,16 @@ export interface DashboardSources {
   csvImports: { id: string; exchangeName: string }[];
 }
 
+export interface MyProfile {
+  id: string;
+  email: string;
+  fullName: string | null;
+}
+
+export async function getMyProfile() {
+  return authRequest<MyProfile>("GET", "/user/me");
+}
+
 export async function getDashboardOverview(taxYear: number) {
   return authGet<DashboardOverview>(`/dashboard/overview?taxYear=${taxYear}`);
 }

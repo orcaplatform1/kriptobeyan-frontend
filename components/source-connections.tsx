@@ -20,6 +20,8 @@ import {
   type WalletAddress,
   type WalletChain,
 } from "@/lib/auth-client";
+import { CustomSelect } from "@/components/custom-select";
+
 
 type Tab = "exchange" | "wallet" | "csv";
 
@@ -92,17 +94,15 @@ function ExchangeConnectionForm({ onAdded }: { onAdded: () => void }) {
     <form onSubmit={handleSubmit} className="flex flex-col gap-3">
       <div>
         <FieldLabel>Borsa</FieldLabel>
-        <select
+        <CustomSelect
           value={provider}
-          onChange={(e) => setProvider(e.target.value as ExchangeProvider)}
+          onChange={(v) => setProvider(v as ExchangeProvider)}
           className={inputClass}
-        >
-          {Object.entries(EXCHANGE_PROVIDER_LABELS).map(([value, name]) => (
-            <option key={value} value={value}>
-              {name}
-            </option>
-          ))}
-        </select>
+          options={Object.entries(EXCHANGE_PROVIDER_LABELS).map(([value, name]) => ({
+            value,
+            label: name,
+          }))}
+        />
       </div>
       <div>
         <FieldLabel>Etiket (opsiyonel)</FieldLabel>
@@ -266,17 +266,15 @@ function WalletAddressForm({ onAdded }: { onAdded: () => void }) {
     <form onSubmit={handleSubmit} className="flex flex-col gap-3">
       <div>
         <FieldLabel>Zincir</FieldLabel>
-        <select
+        <CustomSelect
           value={chain}
-          onChange={(e) => setChain(e.target.value as WalletChain)}
+          onChange={(v) => setChain(v as WalletChain)}
           className={inputClass}
-        >
-          {Object.entries(WALLET_CHAIN_LABELS).map(([value, name]) => (
-            <option key={value} value={value}>
-              {name}
-            </option>
-          ))}
-        </select>
+          options={Object.entries(WALLET_CHAIN_LABELS).map(([value, name]) => ({
+            value,
+            label: name,
+          }))}
+        />
       </div>
       <div>
         <FieldLabel>Cüzdan adresi</FieldLabel>

@@ -10,12 +10,14 @@ import {
   getDashboardOverview,
   getDashboardPositions,
   getDashboardSources,
+  getMyProfile,
   logout,
   type DashboardOverview,
   type DashboardPosition,
   type DashboardSources,
 } from "@/lib/auth-client";
 import { SourceConnections } from "@/components/source-connections";
+import { CustomSelect } from "@/components/custom-select";
 
 const CURRENT_YEAR = new Date().getFullYear();
 const SELECTABLE_YEARS = [CURRENT_YEAR, CURRENT_YEAR - 1, CURRENT_YEAR - 2];
@@ -89,6 +91,7 @@ export default function PanelPage() {
   const router = useRouter();
   const [ready, setReady] = useState(false);
   const [email, setEmail] = useState<string | null>(null);
+  const [displayName, setDisplayName] = useState<string | null>(null);
   const [taxYear, setTaxYear] = useState(CURRENT_YEAR);
 
   const [overview, setOverview] = useState<DashboardOverview | null>(null);
@@ -138,6 +141,11 @@ export default function PanelPage() {
     }
     setEmail(emailFromAccessToken(token));
     setReady(true);
+    getMyProfile()
+      .then((profile) => setDisplayName(profile.fullName))
+      .catch(() => {
+        // isim cekilemezse asagida email'e dusuluyor, kritik degil
+      });
   }, [router]);
 
   useEffect(() => {
@@ -168,7 +176,7 @@ export default function PanelPage() {
               Panel
             </p>
             <h1 className="mt-3 font-serif text-3xl font-semibold text-ink sm:text-4xl">
-              Hoş geldin{email ? `, ${email}` : ""}
+              Hoş geldin{displayName || email ? `, ${displayName || email}` : ""}
             </h1>
           </div>
           <button
@@ -184,18 +192,16 @@ export default function PanelPage() {
           <label htmlFor="taxYear" className="text-sm font-medium text-ink">
             Vergi yılı
           </label>
-          <select
+          <CustomSelect
             id="taxYear"
-            value={taxYear}
-            onChange={(e) => setTaxYear(Number(e.target.value))}
-            className="rounded-lg border border-gold/25 bg-parchment px-3 py-1.5 text-sm text-ink outline-none focus:border-gold"
-          >
-            {SELECTABLE_YEARS.map((year) => (
-              <option key={year} value={year}>
-                {year}
-              </option>
-            ))}
-          </select>
+            value={String(taxYear)}
+            onChange={(v) => setTaxYear(Number(v))}
+            className="w-20 rounded-lg border border-gold/25 bg-parchment px-3 py-1.5 text-sm text-ink focus:border-gold"
+            options={SELECTABLE_YEARS.map((year) => ({
+              value: String(year),
+              label: String(year),
+            }))}
+          />
           {overview?.isDraft && (
             <span className="rounded-full bg-gold/15 px-3 py-1 text-xs font-semibold text-gold-deep">
               Taslak
