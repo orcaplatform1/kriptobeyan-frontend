@@ -1,8 +1,44 @@
 import Image from "next/image";
 import Link from "next/link";
-import { FOOTER_LINK_GROUPS, SUPPORT_EMAIL } from "@/lib/site-config";
+import { FOOTER_LINK_GROUPS } from "@/lib/site-config";
+import type { SiteContent } from "@/lib/api";
 
-export function SiteFooter() {
+// Telif metni admin panelden (SiteContentSettings.footerCopyrightText) duz
+// metin olarak geliyor — "Traders.TR" gecen kismini kullanici istegiyle
+// (2026-08-24: "Traders'i premium kırmızı, .TR'yi premium beyaz yap, yanına
+// bayrak simgesi koy") ozel stille vurgulayip yaninda bayrak ikonu gostermek
+// icin metni bu sabit alt dizeye gore boluyoruz, geri kalani duz metin
+// kaliyor. ORCA'daki (traders.tr) site-footer.tsx ile ayni desen/class.
+function renderCopyrightWithBrandHighlight(text: string) {
+  const marker = "Traders.TR";
+  const parts = text.split(marker);
+  if (parts.length === 1) return text;
+  return parts.flatMap((part, i) =>
+    i === 0
+      ? [part]
+      : [
+          <span key={i} className="whitespace-nowrap">
+            <span className="text-traders-red">Traders</span>
+            <span className="text-traders-white">.TR</span>{" "}
+            <img
+              src="/footerflag.png"
+              alt=""
+              aria-hidden
+              className="inline-block h-[1em] w-[1em] translate-y-[0.1em] object-contain align-baseline"
+            />
+          </span>,
+          part,
+        ],
+  );
+}
+
+export function SiteFooter({ content }: { content?: SiteContent | null }) {
+  const description =
+    content?.footerDescription ?? "Türkiye'nin kripto varlık vergi beyan asistanı.";
+  const copyrightText =
+    content?.footerCopyrightText ||
+    `© ${new Date().getFullYear()} KriptoBeyan. Bir Traders.TR markasıdır. Tüm hakları saklıdır. Bu platformda yer alan tüm içerikler, tasarımlar, marka unsurları ve fikrî mülkiyet hakları ilgili yasal mevzuat kapsamında korunmaktadır.`;
+
   return (
     <footer className="bg-marble-dark text-cream/70">
       <div className="mx-auto max-w-7xl px-6 py-16 lg:px-10">
@@ -23,7 +59,7 @@ export function SiteFooter() {
               </span>
             </Link>
             <p className="mt-4 max-w-[22ch] text-sm leading-relaxed text-cream/55">
-              Türkiye&apos;nin kripto varlık vergi beyan asistanı.
+              {description}
             </p>
           </div>
 
@@ -48,11 +84,11 @@ export function SiteFooter() {
           ))}
         </div>
 
-        <div className="mt-14 flex flex-col gap-3 border-t border-cream/10 pt-6 text-xs text-cream/45 sm:flex-row sm:items-center sm:justify-between">
-          <p>© {new Date().getFullYear()} KriptoBeyan. Tüm hakları saklıdır.</p>
-          <a href={`mailto:${SUPPORT_EMAIL}`} className="hover:text-cream/80">
-            {SUPPORT_EMAIL}
-          </a>
+        <div className="mt-14 flex flex-col items-center gap-3 border-t border-cream/10 pt-6 text-xs text-cream/45 sm:flex-row sm:gap-4">
+          <p>{renderCopyrightWithBrandHighlight(copyrightText)}</p>
+          <Link href="/sitemap" className="transition-colors hover:text-cream/80">
+            Site Haritası
+          </Link>
         </div>
       </div>
     </footer>

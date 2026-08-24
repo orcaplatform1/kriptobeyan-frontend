@@ -144,6 +144,69 @@ body {
    tekrarlanirdi (relative, absolute utility'sini cascade sirasinda ezerdi
    — rozet gorselin disina, sol-alta kayardi, bkz. ekran goruntusu). Her
    kullanim kendi position utility'sini (relative veya absolute) taşımalı. */
+/* Hero'nun "ekrani kapla" tasarimi (100dvh + gorseli h-full/w-auto ile
+   yukseklikten genislik turetme) sadece GENIS/KISA (yatay) ekranlar icin
+   guvenli. Telefonda Chrome "Masaustu sitesi" 980px genislik verir ama
+   YUKSEKLIK degismez (dar+uzun/dikey kalir) — bu durumda h-full bir 2000px+
+   yuksekligi baz alip genisligi de orantiyla ~2100px'e sisiriyor, gorsel
+   ekranin disina tasip hero bomboş gorunuyordu. min-aspect-ratio ile bu
+   davranisi sadece gercekten yatay (genislik >= yukseklik) ekranlara
+   kisitliyoruz; dikey ekranlarda gorsel normal (genislige gore) boyutlanir. */
+@media (min-width: 768px) and (min-aspect-ratio: 1/1) {
+  .hero-landscape-min-h {
+    min-height: 100dvh;
+  }
+  .hero-landscape-fill-h {
+    height: 100%;
+  }
+  .hero-landscape-fill-w {
+    width: auto;
+  }
+  /* Ayni sebep: 2 sutunlu grid (metin sutunu + gorsel sutunu) de sadece
+     yatay ekranlarda mantikli — dikey "masaustu modu"nda metin sutunu zaten
+     bos (md:hidden) ama grid yine de ona %45 pay ayirip gorseli ekranin
+     sagina, kucuk bir dikdortgene sikistiriyordu (bkz. ekran goruntusu,
+     "sag tarafa kaymis" sikayeti). Dikeyde tek sutuna donup gorsel tam
+     genislikte ustte, panel uzerine bindirilmis halde kalsin. */
+  .hero-landscape-grid-cols {
+    grid-template-columns: 0.85fr 1.15fr;
+  }
+  .hero-landscape-order-1 {
+    order: 1;
+  }
+  .hero-landscape-order-2 {
+    order: 2;
+  }
+  .hero-landscape-col-2 {
+    grid-column-start: 2;
+  }
+  /* Ayni sebep: sol ic bosluk (pl-16/xl:pl-24) ve gorsel sutununun mx-0'i
+     sadece gercek 2-sutunlu duzende (metin sutunu icin yer acmak amaciyla)
+     gerekliydi. Dikey tek-sutun halinde bunlar gorseli sol kenardan 64px+
+     iceri itip mobildeki gibi TAM GENISLIKTE (edge-to-edge) oturmasini
+     engelliyordu (kullanicinin "sol yani bos, tam otur" sikayeti). */
+  .hero-landscape-pl-16 {
+    padding-left: 4rem;
+  }
+  .hero-landscape-mx-0 {
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+
+/* Footer'daki "Traders.TR" marka gecisi icin — kullanici istegi 2026-08-24:
+   duz (premium/glow olmadan) kırmızı ve beyaz. Sitenin altin/krem
+   paletinden BAGIMSIZ (bilerek), ORCA'daki (traders.tr) site-footer.tsx'teki
+   AYNI class ile tutarli. */
+.text-traders-red {
+  font-weight: 700;
+  color: #dc2626;
+}
+.text-traders-white {
+  font-weight: 700;
+  color: #ffffff;
+}
+
 .btn-gold-comet {
   border-radius: 999px;
   padding: 2px;

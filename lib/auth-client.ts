@@ -417,6 +417,35 @@ export async function adminUpdatePlan(
   return authRequest<AdminPlan>("PATCH", `/admin/plans/${id}`, data);
 }
 
+// --- Site içeriği (hero/footer metinleri) — ORCA'daki (traders.tr)
+// /manage/site-content ile ayni fikir, kullanici istegi 2026-08-24. ---
+export interface AdminSiteContent {
+  id: string;
+  heroBadge: string;
+  heroTitlePrefix: string;
+  heroTitleHighlight: string;
+  heroTitleSuffix: string;
+  heroDescription: string;
+  heroPrimaryCtaLabel: string;
+  heroSecondaryCtaLabel: string;
+  footerDescription: string;
+  footerCopyrightText: string | null;
+  footerSupportEmail: string | null;
+  updatedAt: string;
+}
+
+export async function adminGetSiteContent() {
+  return authRequest<AdminSiteContent>("GET", "/admin/site-content");
+}
+
+export async function adminUpdateSiteContent(
+  data: Partial<
+    Omit<AdminSiteContent, "id" | "updatedAt">
+  >,
+) {
+  return authRequest<AdminSiteContent>("PATCH", "/admin/site-content", data);
+}
+
 // --- Kaynak bağlama: borsa hesapları ---
 
 export type ExchangeProvider =

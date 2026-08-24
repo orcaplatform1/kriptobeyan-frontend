@@ -6,6 +6,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { CookieConsent } from "@/components/cookie-consent";
 import { VisitorTracker } from "@/components/visitor-tracker";
 import { SITE_URL, SITE_NAME, SITE_DESCRIPTION, SITE_KEYWORDS } from "@/lib/site-config";
+import { getSiteContent } from "@/lib/api";
 import "./globals.css";
 
 const displayFont = Playfair_Display({
@@ -47,7 +48,8 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const siteContent = await getSiteContent();
   return (
     <html
       lang="tr"
@@ -57,7 +59,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <ScaleAnimationProvider>
           <SiteHeader />
           {children}
-          <SiteFooter />
+          <SiteFooter content={siteContent} />
           <CookieConsent />
           <VisitorTracker />
         </ScaleAnimationProvider>

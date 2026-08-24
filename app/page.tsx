@@ -8,6 +8,7 @@ import { FaqTeaserSection } from "@/components/faq-teaser-section";
 import { FinalCtaSection } from "@/components/final-cta-section";
 import { JsonLd } from "@/components/json-ld";
 import { SITE_URL, SITE_NAME, SITE_DESCRIPTION, SITE_KEYWORDS } from "@/lib/site-config";
+import { getSiteContent } from "@/lib/api";
 
 export const metadata: Metadata = {
   title: "Kripto Vergi Hesaplama ve Beyan Asistanı",
@@ -53,14 +54,15 @@ const jsonLd = {
   ],
 };
 
-export default function Home() {
+export default async function Home() {
+  const siteContent = await getSiteContent();
   return (
     <>
       <JsonLd data={jsonLd} />
       <main className="flex flex-1 flex-col">
-        <HeroSection />
-        <HowItWorksSection />
+        <HeroSection content={siteContent} />
         <ExchangesSection />
+        <HowItWorksSection />
         <AccountantsSection />
         <PricingTeaserSection />
         <FaqTeaserSection />

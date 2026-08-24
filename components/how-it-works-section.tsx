@@ -2,22 +2,22 @@ const steps = [
   {
     n: "01",
     title: "Hesaplarını bağla",
-    desc: "Binance, BTCTurk, Kraken gibi borsa hesaplarını API anahtarınla (salt-okunur) veya cüzdan adresinle bağla; istersen CSV içe aktar.",
+    desc: "Binance, BTCTurk, Kraken gibi borsa hesaplarını salt-okunur (read-only) API anahtarıyla ya da Ethereum, BSC ve Bitcoin cüzdan adresinle bağla. API anahtarların AES-256-GCM ile şifrelenir; para çekme iznine hiçbir zaman ihtiyaç duyulmaz. Borsan API desteklemiyorsa, hesap dökümünü CSV olarak da içe aktarabilirsin.",
   },
   {
     n: "02",
     title: "Otomatik birleştirme",
-    desc: "Tüm işlemler tek zaman çizelgesinde birleştirilir, iç transferler ayıklanır, eksik/negatif bakiye uyarıları otomatik işaretlenir.",
+    desc: "Farklı borsalardan ve cüzdanlardan gelen tüm işlemler tek bir zaman çizelgesinde birleştirilir. Kendi hesapların arasındaki transferler (borsadan cüzdana, cüzdandan borsaya) otomatik tespit edilip vergilendirilebilir işlemlerden ayıklanır; eksik geçmiş veya negatif bakiye gibi tutarsızlıklar ise ayrı ayrı uyarı olarak işaretlenir, böylece rapora geçmeden önce fark edip düzeltebilirsin.",
   },
   {
     n: "03",
     title: "FIFO ile kripto vergi hesaplama",
-    desc: "Gerçekleşen kazanç/kayıp FIFO yöntemiyle, güncel TCMB kurlarıyla TL bazında hesaplanır — istisna tutarları otomatik uygulanır.",
+    desc: "Gerçekleşen kazanç ve kayıplar FIFO (İlk Giren İlk Çıkar) yöntemiyle, her işlem anındaki güncel TCMB döviz kuru üzerinden TL bazında hesaplanır. Yasal istisna tutarları otomatik uygulanır ve varsa dönem içi zararların mahsubu da hesaba katılır.",
   },
   {
     n: "04",
     title: "Taslak rapor al",
-    desc: "PDF/Excel formatında taslak beyan raporunu indir, dilersen mali müşavirinle paylaşım linkiyle doğrudan paylaş.",
+    desc: "Hesaplama tamamlandığında PDF ve Excel formatında taslak bir beyan raporu indirebilirsin. Dilersen aynı raporu tek bir paylaşım linkiyle doğrudan mali müşavirine gönderip inceletebilirsin — ayrıca dosya e-postalaşmana gerek kalmaz.",
   },
 ];
 
@@ -30,7 +30,7 @@ export function HowItWorksSection() {
             Nasıl çalışır
           </p>
           <h2 className="mt-3 font-serif text-3xl font-semibold text-ink sm:text-4xl">
-            Kripto vergi hesaplama dört adımda
+            4 Adımda Kripto Vergi Hesaplama
           </h2>
           <p className="mt-4 text-lg leading-relaxed text-ink-soft">
             KriptoBeyan, kripto beyan sürecindeki en zaman alıcı kısmı —
@@ -56,6 +56,13 @@ export function HowItWorksSection() {
             </div>
           ))}
         </div>
+
+        <a
+          href="/nasil-calisir"
+          className="mt-8 inline-flex items-center gap-1.5 text-sm font-semibold text-gold-deep hover:underline"
+        >
+          API anahtarı alma, bağlanma ve rapor içeriği dahil detaylı anlatımı incele →
+        </a>
       </div>
     </section>
   );

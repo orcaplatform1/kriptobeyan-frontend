@@ -1,35 +1,51 @@
+import Image from "next/image";
 import { LIVE_EXCHANGES, UPCOMING_EXCHANGES } from "@/lib/exchanges";
-import { EXCHANGE_LOGOS } from "@/lib/exchange-logos";
 
-// Binance/OKX/KuCoin/Coinbase icin Simple Icons'tan (CC0 lisans, gercek
-// marka SVG'si) gelen ikon var. Digerleri (Bybit, Kraken, BTCTurk, Paribu,
-// Bitexen, ICRYPEX, Bitci, Gate.io, Bitget, HTX, MEXC, Crypto.com) icin
-// lisansli/dogrulanmis bir kaynak yok — o borsalar bas harf rozetine duser.
-function ExchangeBadge({ name, dim }: { name: string; dim?: boolean }) {
-  const logo = EXCHANGE_LOGOS[name];
-  if (logo) {
-    return (
-      <svg
-        role="img"
-        aria-hidden
-        viewBox={logo.viewBox}
-        className={`h-4 w-4 shrink-0 ${dim ? "opacity-50" : ""}`}
-        fill={logo.color}
-      >
-        <path d={logo.path} />
-      </svg>
-    );
-  }
+// Gercek borsa logo PNG/WebP dosyalari public/borsalar/ altinda (kullanici
+// tarafindan eklendi) — isim anahtari LIVE_EXCHANGES/UPCOMING_EXCHANGES'teki
+// degerle ayni, dosya adi sadece buyuk/kucuk harf veya nokta farkli oldugu
+// icin bu eslesme tablosu var.
+const EXCHANGE_LOGO_FILES: Record<string, string> = {
+  Binance: "Binance.png",
+  Bybit: "Bybit.png",
+  OKX: "OKX.png",
+  Coinbase: "Coinbase.png",
+  Kraken: "Kraken.png",
+  KuCoin: "Kucoin.png",
+  BTCTurk: "BtcTurk.png",
+  "Gate.io": "gateio.png",
+  HTX: "HTX.png",
+  Bitget: "Bitget.png",
+  MEXC: "Mexc.png",
+  "Crypto.com": "Crypto.com.png",
+  Paribu: "paribu.png",
+  Bitexen: "Bitexen.png",
+  ICRYPEX: "icrypex.webp",
+  Bitci: "Bitci.png",
+};
+
+// Kutunun kendisi sabit boyutta (w-28 h-14) — kaynak PNG'lerin en-boy orani
+// birbirinden çok farklı (bazıları kare ikon, bazıları genis yazi logosu),
+// object-contain ile hepsi bu AYNI kutunun icine sigacak sekilde olceklenir,
+// tasma/kirpilma olmaz. Yakinda etiketindeki logo da (kullanici istegi)
+// SOLUK degil, tam renkli/opak kalir — sadece "Yakında" yazisi soluk.
+function ExchangeLogoBox({ name }: { name: string }) {
+  const file = EXCHANGE_LOGO_FILES[name];
   return (
-    <span
-      aria-hidden
-      className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[0.65rem] font-bold ${
-        dim
-          ? "bg-ink-soft/15 text-ink-soft/70"
-          : "bg-marble-dark text-gold-light"
-      }`}
-    >
-      {name.charAt(0)}
+    <span className="relative block h-14 w-28 shrink-0">
+      {file ? (
+        <Image
+          src={`/borsalar/${file}`}
+          alt={name}
+          fill
+          sizes="112px"
+          className="object-contain"
+        />
+      ) : (
+        <span className="flex h-full w-full items-center justify-center rounded-lg bg-marble-dark text-sm font-bold text-gold-light">
+          {name.charAt(0)}
+        </span>
+      )}
     </span>
   );
 }
@@ -43,28 +59,26 @@ export function ExchangesSection() {
             Desteklenen borsalar
           </p>
           <h2 className="mt-3 font-serif text-3xl font-semibold text-ink sm:text-4xl">
-            Türkiye&apos;nin önde gelen borsaları ve global tier-1 borsalar
+            Türkiye&apos;nin ve Dünyanın Lider Borsaları
           </h2>
         </div>
 
-        <div className="mt-10 flex flex-wrap gap-3">
+        <div className="mt-10 flex flex-wrap gap-4">
           {LIVE_EXCHANGES.map((name) => (
             <span
               key={name}
-              className="flex items-center gap-2 rounded-full border border-gold/25 bg-cream px-4 py-2 text-sm font-medium text-ink"
+              className="flex items-center justify-center rounded-xl border border-gold/25 bg-cream p-2"
             >
-              <ExchangeBadge name={name} />
-              {name}
+              <ExchangeLogoBox name={name} />
             </span>
           ))}
           {UPCOMING_EXCHANGES.map((name) => (
             <span
               key={name}
-              className="flex items-center gap-2 rounded-full border border-ink/10 bg-cream/60 px-4 py-2 text-sm font-medium text-ink-soft/70"
+              className="flex flex-col items-center gap-1 rounded-xl border border-ink/10 bg-cream/60 p-2"
             >
-              <ExchangeBadge name={name} dim />
-              {name}
-              <span className="text-[0.65rem] font-semibold tracking-wide text-gold-deep/80 uppercase">
+              <ExchangeLogoBox name={name} />
+              <span className="text-[0.65rem] font-semibold tracking-wide text-ink-soft/60 uppercase">
                 Yakında
               </span>
             </span>

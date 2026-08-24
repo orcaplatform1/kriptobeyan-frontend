@@ -8,6 +8,8 @@ import {
   ApiError,
   adminApproveAccountantVerification,
   adminApprovePayment,
+  adminGetSiteContent,
+  adminUpdateSiteContent,
   adminDeleteUser,
   adminGetActiveUsers,
   adminGetRoleCounts,
@@ -36,6 +38,7 @@ import {
   type AccountantVerificationRow,
   type ActiveUsers,
   type AdminCouponRow,
+  type AdminSiteContent,
   type AdminPayment,
   type AdminPlan,
   type AdminUserDetail,
@@ -59,7 +62,8 @@ type Tab =
   | "announcements"
   | "support"
   | "accountants"
-  | "coupons";
+  | "coupons"
+  | "site-content";
 
 const TABS: { id: Tab; label: string }[] = [
   { id: "overview", label: "Genel Bakış" },
@@ -70,6 +74,7 @@ const TABS: { id: Tab; label: string }[] = [
   { id: "coupons", label: "Kuponlar" },
   { id: "announcements", label: "Duyurular" },
   { id: "support", label: "Destek" },
+  { id: "site-content", label: "Site İçeriği" },
 ];
 
 function formatTRY(value: number | string) {
@@ -1166,6 +1171,129 @@ function AnnouncementsSection() {
   );
 }
 
+// ================= Site içeriği (hero/footer) =================
+
+const SITE_CONTENT_FIELDS: {
+  key: keyof Omit<AdminSiteContent, "id" | "updatedAt">;
+  label: string;
+  group: "Hero" | "Footer";
+  multiline?: boolean;
+  placeholder?: string;
+}[] = [
+  { key: "heroBadge", label: "Üst etiket", group: "Hero" },
+  { key: "heroTitlePrefix", label: "Başlık (etiket öncesi)", group: "Hero" },
+  { key: "heroTitleHighlight", label: "Başlık — altın vurgulu kelime", group: "Hero" },
+  { key: "heroTitleSuffix", label: "Başlık (vurgulu kelime sonrası)", group: "Hero" },
+  { key: "heroDescription", label: "Açıklama paragrafı", group: "Hero", multiline: true },
+  { key: "heroPrimaryCtaLabel", label: "Ana buton metni", group: "Hero" },
+  { key: "heroSecondaryCtaLabel", label: "İkincil buton metni", group: "Hero" },
+  { key: "footerDescription", label: "Footer açıklama metni", group: "Footer" },
+  {
+    key: "footerCopyrightText",
+    label: "Telif hakkı metni (boş bırakılırsa © {yıl} KriptoBeyan. Tüm hakları saklıdır. otomatik hesaplanır)",
+    group: "Footer",
+    placeholder: "© 2026 KriptoBeyan. Tüm hakları saklıdır.",
+  },
+];
+
+function SiteContentSection() {
+  const [values, setValues] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const data = await adminGetSiteContent();
+        const next: Record<string, string> = {};
+        for (const f of SITE_CONTENT_FIELDS) {
+          next[f.key] = (data[f.key] as string | null) ?? "";
+        }
+        setValues(next);
+      } catch (err) {
+        setError(err instanceof ApiError ? err.message : "Yüklenemedi.");
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
+
+  async function handleSave() {
+    setSaving(true);
+    setError(null);
+    setSaved(false);
+    try {
+      await adminUpdateSiteContent(values);
+      setSaved(true);
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Kaydedilemedi.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  if (loading) {
+    return <p className="text-sm text-ink-soft">Yükleniyor…</p>;
+  }
+
+  return (
+    <div className="max-w-2xl">
+      <h2 className="font-serif text-lg font-semibold text-ink">Site içeriği</h2>
+      <p className="mt-1 text-sm text-ink-soft">
+        Ana sayfa hero bölümü ve footer metinlerini buradan düzenle — kod
+        değişikliği veya yeniden yayınlama gerekmez, kaydettikten sonra
+        birkaç dakika içinde (önbellek yenilenince) canlıya yansır.
+      </p>
+
+      {(["Hero", "Footer"] as const).map((group) => (
+        <div key={group} className="mt-6">
+          <h3 className="text-xs font-semibold tracking-wide text-gold-deep uppercase">
+            {group}
+          </h3>
+          <div className="mt-3 flex flex-col gap-4">
+            {SITE_CONTENT_FIELDS.filter((f) => f.group === group).map((f) => (
+              <div key={f.key}>
+                <label className="block text-xs font-semibold tracking-wide text-ink-soft uppercase">
+                  {f.label}
+                </label>
+                {f.multiline ? (
+                  <textarea
+                    value={values[f.key] ?? ""}
+                    onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))}
+                    rows={3}
+                    className="mt-1.5 w-full rounded-lg border border-gold/25 bg-parchment px-3 py-2 text-sm text-ink outline-none focus:border-gold"
+                  />
+                ) : (
+                  <input
+                    type="text"
+                    value={values[f.key] ?? ""}
+                    onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))}
+                    placeholder={f.placeholder}
+                    className="mt-1.5 w-full rounded-lg border border-gold/25 bg-parchment px-3 py-2 text-sm text-ink outline-none focus:border-gold"
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+
+      {error && <p className="mt-4 text-sm text-red-700">{error}</p>}
+      {saved && <p className="mt-4 text-sm text-emerald-700">Kaydedildi.</p>}
+
+      <button
+        onClick={handleSave}
+        disabled={saving}
+        className="mt-6 rounded-full bg-marble-dark px-5 py-2.5 text-sm font-semibold text-cream hover:bg-marble-dark-2 disabled:opacity-60"
+      >
+        {saving ? "Kaydediliyor…" : "Kaydet"}
+      </button>
+    </div>
+  );
+}
+
 // ================= Destek merkezi =================
 
 const SUPPORT_STATUS_LABELS: Record<SupportTicketStatus, string> = {
@@ -1631,6 +1759,7 @@ export default function AdminPage() {
           {tab === "support" && <SupportSection />}
           {tab === "accountants" && <AccountantVerificationsSection />}
           {tab === "coupons" && <CouponsSection />}
+          {tab === "site-content" && <SiteContentSection />}
         </div>
       </div>
     </main>

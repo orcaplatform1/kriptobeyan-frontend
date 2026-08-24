@@ -28,7 +28,7 @@ export function HeroScale() {
   const [stage, setStage] = useState<Stage>("intro");
   const [isCompact, setIsCompact] = useState(() =>
     typeof window !== "undefined"
-      ? window.matchMedia("(max-width: 1023px)").matches
+      ? window.matchMedia("(max-width: 767px)").matches
       : false,
   );
 
@@ -37,7 +37,7 @@ export function HeroScale() {
   }, [setSettled]);
 
   useEffect(() => {
-    const mq = window.matchMedia("(max-width: 1023px)");
+    const mq = window.matchMedia("(max-width: 767px)");
     const onChange = (e: MediaQueryListEvent) => setIsCompact(e.matches);
     mq.addEventListener("change", onChange);
     return () => mq.removeEventListener("change", onChange);
@@ -72,7 +72,7 @@ export function HeroScale() {
       initial={{ opacity: 0, scale: 0.97 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-      className="relative aspect-[1536/1024] w-full max-w-full select-none lg:h-full lg:w-auto"
+      className="hero-landscape-fill-h hero-landscape-fill-w relative aspect-[1536/1024] w-full max-w-full select-none"
     >
       <Image
         src="/hero-base.png"

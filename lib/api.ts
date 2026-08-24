@@ -27,6 +27,36 @@ export async function getPlans(): Promise<Plan[]> {
   }
 }
 
+export interface SiteContent {
+  heroBadge: string;
+  heroTitlePrefix: string;
+  heroTitleHighlight: string;
+  heroTitleSuffix: string;
+  heroDescription: string;
+  heroPrimaryCtaLabel: string;
+  heroSecondaryCtaLabel: string;
+  footerDescription: string;
+  footerCopyrightText: string | null;
+  footerSupportEmail: string | null;
+}
+
+// Admin panelden duzenlenebilir hero/footer metinleri (bkz. backend
+// SiteContentService) - kullanici istegi 2026-08-24: "footer hero yazılar
+// panelden olsun". Backend erisilemezse (veya kayit henuz olusmadiysa) null
+// doner; bilesenler bu durumda kendi SABIT varsayilan metinlerine duser,
+// yani sayfa hicbir zaman bu yuzden bozulmaz.
+export async function getSiteContent(): Promise<SiteContent | null> {
+  try {
+    const res = await fetch(`${INTERNAL_API_URL}/site-content`, {
+      next: { revalidate: 60 },
+    });
+    if (!res.ok) return null;
+    return (await res.json()) as SiteContent;
+  } catch {
+    return null;
+  }
+}
+
 export function formatTRY(value: string): string {
   const amount = Number(value);
   if (amount === 0) return "Ücretsiz";
