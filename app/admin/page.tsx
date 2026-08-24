@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { CustomSelect } from "@/components/custom-select";
 import {
   ApiError,
+  adminApproveAccountantVerification,
   adminApprovePayment,
   adminDeleteUser,
   adminGetActiveUsers,
@@ -14,10 +15,12 @@ import {
   adminGetUser,
   adminGetVisitorStats,
   adminGrantStaff,
+  adminListAccountantVerifications,
   adminListPayments,
   adminListPlans,
   adminListSupportTickets,
   adminListUsers,
+  adminRejectAccountantVerification,
   adminRejectPayment,
   adminReplySupportTicket,
   adminRevokeStaff,
@@ -26,7 +29,9 @@ import {
   adminUpdateSupportTicketStatus,
   adminUpdateUser,
   getAccessToken,
+  openAccountantVerificationDoc,
   openPaymentReceipt,
+  type AccountantVerificationRow,
   type ActiveUsers,
   type AdminPayment,
   type AdminPlan,
@@ -43,13 +48,21 @@ import {
 } from "@/lib/auth-client";
 
 type Status = "checking" | "forbidden" | "error" | "ready";
-type Tab = "overview" | "plans" | "payments" | "users" | "announcements" | "support";
+type Tab =
+  | "overview"
+  | "plans"
+  | "payments"
+  | "users"
+  | "announcements"
+  | "support"
+  | "accountants";
 
 const TABS: { id: Tab; label: string }[] = [
   { id: "overview", label: "Genel Bakış" },
   { id: "plans", label: "Planlar" },
   { id: "payments", label: "Ödemeler" },
   { id: "users", label: "Kullanıcılar" },
+  { id: "accountants", label: "Müşavir Onayları" },
   { id: "announcements", label: "Duyurular" },
   { id: "support", label: "Destek" },
 ];
@@ -1268,6 +1281,109 @@ function SupportSection() {
   );
 }
 
+// ================= Müşavir onayları =================
+
+function AccountantVerificationsSection() {
+  const [rows, setRows] = useState<AccountantVerificationRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [busyId, setBusyId] = useState<string | null>(null);
+
+  async function reload() {
+    setLoading(true);
+    try {
+      setRows(await adminListAccountantVerifications());
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    reload();
+  }, []);
+
+  async function handleApprove(userId: string) {
+    setBusyId(userId);
+    try {
+      await adminApproveAccountantVerification(userId);
+      await reload();
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  async function handleReject(userId: string) {
+    setBusyId(userId);
+    try {
+      await adminRejectAccountantVerification(userId);
+      await reload();
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  return (
+    <div>
+      <h2 className="font-serif text-lg font-semibold text-ink">Onay bekleyen müşavirler</h2>
+      <p className="mt-1 text-sm text-ink-soft">
+        Müşavirlik belgesi ve/veya vergi levhası yüklenmiş, henüz onaylanmamış hesaplar.
+      </p>
+
+      <div className="mt-4 overflow-hidden rounded-2xl border border-gold/20">
+        {loading ? (
+          <p className="p-6 text-sm text-ink-soft">Yükleniyor…</p>
+        ) : rows.length === 0 ? (
+          <p className="p-6 text-sm text-ink-soft">Bekleyen onay yok.</p>
+        ) : (
+          <div className="divide-y divide-gold/10">
+            {rows.map((r) => (
+              <div key={r.id} className="bg-parchment p-4">
+                <p className="font-medium text-ink">{r.fullName || r.email}</p>
+                <p className="text-xs text-ink-soft">
+                  {r.email} · @{r.username} · {new Date(r.createdAt).toLocaleDateString("tr-TR")}
+                </p>
+                <div className="mt-2 flex flex-wrap items-center gap-3">
+                  {r.accountantLicenseDocUrl && (
+                    <button
+                      onClick={() => openAccountantVerificationDoc(r.id, "license", true)}
+                      className="text-xs font-semibold text-gold-deep hover:underline"
+                    >
+                      Müşavirlik belgesi
+                    </button>
+                  )}
+                  {r.accountantTaxPlateDocUrl && (
+                    <button
+                      onClick={() => openAccountantVerificationDoc(r.id, "taxPlate", true)}
+                      className="text-xs font-semibold text-gold-deep hover:underline"
+                    >
+                      Vergi levhası
+                    </button>
+                  )}
+                  <div className="ml-auto flex gap-2">
+                    <button
+                      onClick={() => handleApprove(r.id)}
+                      disabled={busyId === r.id}
+                      className="rounded-full bg-marble-dark px-3.5 py-1.5 text-xs font-semibold text-cream hover:bg-marble-dark-2 disabled:opacity-60"
+                    >
+                      Onayla
+                    </button>
+                    <button
+                      onClick={() => handleReject(r.id)}
+                      disabled={busyId === r.id}
+                      className="rounded-full border border-red-200 px-3.5 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-50 disabled:opacity-60"
+                    >
+                      Reddet
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ================= Sayfa =================
 
 export default function AdminPage() {
@@ -1356,6 +1472,7 @@ export default function AdminPage() {
           {tab === "users" && <UsersSection />}
           {tab === "announcements" && <AnnouncementsSection />}
           {tab === "support" && <SupportSection />}
+          {tab === "accountants" && <AccountantVerificationsSection />}
         </div>
       </div>
     </main>

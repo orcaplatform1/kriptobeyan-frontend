@@ -979,3 +979,82 @@ export async function adminUpdateSupportTicketStatus(
     { status },
   );
 }
+
+// --- Mali müşavir belge doğrulama ---
+
+export interface AccountantVerificationStatus {
+  hasLicenseDoc: boolean;
+  hasTaxPlateDoc: boolean;
+  verified: boolean;
+  verifiedAt: string | null;
+}
+
+export async function getAccountantVerificationStatus() {
+  return authRequest<AccountantVerificationStatus>(
+    "GET",
+    "/accountant/verification/status",
+  );
+}
+
+export async function uploadAccountantVerificationDocs(
+  license: File | null,
+  taxPlate: File | null,
+) {
+  const form = new FormData();
+  if (license) form.append("license", license);
+  if (taxPlate) form.append("taxPlate", taxPlate);
+  return authUpload<{
+    accountantLicenseDocUrl: string | null;
+    accountantTaxPlateDocUrl: string | null;
+    accountantVerified: boolean;
+  }>("/accountant/verification/documents", form);
+}
+
+export interface AccountantVerificationRow {
+  id: string;
+  email: string;
+  username: string;
+  fullName: string | null;
+  accountantLicenseDocUrl: string | null;
+  accountantTaxPlateDocUrl: string | null;
+  createdAt: string;
+}
+
+export async function adminListAccountantVerifications() {
+  return authRequest<AccountantVerificationRow[]>(
+    "GET",
+    "/admin/accountant-verifications",
+  );
+}
+
+export async function adminApproveAccountantVerification(userId: string) {
+  return authRequest<void>(
+    "POST",
+    `/admin/accountant-verifications/${userId}/approve`,
+  );
+}
+
+export async function adminRejectAccountantVerification(userId: string) {
+  return authRequest<void>(
+    "POST",
+    `/admin/accountant-verifications/${userId}/reject`,
+  );
+}
+
+export async function openAccountantVerificationDoc(
+  userId: string,
+  kind: "license" | "taxPlate",
+  isAdmin: boolean,
+) {
+  const token = getAccessToken();
+  if (!token) throw new ApiError("Oturum bulunamadı, tekrar giriş yap.", 401);
+  const path = isAdmin
+    ? `/api/admin/accountant-verifications/${userId}/documents/${kind}`
+    : `/api/accountant/verification/documents/${kind}`;
+  const res = await fetch(path, { headers: { Authorization: `Bearer ${token}` } });
+  if (!res.ok) throw new ApiError("Belge açılamadı", res.status);
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  window.open(url, "_blank", "noopener,noreferrer");
+  setTimeout(() => URL.revokeObjectURL(url), 60_000);
+}

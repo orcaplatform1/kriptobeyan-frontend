@@ -7,11 +7,15 @@ import {
   ApiError,
   getAccessToken,
   getAccountantOverview,
+  getAccountantVerificationStatus,
   inviteAccountantClient,
   logout,
+  openAccountantVerificationDoc,
   removeAccountantClient,
   roleFromAccessToken,
+  uploadAccountantVerificationDocs,
   type AccountantClientRow,
+  type AccountantVerificationStatus,
 } from "@/lib/auth-client";
 
 const STATUS_LABEL: Record<string, string> = {
@@ -33,6 +37,20 @@ export default function MusavirPaneliPage() {
   const [inviteLoading, setInviteLoading] = useState(false);
   const [inviteError, setInviteError] = useState<string | null>(null);
   const [inviteSuccess, setInviteSuccess] = useState<string | null>(null);
+
+  const [verification, setVerification] = useState<AccountantVerificationStatus | null>(null);
+  const [licenseFile, setLicenseFile] = useState<File | null>(null);
+  const [taxPlateFile, setTaxPlateFile] = useState<File | null>(null);
+  const [docsUploading, setDocsUploading] = useState(false);
+  const [docsError, setDocsError] = useState<string | null>(null);
+
+  const loadVerification = useCallback(async () => {
+    try {
+      setVerification(await getAccountantVerificationStatus());
+    } catch {
+      // panel kritik yolu degil, sessizce gec
+    }
+  }, []);
 
   const loadClients = useCallback(async () => {
     setLoading(true);
@@ -61,8 +79,27 @@ export default function MusavirPaneliPage() {
   }, [router]);
 
   useEffect(() => {
-    if (checked && authorized) loadClients();
-  }, [checked, authorized, loadClients]);
+    if (checked && authorized) {
+      loadClients();
+      loadVerification();
+    }
+  }, [checked, authorized, loadClients, loadVerification]);
+
+  async function handleUploadDocs(e: FormEvent) {
+    e.preventDefault();
+    setDocsError(null);
+    setDocsUploading(true);
+    try {
+      await uploadAccountantVerificationDocs(licenseFile, taxPlateFile);
+      setLicenseFile(null);
+      setTaxPlateFile(null);
+      await loadVerification();
+    } catch (err) {
+      setDocsError(err instanceof ApiError ? err.message : "Belgeler yüklenemedi.");
+    } finally {
+      setDocsUploading(false);
+    }
+  }
 
   async function handleLogout() {
     setLoggingOut(true);
@@ -146,35 +183,112 @@ export default function MusavirPaneliPage() {
           </button>
         </div>
 
+        {verification && !verification.verified && (
+          <div className="mt-10 rounded-xl border border-gold/30 bg-gold/10 p-5">
+            <h2 className="font-serif text-lg font-semibold text-ink">
+              Kimlik doğrulama gerekli
+            </h2>
+            <p className="mt-1 text-sm text-ink-soft">
+              Müşteri davet edebilmek için müşavirlik belgeni ve vergi
+              levhanı yükleyip admin onayı almalısın.
+            </p>
+
+            {verification.hasLicenseDoc && verification.hasTaxPlateDoc ? (
+              <p className="mt-3 text-sm font-medium text-gold-deep">
+                Belgelerin yüklendi, inceleniyor — onaylanınca müşteri davet
+                edebileceksin.
+              </p>
+            ) : null}
+
+            <div className="mt-4 flex flex-wrap gap-3 text-sm">
+              {verification.hasLicenseDoc && (
+                <button
+                  onClick={() => openAccountantVerificationDoc("me", "license", false)}
+                  className="font-medium text-gold-deep hover:underline"
+                >
+                  Yüklenen müşavirlik belgesini görüntüle
+                </button>
+              )}
+              {verification.hasTaxPlateDoc && (
+                <button
+                  onClick={() => openAccountantVerificationDoc("me", "taxPlate", false)}
+                  className="font-medium text-gold-deep hover:underline"
+                >
+                  Yüklenen vergi levhasını görüntüle
+                </button>
+              )}
+            </div>
+
+            <form onSubmit={handleUploadDocs} className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <label className="flex cursor-pointer flex-col items-center gap-1.5 rounded-xl border border-dashed border-gold/40 bg-cream p-4 text-center text-sm text-ink-soft">
+                {licenseFile ? licenseFile.name : "Müşavirlik belgesi (PDF/görsel)"}
+                <input
+                  type="file"
+                  accept="image/*,application/pdf"
+                  className="hidden"
+                  onChange={(e) => setLicenseFile(e.target.files?.[0] ?? null)}
+                />
+              </label>
+              <label className="flex cursor-pointer flex-col items-center gap-1.5 rounded-xl border border-dashed border-gold/40 bg-cream p-4 text-center text-sm text-ink-soft">
+                {taxPlateFile ? taxPlateFile.name : "Vergi levhası (PDF/görsel)"}
+                <input
+                  type="file"
+                  accept="image/*,application/pdf"
+                  className="hidden"
+                  onChange={(e) => setTaxPlateFile(e.target.files?.[0] ?? null)}
+                />
+              </label>
+              {docsError && (
+                <p className="sm:col-span-2 text-sm text-red-700">{docsError}</p>
+              )}
+              <button
+                type="submit"
+                disabled={docsUploading || (!licenseFile && !taxPlateFile)}
+                className="sm:col-span-2 rounded-full bg-marble-dark px-5 py-2.5 text-sm font-semibold text-cream transition-colors hover:bg-marble-dark-2 disabled:opacity-60"
+              >
+                {docsUploading ? "Yükleniyor…" : "Belgeleri gönder"}
+              </button>
+            </form>
+          </div>
+        )}
+
         <div className="mt-10 rounded-xl border border-gold/20 bg-parchment p-5">
           <h2 className="font-serif text-lg font-semibold text-ink">
             Yeni müşteri davet et
           </h2>
-          <form
-            onSubmit={handleInvite}
-            className="mt-4 flex flex-col gap-3 sm:flex-row"
-          >
-            <input
-              type="email"
-              required
-              placeholder="musteri@ornek.com"
-              value={inviteEmail}
-              onChange={(e) => setInviteEmail(e.target.value)}
-              className="flex-1 rounded-lg border border-gold/25 bg-cream px-4 py-2.5 text-ink outline-none transition-colors focus:border-gold"
-            />
-            <button
-              type="submit"
-              disabled={inviteLoading}
-              className="rounded-full bg-marble-dark px-5 py-2.5 text-sm font-semibold text-cream transition-colors hover:bg-marble-dark-2 disabled:opacity-60"
-            >
-              {inviteLoading ? "Gönderiliyor…" : "Davet gönder"}
-            </button>
-          </form>
-          {inviteError && (
-            <p className="mt-2 text-sm text-red-700">{inviteError}</p>
-          )}
-          {inviteSuccess && (
-            <p className="mt-2 text-sm text-emerald-700">{inviteSuccess}</p>
+          {verification && !verification.verified ? (
+            <p className="mt-3 text-sm text-ink-soft">
+              Belge onayı tamamlanmadan müşteri davet edemezsin.
+            </p>
+          ) : (
+            <>
+              <form
+                onSubmit={handleInvite}
+                className="mt-4 flex flex-col gap-3 sm:flex-row"
+              >
+                <input
+                  type="email"
+                  required
+                  placeholder="musteri@ornek.com"
+                  value={inviteEmail}
+                  onChange={(e) => setInviteEmail(e.target.value)}
+                  className="flex-1 rounded-lg border border-gold/25 bg-cream px-4 py-2.5 text-ink outline-none transition-colors focus:border-gold"
+                />
+                <button
+                  type="submit"
+                  disabled={inviteLoading}
+                  className="rounded-full bg-marble-dark px-5 py-2.5 text-sm font-semibold text-cream transition-colors hover:bg-marble-dark-2 disabled:opacity-60"
+                >
+                  {inviteLoading ? "Gönderiliyor…" : "Davet gönder"}
+                </button>
+              </form>
+              {inviteError && (
+                <p className="mt-2 text-sm text-red-700">{inviteError}</p>
+              )}
+              {inviteSuccess && (
+                <p className="mt-2 text-sm text-emerald-700">{inviteSuccess}</p>
+              )}
+            </>
           )}
         </div>
 
