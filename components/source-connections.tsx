@@ -23,6 +23,14 @@ import {
 import { CustomSelect } from "@/components/custom-select";
 
 
+// Passphrase isteyen borsalar (ACCESS-PASSPHRASE benzeri bir header/parametre
+// gerektirir): OKX ailesi ve Bitget.
+const REQUIRES_PASSPHRASE = new Set<ExchangeProvider>([
+  "OKX",
+  "OKX_TR",
+  "BITGET",
+]);
+
 type Tab = "exchange" | "wallet" | "csv";
 
 const TABS: { id: Tab; label: string }[] = [
@@ -87,7 +95,7 @@ function ExchangeConnectionForm({ onAdded }: { onAdded: () => void }) {
         label: label || EXCHANGE_PROVIDER_LABELS[provider],
         apiKey,
         apiSecret,
-        passphrase: provider === "OKX" ? passphrase : undefined,
+        passphrase: REQUIRES_PASSPHRASE.has(provider) ? passphrase : undefined,
         confirmedReadOnly: confirmed,
       });
       setLabel("");
@@ -147,7 +155,7 @@ function ExchangeConnectionForm({ onAdded }: { onAdded: () => void }) {
           className={inputClass}
         />
       </div>
-      {provider === "OKX" && (
+      {REQUIRES_PASSPHRASE.has(provider) && (
         <div>
           <FieldLabel>Passphrase</FieldLabel>
           <input

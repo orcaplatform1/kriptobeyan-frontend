@@ -450,13 +450,16 @@ export async function adminUpdateSiteContent(
 
 export type ExchangeProvider =
   | "BINANCE"
+  | "BINANCE_TR"
   | "BTCTURK"
   | "PARIBU"
   | "BITEXEN"
   | "ICRYPEX"
   | "BITCI"
   | "BYBIT"
+  | "BYBIT_TR"
   | "OKX"
+  | "OKX_TR"
   | "COINBASE"
   | "KRAKEN"
   | "KUCOIN"
@@ -468,13 +471,16 @@ export type ExchangeProvider =
 
 export const EXCHANGE_PROVIDER_LABELS: Record<ExchangeProvider, string> = {
   BINANCE: "Binance",
+  BINANCE_TR: "Binance TR",
   BTCTURK: "BTCTurk",
   PARIBU: "Paribu",
   BITEXEN: "Bitexen",
   ICRYPEX: "ICRYPEX",
   BITCI: "Bitci",
   BYBIT: "Bybit",
+  BYBIT_TR: "Bybit TR",
   OKX: "OKX",
+  OKX_TR: "OKX TR",
   COINBASE: "Coinbase",
   KRAKEN: "Kraken",
   KUCOIN: "KuCoin",
