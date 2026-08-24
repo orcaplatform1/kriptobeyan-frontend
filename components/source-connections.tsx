@@ -422,6 +422,20 @@ function CsvImportForm({ onAdded }: { onAdded: () => void }) {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+      <div className="rounded-lg border border-gold/20 bg-cream px-3.5 py-3 text-xs text-ink-soft">
+        <p>
+          Paribu, Bitexen, ICRYPEX, Bitci gibi API ile canlı senkronize
+          edemediğimiz borsalar için işlem geçmişini CSV olarak dışa aktarıp
+          buradan yükleyebilirsin.
+        </p>
+        <a
+          href="/kriptobeyan-csv-sablonu.csv"
+          download
+          className="mt-1.5 inline-flex items-center gap-1 font-semibold text-gold-deep hover:underline"
+        >
+          Örnek CSV şablonunu indir
+        </a>
+      </div>
       <div>
         <FieldLabel>Borsa adı</FieldLabel>
         <input
