@@ -119,9 +119,15 @@ body {
     transform: rotate(360deg);
   }
 }
+/* display BILEREK burada set edilmiyor — bu dosyadaki kural Tailwind'in
+   uretilen utility'lerinden (ozellikle responsive "hidden"/"sm:inline-flex"
+   gibi varyantlar) SONRA derleniyor, ayni ozgullukte (tek class secici) ama
+   kaynak sirasi daha sonra oldugu icin "hidden"i eziyordu — mobilde
+   gizlenmesi gereken bir buton hep gorunur kaliyordu. display, JSX'te
+   kullanan tarafindan ayrica bir Tailwind utility'siyle (inline-flex,
+   hidden sm:inline-flex, vb.) verilmeli. */
 .btn-gold-comet {
   position: relative;
-  display: inline-flex;
   border-radius: 999px;
   padding: 2px;
   overflow: hidden;

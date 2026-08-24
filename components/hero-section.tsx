@@ -51,14 +51,6 @@ export function HeroSection() {
             transition={{ ...revealTransition, delay: 0.24 }}
             className="mt-9 flex flex-col gap-3.5 sm:flex-row sm:items-center"
           >
-            <span className="btn-gold-comet">
-              <Link
-                href="/kayit-ol"
-                className="inline-flex items-center justify-center rounded-full bg-marble-dark px-7 py-3.5 text-base font-semibold text-cream shadow-[0_8px_24px_-8px_rgba(28,32,25,0.45)] transition-transform hover:scale-[1.02] hover:bg-marble-dark-2"
-              >
-                Ücretsiz Başla
-              </Link>
-            </span>
             <a
               href="#nasil-calisir"
               className="inline-flex items-center justify-center rounded-full border border-ink/15 px-7 py-3.5 text-base font-medium text-ink-soft transition-colors hover:border-gold/40 hover:text-gold-deep"
@@ -73,7 +65,10 @@ export function HeroSection() {
             <HeroScale />
           </div>
 
-          <span className="btn-gold-comet absolute bottom-5 left-5 lg:hidden">
+          {/* Hero'daki TEK "Ücretsiz Başla" — bilerek gorselin sag-alt
+              kosesinde, her ekran boyutunda (navbar'da AYRICA yok, bkz.
+              site-header.tsx). */}
+          <span className="btn-gold-comet absolute right-5 bottom-5 inline-flex">
             <Link
               href="/kayit-ol"
               className="inline-flex items-center justify-center rounded-full bg-marble-dark px-6 py-3 text-sm font-semibold text-cream shadow-[0_8px_24px_-8px_rgba(28,32,25,0.5)] transition-transform hover:scale-[1.03] hover:bg-marble-dark-2"

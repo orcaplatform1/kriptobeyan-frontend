@@ -99,22 +99,12 @@ export function SiteHeader() {
               </Link>
             </>
           ) : (
-            <>
-              <Link
-                href="/giris"
-                className="hidden rounded-full bg-ink px-4 py-2 text-sm font-semibold text-cream transition-colors hover:bg-ink/85 sm:inline-flex"
-              >
-                Giriş Yap
-              </Link>
-              <span className="hidden btn-gold-comet sm:inline-flex">
-                <Link
-                  href="/kayit-ol"
-                  className="rounded-full bg-marble-dark px-4 py-2 text-sm font-semibold text-cream transition-colors hover:bg-marble-dark-2"
-                >
-                  Ücretsiz Başla
-                </Link>
-              </span>
-            </>
+            <Link
+              href="/giris"
+              className="hidden rounded-full bg-ink px-4 py-2 text-sm font-semibold text-cream transition-colors hover:bg-ink/85 sm:inline-flex"
+            >
+              Giriş Yap
+            </Link>
           )}
 
           <button
@@ -206,24 +196,13 @@ export function SiteHeader() {
                     </Link>
                   </>
                 ) : (
-                  <>
-                    <Link
-                      href="/giris"
-                      onClick={() => setMenuOpen(false)}
-                      className="rounded-full bg-ink px-4 py-2.5 text-center text-sm font-semibold text-cream transition-colors hover:bg-ink/85"
-                    >
-                      Giriş Yap
-                    </Link>
-                    <span className="btn-gold-comet w-full">
-                      <Link
-                        href="/kayit-ol"
-                        onClick={() => setMenuOpen(false)}
-                        className="w-full rounded-full bg-marble-dark px-4 py-2.5 text-center text-sm font-semibold text-cream transition-colors hover:bg-marble-dark-2"
-                      >
-                        Ücretsiz Başla
-                      </Link>
-                    </span>
-                  </>
+                  <Link
+                    href="/giris"
+                    onClick={() => setMenuOpen(false)}
+                    className="rounded-full bg-ink px-4 py-2.5 text-center text-sm font-semibold text-cream transition-colors hover:bg-ink/85"
+                  >
+                    Giriş Yap
+                  </Link>
                 )}
               </div>
             </motion.div>
