@@ -455,7 +455,6 @@ export type ExchangeProvider =
   | "PARIBU"
   | "BITEXEN"
   | "ICRYPEX"
-  | "BITCI"
   | "BYBIT"
   | "BYBIT_TR"
   | "OKX"
@@ -476,7 +475,6 @@ export const EXCHANGE_PROVIDER_LABELS: Record<ExchangeProvider, string> = {
   PARIBU: "Paribu",
   BITEXEN: "Bitexen",
   ICRYPEX: "ICRYPEX",
-  BITCI: "Bitci",
   BYBIT: "Bybit",
   BYBIT_TR: "Bybit TR",
   OKX: "OKX",

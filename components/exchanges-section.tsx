@@ -24,7 +24,6 @@ const EXCHANGE_LOGO_FILES: Record<string, string> = {
   Paribu: "paribu.png",
   Bitexen: "Bitexen.png",
   ICRYPEX: "icrypex.webp",
-  Bitci: "Bitci.png",
 };
 
 // Kutunun kendisi sabit boyutta (w-28 h-14) — kaynak PNG'lerin en-boy orani

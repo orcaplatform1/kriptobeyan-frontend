@@ -61,7 +61,7 @@ const faqGroups: { title: string; items: { q: string; a: string }[] }[] = [
     items: [
       {
         q: "Hangi borsalar destekleniyor?",
-        a: "Binance, Bybit, OKX, BTCTurk, Kraken, KuCoin ve Coinbase şu anda tam destekleniyor. Paribu, Bitexen, ICRYPEX, Bitci, Gate.io, Bitget, HTX, MEXC ve Crypto.com entegrasyonları yakında ekleniyor. Listedeki bir borsayı kullanmıyorsanız CSV içe aktarımıyla da işlem geçmişinizi ekleyebilirsiniz.",
+        a: "Binance, Binance TR, Bybit, Bybit TR, OKX, OKX TR, BTCTurk, Kraken, KuCoin, Coinbase, Gate.io, HTX, Bitget, MEXC, Paribu ve ICRYPEX şu anda tam destekleniyor. Bitexen ve Crypto.com entegrasyonları yakında ekleniyor. Listedeki bir borsayı kullanmıyorsanız CSV içe aktarımıyla da işlem geçmişinizi ekleyebilirsiniz.",
       },
       {
         q: "On-chain cüzdan takibi nasıl çalışır?",

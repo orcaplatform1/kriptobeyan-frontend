@@ -65,11 +65,11 @@ export default function NasilCalisirPage() {
         </li>
       </ul>
       <p>
-        Şu anda tam entegre borsalar: Binance, Bybit, OKX, BTCTurk, Kraken,
-        KuCoin ve Coinbase. Paribu, Bitexen, ICRYPEX, Bitci, Gate.io,
-        Bitget, HTX, MEXC ve Crypto.com entegrasyonları yakında ekleniyor —
-        bu arada söz konusu borsadan aldığınız işlem dökümünü CSV olarak da
-        içe aktarabilirsiniz.
+        Şu anda tam entegre borsalar: Binance, Binance TR, Bybit, Bybit TR,
+        OKX, OKX TR, BTCTurk, Kraken, KuCoin, Coinbase, Gate.io, HTX, Bitget,
+        MEXC, Paribu ve ICRYPEX. Bitexen ve Crypto.com entegrasyonları yakında
+        ekleniyor — bu arada söz konusu borsadan aldığınız işlem dökümünü CSV
+        olarak da içe aktarabilirsiniz.
       </p>
 
       <h3>Cüzdan adresi ile bağlantı (on-chain)</h3>
