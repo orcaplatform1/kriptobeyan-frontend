@@ -91,6 +91,7 @@ function AbonelikPageInner() {
   const [formSuccess, setFormSuccess] = useState<string | null>(null);
 
   const [receiptFile, setReceiptFile] = useState<File | null>(null);
+  const [couponCode, setCouponCode] = useState("");
 
   const [cryptoProvider, setCryptoProvider] = useState<CryptoProvider>("BINANCE");
   const [cryptoAsset, setCryptoAsset] = useState<CryptoAsset>("USDT");
@@ -204,7 +205,11 @@ function AbonelikPageInner() {
       // Kart bilgileri (numara/CVV) backend'e ASLA gonderilmiyor — gercek
       // odeme saglayicisi baglanana kadar sadece yontem bilgisiyle bekleyen
       // bir odeme kaydi olusturuluyor (bkz. PaymentService yorumu).
-      await createPayment({ planId: selectedPlan.id, method: "CARD" });
+      await createPayment({
+        planId: selectedPlan.id,
+        method: "CARD",
+        couponCode: couponCode.trim() || undefined,
+      });
       setFormSuccess("Ödeme talebin oluşturuldu, kart altyapımız tamamlandığında işlemin otomatik tamamlanacak.");
       await load();
       backToPackage();
@@ -229,6 +234,7 @@ function AbonelikPageInner() {
         planId: selectedPlan.id,
         method: "BANK_TRANSFER",
         receiptUrl: key,
+        couponCode: couponCode.trim() || undefined,
       });
       setFormSuccess("Ödeme talebin oluşturuldu, dekontun incelenip onaylandığında planın otomatik açılacak.");
       await load();
@@ -250,6 +256,7 @@ function AbonelikPageInner() {
         method: "CRYPTO",
         cryptoProvider,
         cryptoAsset,
+        couponCode: couponCode.trim() || undefined,
       });
       setCryptoPayment(payment);
     } catch (err) {

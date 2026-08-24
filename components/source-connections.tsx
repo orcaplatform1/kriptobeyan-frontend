@@ -31,6 +31,19 @@ const TABS: { id: Tab; label: string }[] = [
   { id: "csv", label: "CSV içe aktar" },
 ];
 
+// Senkronizasyon artik arka planda bir is kuyrugunda calisiyor (backend
+// HTTP istegini beklemeden hemen doner) — sonucu gormek icin birkac kere
+// arka arkaya listeyi yeniliyoruz, WebSocket/gercek-zamanli bildirim
+// altyapisi kurmadan makul bir yaklasim.
+function pollAfterSync(onChanged: () => void) {
+  const delays = [3000, 3000, 4000, 5000, 5000];
+  let elapsed = 0;
+  for (const delay of delays) {
+    elapsed += delay;
+    setTimeout(onChanged, elapsed);
+  }
+}
+
 function Card({ children }: { children: React.ReactNode }) {
   return (
     <div className="rounded-xl border border-gold/20 bg-parchment p-5">
@@ -219,7 +232,9 @@ function ExchangeConnectionList({
               İzni doğrula
             </button>
             <button
-              onClick={() => withBusy(c.id, () => syncExchangeConnection(c.id))}
+              onClick={() =>
+                withBusy(c.id, () => syncExchangeConnection(c.id)).then(() => pollAfterSync(onChanged))
+              }
               disabled={busyId === c.id}
               className="rounded-full border border-gold/30 px-3 py-1 text-xs font-semibold text-ink hover:bg-parchment disabled:opacity-60"
             >
@@ -354,7 +369,9 @@ function WalletAddressList({
           </div>
           <div className="flex gap-2">
             <button
-              onClick={() => withBusy(w.id, () => syncWalletAddress(w.id))}
+              onClick={() =>
+                withBusy(w.id, () => syncWalletAddress(w.id)).then(() => pollAfterSync(onChanged))
+              }
               disabled={busyId === w.id}
               className="rounded-full border border-gold/30 px-3 py-1 text-xs font-semibold text-ink hover:bg-parchment disabled:opacity-60"
             >

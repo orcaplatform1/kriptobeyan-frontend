@@ -656,6 +656,7 @@ export async function createPayment(data: {
   cryptoProvider?: CryptoProvider;
   cryptoAsset?: CryptoAsset;
   receiptUrl?: string;
+  couponCode?: string;
 }) {
   return authRequest<Payment & { cryptoWalletAddress: string | null }>(
     "POST",
@@ -1057,4 +1058,36 @@ export async function openAccountantVerificationDoc(
   const url = URL.createObjectURL(blob);
   window.open(url, "_blank", "noopener,noreferrer");
   setTimeout(() => URL.revokeObjectURL(url), 60_000);
+}
+
+// --- Mali müşavir iş ortaklığı: kupon kodu ---
+
+export interface MyCoupon {
+  id: string;
+  code: string;
+  discountPercent: number;
+  isActive: boolean;
+  createdAt: string;
+  redemptionCount: number;
+  totalDiscountGivenTRY: string;
+}
+
+export async function getMyCoupon() {
+  return authRequest<MyCoupon | null>("GET", "/accountant/coupon");
+}
+
+export async function createMyCoupon() {
+  return authRequest<MyCoupon>("POST", "/accountant/coupon");
+}
+
+export interface AdminCouponRow extends MyCoupon {
+  accountant: { id: string; email: string; username: string; fullName: string | null };
+}
+
+export async function adminListCoupons() {
+  return authRequest<AdminCouponRow[]>("GET", "/admin/coupons");
+}
+
+export async function adminSetCouponActive(id: string, isActive: boolean) {
+  return authRequest<void>("POST", `/admin/coupons/${id}/active`, { isActive });
 }

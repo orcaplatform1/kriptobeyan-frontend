@@ -5,9 +5,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   ApiError,
+  createMyCoupon,
   getAccessToken,
   getAccountantOverview,
   getAccountantVerificationStatus,
+  getMyCoupon,
   inviteAccountantClient,
   logout,
   openAccountantVerificationDoc,
@@ -16,6 +18,7 @@ import {
   uploadAccountantVerificationDocs,
   type AccountantClientRow,
   type AccountantVerificationStatus,
+  type MyCoupon,
 } from "@/lib/auth-client";
 
 const STATUS_LABEL: Record<string, string> = {
@@ -52,6 +55,38 @@ export default function MusavirPaneliPage() {
     }
   }, []);
 
+  const [coupon, setCoupon] = useState<MyCoupon | null>(null);
+  const [couponLoading, setCouponLoading] = useState(false);
+  const [couponError, setCouponError] = useState<string | null>(null);
+  const [couponCopied, setCouponCopied] = useState(false);
+
+  const loadCoupon = useCallback(async () => {
+    try {
+      setCoupon(await getMyCoupon());
+    } catch {
+      // panel kritik yolu degil
+    }
+  }, []);
+
+  async function handleCreateCoupon() {
+    setCouponLoading(true);
+    setCouponError(null);
+    try {
+      setCoupon(await createMyCoupon());
+    } catch (err) {
+      setCouponError(err instanceof ApiError ? err.message : "Kupon oluşturulamadı.");
+    } finally {
+      setCouponLoading(false);
+    }
+  }
+
+  function copyCouponCode() {
+    if (!coupon) return;
+    navigator.clipboard.writeText(coupon.code);
+    setCouponCopied(true);
+    setTimeout(() => setCouponCopied(false), 2000);
+  }
+
   const loadClients = useCallback(async () => {
     setLoading(true);
     setLoadError(null);
@@ -82,8 +117,9 @@ export default function MusavirPaneliPage() {
     if (checked && authorized) {
       loadClients();
       loadVerification();
+      loadCoupon();
     }
-  }, [checked, authorized, loadClients, loadVerification]);
+  }, [checked, authorized, loadClients, loadVerification, loadCoupon]);
 
   async function handleUploadDocs(e: FormEvent) {
     e.preventDefault();
@@ -249,6 +285,49 @@ export default function MusavirPaneliPage() {
                 {docsUploading ? "Yükleniyor…" : "Belgeleri gönder"}
               </button>
             </form>
+          </div>
+        )}
+
+        {verification?.verified && (
+          <div className="mt-10 rounded-xl border border-gold/20 bg-parchment p-5">
+            <h2 className="font-serif text-lg font-semibold text-ink">
+              İndirim kuponun
+            </h2>
+            <p className="mt-1 text-sm text-ink-soft">
+              Bu kodu mükelleflerine ver — kayıt sırasında kullandıklarında
+              %{coupon?.discountPercent ?? 15} indirim alırlar. Kod kimin
+              hesabına indirim getirdiğini takip eder, mükellefin verisine
+              erişim vermez (o ayrı, kendi onaylayacağı bir davettir).
+            </p>
+
+            {coupon ? (
+              <div className="mt-4 flex flex-wrap items-center gap-3">
+                <span className="rounded-full bg-marble-dark px-4 py-2 font-mono text-sm font-semibold tracking-wide text-cream">
+                  {coupon.code}
+                </span>
+                <button
+                  onClick={copyCouponCode}
+                  className="rounded-full border border-gold/30 px-4 py-2 text-sm font-semibold text-ink hover:bg-cream"
+                >
+                  {couponCopied ? "Kopyalandı ✓" : "Kopyala"}
+                </button>
+                <span className="text-sm text-ink-soft">
+                  {coupon.redemptionCount} kullanım · toplam{" "}
+                  {Number(coupon.totalDiscountGivenTRY).toLocaleString("tr-TR")} ₺ indirim
+                </span>
+              </div>
+            ) : (
+              <>
+                {couponError && <p className="mt-3 text-sm text-red-700">{couponError}</p>}
+                <button
+                  onClick={handleCreateCoupon}
+                  disabled={couponLoading}
+                  className="mt-4 rounded-full bg-marble-dark px-5 py-2.5 text-sm font-semibold text-cream hover:bg-marble-dark-2 disabled:opacity-60"
+                >
+                  {couponLoading ? "Oluşturuluyor…" : "Kupon kodu oluştur"}
+                </button>
+              </>
+            )}
           </div>
         )}
 

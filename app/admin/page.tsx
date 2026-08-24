@@ -16,6 +16,7 @@ import {
   adminGetVisitorStats,
   adminGrantStaff,
   adminListAccountantVerifications,
+  adminListCoupons,
   adminListPayments,
   adminListPlans,
   adminListSupportTickets,
@@ -25,6 +26,7 @@ import {
   adminReplySupportTicket,
   adminRevokeStaff,
   adminSendAnnouncement,
+  adminSetCouponActive,
   adminUpdatePlan,
   adminUpdateSupportTicketStatus,
   adminUpdateUser,
@@ -33,6 +35,7 @@ import {
   openPaymentReceipt,
   type AccountantVerificationRow,
   type ActiveUsers,
+  type AdminCouponRow,
   type AdminPayment,
   type AdminPlan,
   type AdminUserDetail,
@@ -55,7 +58,8 @@ type Tab =
   | "users"
   | "announcements"
   | "support"
-  | "accountants";
+  | "accountants"
+  | "coupons";
 
 const TABS: { id: Tab; label: string }[] = [
   { id: "overview", label: "Genel Bakış" },
@@ -63,6 +67,7 @@ const TABS: { id: Tab; label: string }[] = [
   { id: "payments", label: "Ödemeler" },
   { id: "users", label: "Kullanıcılar" },
   { id: "accountants", label: "Müşavir Onayları" },
+  { id: "coupons", label: "Kuponlar" },
   { id: "announcements", label: "Duyurular" },
   { id: "support", label: "Destek" },
 ];
@@ -1384,6 +1389,114 @@ function AccountantVerificationsSection() {
   );
 }
 
+// ================= Kuponlar =================
+
+function CouponsSection() {
+  const [rows, setRows] = useState<AdminCouponRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [busyId, setBusyId] = useState<string | null>(null);
+
+  async function reload() {
+    setLoading(true);
+    try {
+      setRows(await adminListCoupons());
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    reload();
+  }, []);
+
+  async function handleToggle(id: string, isActive: boolean) {
+    setBusyId(id);
+    try {
+      await adminSetCouponActive(id, isActive);
+      await reload();
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  const totalRedemptions = rows.reduce((sum, r) => sum + r.redemptionCount, 0);
+  const totalDiscount = rows.reduce((sum, r) => sum + Number(r.totalDiscountGivenTRY), 0);
+
+  return (
+    <div>
+      <h2 className="font-serif text-lg font-semibold text-ink">
+        Mali müşavir kuponları
+      </h2>
+      <p className="mt-1 text-sm text-ink-soft">
+        Her müşavirin kendi ürettiği indirim kodu — kim getirmiş, kaç kullanım, ne kadar indirim.
+      </p>
+
+      <div className="mt-4 grid grid-cols-2 gap-3 sm:w-96">
+        <div className="rounded-xl border border-gold/20 bg-parchment p-4">
+          <p className="text-xs text-ink-soft">Toplam kullanım</p>
+          <p className="mt-1 font-serif text-2xl font-semibold text-ink">{totalRedemptions}</p>
+        </div>
+        <div className="rounded-xl border border-gold/20 bg-parchment p-4">
+          <p className="text-xs text-ink-soft">Toplam verilen indirim</p>
+          <p className="mt-1 font-serif text-2xl font-semibold text-ink">
+            {totalDiscount.toLocaleString("tr-TR")} ₺
+          </p>
+        </div>
+      </div>
+
+      <div className="mt-4 overflow-x-auto rounded-2xl border border-gold/20">
+        {loading ? (
+          <p className="p-6 text-sm text-ink-soft">Yükleniyor…</p>
+        ) : rows.length === 0 ? (
+          <p className="p-6 text-sm text-ink-soft">Henüz kupon oluşturulmamış.</p>
+        ) : (
+          <table className="w-full min-w-[720px] text-left text-sm">
+            <thead>
+              <tr className="border-b border-gold/20 bg-parchment text-xs font-semibold tracking-wide text-ink-soft uppercase">
+                <th className="px-4 py-3">Müşavir</th>
+                <th className="px-4 py-3">Kod</th>
+                <th className="px-4 py-3">İndirim</th>
+                <th className="px-4 py-3">Kullanım</th>
+                <th className="px-4 py-3">Toplam indirim</th>
+                <th className="px-4 py-3">Aktif</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((r) => (
+                <tr key={r.id} className="border-b border-gold/10 last:border-0">
+                  <td className="px-4 py-3">
+                    <p className="font-medium text-ink">{r.accountant.fullName || r.accountant.email}</p>
+                    <p className="text-xs text-ink-soft">@{r.accountant.username}</p>
+                  </td>
+                  <td className="px-4 py-3 font-mono text-ink">{r.code}</td>
+                  <td className="px-4 py-3 text-ink-soft">%{r.discountPercent}</td>
+                  <td className="px-4 py-3 text-ink-soft">{r.redemptionCount}</td>
+                  <td className="px-4 py-3 text-ink-soft">
+                    {Number(r.totalDiscountGivenTRY).toLocaleString("tr-TR")} ₺
+                  </td>
+                  <td className="px-4 py-3">
+                    <button
+                      onClick={() => handleToggle(r.id, !r.isActive)}
+                      disabled={busyId === r.id}
+                      className={`rounded-full px-3 py-1 text-xs font-semibold disabled:opacity-60 ${
+                        r.isActive
+                          ? "bg-emerald-100 text-emerald-700"
+                          : "bg-parchment text-ink-soft"
+                      }`}
+                    >
+                      {r.isActive ? "Aktif" : "Pasif"}
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ================= Sayfa =================
 
 export default function AdminPage() {
@@ -1473,6 +1586,7 @@ export default function AdminPage() {
           {tab === "announcements" && <AnnouncementsSection />}
           {tab === "support" && <SupportSection />}
           {tab === "accountants" && <AccountantVerificationsSection />}
+          {tab === "coupons" && <CouponsSection />}
         </div>
       </div>
     </main>
