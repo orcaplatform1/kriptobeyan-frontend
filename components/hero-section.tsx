@@ -60,22 +60,28 @@ export function HeroSection() {
           </motion.div>
         </div>
 
-        <div className="relative order-1 -mx-6 flex min-w-0 items-center justify-center sm:-mx-10 lg:order-2 lg:mx-0 lg:h-full lg:justify-end">
-          <div className="w-full min-w-0 lg:h-full lg:w-auto">
+        <div className="order-1 -mx-6 flex min-w-0 items-center justify-center sm:-mx-10 lg:order-2 lg:mx-0 lg:h-full lg:justify-end">
+          {/* relative burada, dogrudan gorseli saran kutuda — bir onceki
+              halde disaridaki flex kapsayicidaydi ve "items-center
+              justify-center" gorseli kapsayicinin ortasina hizaladigi icin
+              (gorsel container'i tam doldurmuyor) rozet gorselin disina,
+              sag-usta kayiyordu (bkz. ekran goruntusu). Artik gorselin
+              GERCEK render kutusuyla ayni boyuta sahip. */}
+          <div className="relative w-full min-w-0 lg:h-full lg:w-auto">
             <HeroScale />
-          </div>
 
-          {/* Hero'daki TEK "Ücretsiz Başla" — bilerek gorselin sag-alt
-              kosesinde, her ekran boyutunda (navbar'da AYRICA yok, bkz.
-              site-header.tsx). */}
-          <span className="btn-gold-comet absolute right-5 bottom-5 inline-flex">
-            <Link
-              href="/kayit-ol"
-              className="inline-flex items-center justify-center rounded-full bg-marble-dark px-6 py-3 text-sm font-semibold text-cream shadow-[0_8px_24px_-8px_rgba(28,32,25,0.5)] transition-transform hover:scale-[1.03] hover:bg-marble-dark-2"
-            >
-              Ücretsiz Başla
-            </Link>
-          </span>
+            {/* Hero'daki TEK "Ücretsiz Başla" — bilerek gorselin sag-alt
+                kosesinde, her ekran boyutunda (navbar'da AYRICA yok, bkz.
+                site-header.tsx). */}
+            <span className="btn-gold-comet absolute right-5 bottom-5 inline-flex">
+              <Link
+                href="/kayit-ol"
+                className="inline-flex items-center justify-center rounded-full bg-marble-dark px-6 py-3 text-sm font-semibold text-cream shadow-[0_8px_24px_-8px_rgba(28,32,25,0.5)] transition-transform hover:scale-[1.03] hover:bg-marble-dark-2"
+              >
+                Ücretsiz Başla
+              </Link>
+            </span>
+          </div>
         </div>
       </div>
     </section>
