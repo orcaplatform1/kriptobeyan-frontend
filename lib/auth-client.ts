@@ -128,3 +128,99 @@ export function emailFromAccessToken(token: string): string | null {
     return null;
   }
 }
+
+async function refreshAccessToken(): Promise<boolean> {
+  const refreshToken = getRefreshToken();
+  if (!refreshToken) return false;
+  try {
+    const tokens = await apiPost<TokenPair>("/auth/refresh", { refreshToken });
+    saveTokens(tokens);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+// Ayni anda birden fazla dashboard cagrisi 401 alirsa hepsi tek bir
+// refresh'i paylassin, her biri kendi refresh isteğini atmasin.
+let pendingRefresh: Promise<boolean> | null = null;
+
+async function authFetch(path: string): Promise<Response> {
+  const token = getAccessToken();
+  if (!token) throw new ApiError("Oturum bulunamadı, tekrar giriş yap.", 401);
+
+  const res = await fetch(`/api${path}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (res.status !== 401) return res;
+
+  if (!pendingRefresh) {
+    pendingRefresh = refreshAccessToken().finally(() => {
+      pendingRefresh = null;
+    });
+  }
+  const refreshed = await pendingRefresh;
+  if (!refreshed) {
+    clearTokens();
+    throw new ApiError("Oturum süresi doldu, tekrar giriş yap.", 401);
+  }
+
+  return fetch(`/api${path}`, {
+    headers: { Authorization: `Bearer ${getAccessToken()}` },
+  });
+}
+
+async function authGet<T>(path: string): Promise<T> {
+  const res = await authFetch(path);
+  if (!res.ok) {
+    throw new ApiError(await parseErrorMessage(res), res.status);
+  }
+  return res.json();
+}
+
+export interface DashboardOverview {
+  taxYear: number;
+  isDraft: boolean;
+  totalRealizedGainTRY: number;
+  totalRealizedLossTRY: number;
+  netCapitalGainTRY: number;
+  occasionalIncomeTRY: number;
+  estimatedTaxableAmountTRY: number;
+  capitalGainsExemption: {
+    used: number;
+    total: number | null;
+    usedPercent: number;
+  };
+  occasionalIncomeExemption: {
+    used: number;
+    total: number | null;
+    usedPercent: number;
+  };
+  calculatedAt: string | null;
+}
+
+export interface DashboardPosition {
+  asset: string;
+  quantity: number;
+  costBasisTRY: number;
+  currentValueTRY: number | null;
+  unrealizedPnlTRY: number | null;
+}
+
+export interface DashboardSources {
+  connections: { id: string; provider: string; label: string | null }[];
+  wallets: { id: string; chain: string; label: string | null }[];
+  csvImports: { id: string; exchangeName: string }[];
+}
+
+export async function getDashboardOverview(taxYear: number) {
+  return authGet<DashboardOverview>(`/dashboard/overview?taxYear=${taxYear}`);
+}
+
+export async function getDashboardPositions() {
+  return authGet<DashboardPosition[]>("/dashboard/positions");
+}
+
+export async function getDashboardSources() {
+  return authGet<DashboardSources>("/dashboard/sources");
+}
