@@ -90,7 +90,7 @@ export function SiteHeader() {
           </motion.span>
         </Link>
 
-        <nav className="hidden items-center gap-8 md:flex">
+        <nav className="hidden items-center gap-8 lg:flex">
           {navLinks.map((link) => (
             <Link
               key={link.href}
@@ -137,7 +137,7 @@ export function SiteHeader() {
             onClick={() => setMenuOpen((v) => !v)}
             aria-label={menuOpen ? "Menüyü kapat" : "Menüyü aç"}
             aria-expanded={menuOpen}
-            className="flex h-9 w-9 items-center justify-center rounded-full border border-gold/25 text-ink transition-colors hover:border-gold/50 md:hidden"
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-gold/25 text-ink transition-colors hover:border-gold/50 lg:hidden"
           >
             <span className="relative flex h-4 w-4 flex-col items-center justify-center">
               <span
@@ -165,14 +165,14 @@ export function SiteHeader() {
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.2 }}
                   onClick={() => setMenuOpen(false)}
-                  className="fixed inset-0 z-40 bg-ink/40 md:hidden"
+                  className="fixed inset-0 z-40 bg-ink/40 lg:hidden"
                 />
                 <motion.div
                   initial={{ x: "100%" }}
                   animate={{ x: 0 }}
                   exit={{ x: "100%" }}
                   transition={{ type: "spring", stiffness: 320, damping: 34 }}
-                  className="fixed inset-y-0 right-0 z-50 flex w-[82vw] max-w-[320px] flex-col overflow-y-auto border-l border-gold/15 bg-cream px-6 py-5 shadow-2xl md:hidden"
+                  className="fixed inset-y-0 right-0 z-50 flex w-[82vw] max-w-[320px] flex-col overflow-y-auto border-l border-gold/15 bg-cream px-6 py-5 shadow-2xl lg:hidden"
                 >
                   <div className="flex items-center justify-between">
                     <span className="font-serif text-lg font-semibold text-ink">Menü</span>
