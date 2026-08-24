@@ -9,6 +9,8 @@ const STATIC_ROUTES: { path: string; priority: number; changeFrequency: Metadata
   { path: "/sss", priority: 0.7, changeFrequency: "monthly" },
   { path: "/iletisim", priority: 0.5, changeFrequency: "yearly" },
   { path: "/guvenlik", priority: 0.6, changeFrequency: "monthly" },
+  { path: "/guclendiriciler", priority: 0.4, changeFrequency: "monthly" },
+  { path: "/nasil-calisir", priority: 0.6, changeFrequency: "monthly" },
   { path: "/sorumluluk-reddi", priority: 0.5, changeFrequency: "yearly" },
   { path: "/gizlilik-politikasi", priority: 0.3, changeFrequency: "yearly" },
   { path: "/kvkk-aydinlatma-metni", priority: 0.3, changeFrequency: "yearly" },

@@ -305,6 +305,31 @@ export async function getDashboardSources() {
   return authGet<DashboardSources>("/dashboard/sources");
 }
 
+// --- Yapay Zeka Kontrolörü (rapor anomali kontrolü) ---
+
+export interface AiAuditFinding {
+  type: string;
+  description: string;
+  createdAt: string;
+}
+
+export interface AiAuditOpinion {
+  severity: "info" | "warning" | "critical";
+  summary: string;
+  recommendations: string[];
+}
+
+export interface AiAuditResult {
+  status: "clean" | "issues";
+  findings: AiAuditFinding[];
+  ai: AiAuditOpinion | null;
+  aiConfigured: boolean;
+}
+
+export async function getAiAudit(taxYear: number) {
+  return authGet<AiAuditResult>(`/ai-audit/${taxYear}`);
+}
+
 // --- Mali müşavir paneli ---
 
 export type AccountantClientStatus = "PENDING" | "ACTIVE" | "REMOVED";

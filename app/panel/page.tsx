@@ -18,6 +18,7 @@ import {
 } from "@/lib/auth-client";
 import { SourceConnections } from "@/components/source-connections";
 import { CustomSelect } from "@/components/custom-select";
+import { AiAuditBox } from "@/components/ai-audit-box";
 
 const CURRENT_YEAR = new Date().getFullYear();
 const SELECTABLE_YEARS = [CURRENT_YEAR, CURRENT_YEAR - 1, CURRENT_YEAR - 2];
@@ -280,6 +281,8 @@ export default function PanelPage() {
                 />
               </div>
             </div>
+
+            <AiAuditBox taxYear={taxYear} />
 
             <div className="mt-14">
               <h2 className="font-serif text-xl font-semibold text-ink">

@@ -17,7 +17,7 @@ const steps = [
   {
     n: "04",
     title: "Taslak rapor al",
-    desc: "Hesaplama tamamlandığında PDF ve Excel formatında taslak bir beyan raporu indirebilirsin. Dilersen aynı raporu tek bir paylaşım linkiyle doğrudan mali müşavirine gönderip inceletebilirsin — ayrıca dosya e-postalaşmana gerek kalmaz.",
+    desc: "Hesaplama tamamlandığında PDF ve Excel formatında taslak bir beyan raporu indirebilirsin. Dilersen aynı raporu tek bir paylaşım linkiyle doğrudan mali müşavirine gönderip inceletebilirsin — ayrıca dosya e-postalaşmana gerek kalmaz. Not: rapor ekranında ayrıca bir \"Yapay Zeka Kontrolörü\" kutusu görürsün — verinde eksik/tutarsız bir nokta varsa bunu sade bir dille özetler (bkz. detaylı anlatım).",
   },
 ];
 

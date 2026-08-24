@@ -31,6 +31,7 @@ const PAGE_META: Record<string, { label: string; group: string }> = {
   "/nasil-calisir": { label: "Nasıl Çalışır", group: "Ürün" },
   "/fiyatlandirma": { label: "Fiyatlandırma", group: "Ürün" },
   "/guvenlik": { label: "Güvenlik", group: "Ürün" },
+  "/guclendiriciler": { label: "Güçlendiricilerimiz", group: "Ürün" },
   "/hakkimizda": { label: "Hakkımızda", group: "Şirket" },
   "/sss": { label: "Sık Sorulan Sorular", group: "Şirket" },
   "/iletisim": { label: "İletişim", group: "Şirket" },

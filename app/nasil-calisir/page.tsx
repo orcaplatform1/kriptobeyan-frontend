@@ -162,6 +162,40 @@ export default function NasilCalisirPage() {
         <a href="/sorumluluk-reddi">Sorumluluk Reddi</a>).
       </p>
 
+      <h3>Yapay Zeka Kontrolörü</h3>
+      <p>
+        Panelde, rapor özetinizin hemen altında bir &quot;Yapay Zeka
+        Kontrolörü&quot; kutusu bulunur. Bu kutu şöyle çalışır:
+      </p>
+      <ul>
+        <li>
+          Sistem önce tamamen <strong>deterministik/kural tabanlı</strong>{" "}
+          kontroller çalıştırır — eksik fiyat verisi yüzünden 0 maliyetle
+          işlenmiş bir alım, negatif bakiyeye yol açan bir işlem sırası veya
+          ilgili yıl için henüz tanımlanmamış bir istisna tutarı gibi veri
+          kalitesi sorunlarını tarar. Bu taramanın sonucu, hesaplamanın
+          kendisiyle aynı yerde (ReconciliationFlag olarak) üretilir.
+        </li>
+        <li>
+          Herhangi bir sorun bulunursa, Claude (Anthropic) bu bulguları
+          sade bir Türkçeyle özetler ve ne yapmanız gerektiğine dair somut
+          öneriler sunar (ör. &quot;eksik cüzdanını ekle&quot;, &quot;şu
+          işlemi gözden geçir&quot;).
+        </li>
+        <li>
+          Herhangi bir sorun bulunmazsa kutu doğrudan &quot;veri
+          kalitesinde bir sorun bulunamadı&quot; der — bu durumda yapay
+          zekaya hiç başvurulmaz.
+        </li>
+      </ul>
+      <p>
+        Önemli bir sınır: Yapay Zeka Kontrolörü, vergi hesabınızın
+        matematiksel doğruluğunu <strong>denetlemez</strong> — FIFO
+        hesaplaması tamamen deterministik kod tarafıyla yapılır. Kontrolörün
+        tek işi, önceden kural tabanlı olarak tespit edilmiş veri kalitesi
+        sinyallerini sizin için yorumlamaktır.
+      </p>
+
       <h2>Güvenlik özeti</h2>
       <p>
         API anahtarlarınız yalnızca salt-okunur olarak kabul edilir, AES-256-GCM

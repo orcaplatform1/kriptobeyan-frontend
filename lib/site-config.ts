@@ -48,6 +48,7 @@ export const FOOTER_LINK_GROUPS: { title: string; links: FooterLink[] }[] = [
       { href: "/fiyatlandirma", label: "Fiyatlandırma" },
       { href: "/#muhasebeciler", label: "Mali Müşavirler İçin" },
       { href: "/guvenlik", label: "Güvenlik" },
+      { href: "/guclendiriciler", label: "Güçlendiricilerimiz" },
     ],
   },
   {
