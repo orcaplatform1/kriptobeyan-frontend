@@ -11,9 +11,9 @@ export function HeroSection() {
   const { settled } = useScaleAnimation();
 
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-parchment to-cream">
-      <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-10 px-6 py-12 lg:grid-cols-2 lg:gap-8 lg:py-20 lg:px-10">
-        <div className="order-2 lg:order-1">
+    <section className="relative flex min-h-[100dvh] items-center overflow-hidden bg-gradient-to-b from-parchment to-cream">
+      <div className="grid w-full grid-cols-1 items-center gap-10 px-6 py-24 sm:px-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-6 lg:py-20 lg:pl-16 lg:pr-0 xl:pl-24">
+        <div className="order-2 lg:order-1 lg:max-w-xl">
           <motion.p
             initial={{ opacity: 0, y: 14 }}
             animate={settled ? { opacity: 1, y: 0 } : { opacity: 0, y: 14 }}
@@ -27,7 +27,7 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 18 }}
             animate={settled ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
             transition={{ ...revealTransition, delay: 0.08 }}
-            className="font-serif text-4xl leading-[1.1] font-semibold text-ink sm:text-5xl lg:text-[3.4rem]"
+            className="font-serif text-4xl leading-[1.1] font-semibold text-ink sm:text-5xl lg:text-[3.4rem] xl:text-[3.9rem]"
           >
             Kripto kazancınız ile vergi arasındaki
             <span className="text-gold-deep"> dengeyi</span> siz kurmayın.
@@ -76,7 +76,7 @@ export function HeroSection() {
         </div>
 
         <div className="order-1 lg:order-2">
-          <div className="mx-auto w-[78%] sm:w-[62%] lg:w-full">
+          <div className="mx-auto w-[78%] sm:w-[62%] lg:ml-auto lg:w-full xl:w-[112%] 2xl:w-[128%]">
             <HeroScale />
           </div>
         </div>
