@@ -209,13 +209,22 @@ export function SiteHeader() {
                         </Link>
                       </>
                     ) : (
-                      <Link
-                        href="/giris"
-                        onClick={() => setMenuOpen(false)}
-                        className="rounded-full bg-ink px-4 py-2.5 text-center text-sm font-semibold text-cream transition-colors hover:bg-ink/85"
-                      >
-                        Giriş Yap
-                      </Link>
+                      <>
+                        <Link
+                          href="/giris"
+                          onClick={() => setMenuOpen(false)}
+                          className="rounded-full bg-ink px-4 py-2.5 text-center text-sm font-semibold text-cream transition-colors hover:bg-ink/85"
+                        >
+                          Giriş Yap
+                        </Link>
+                        <Link
+                          href="/kayit-ol"
+                          onClick={() => setMenuOpen(false)}
+                          className="rounded-full bg-ink px-4 py-2.5 text-center text-sm font-semibold text-cream transition-colors hover:bg-ink/85"
+                        >
+                          Kayıt Ol
+                        </Link>
+                      </>
                     )}
                   </div>
                 </motion.div>

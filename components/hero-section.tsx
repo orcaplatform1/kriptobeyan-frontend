@@ -12,7 +12,7 @@ export function HeroSection() {
 
   return (
     <section className="relative flex items-stretch overflow-hidden bg-gradient-to-b from-parchment to-cream lg:min-h-[100dvh]">
-      <div className="grid w-full grid-cols-1 gap-10 px-6 py-6 sm:px-10 sm:py-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-stretch lg:gap-6 lg:py-0 lg:pl-16 lg:pr-0 xl:pl-24">
+      <div className="grid w-full grid-cols-1 gap-10 px-6 pt-0 pb-6 sm:px-10 sm:pb-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-stretch lg:gap-6 lg:py-0 lg:pl-16 lg:pr-0 xl:pl-24">
         <div className="order-2 lg:order-1 lg:flex lg:min-w-0 lg:max-w-xl lg:flex-col lg:justify-center">
           <motion.p
             initial={{ opacity: 0, y: 14 }}

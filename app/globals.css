@@ -125,9 +125,15 @@ body {
    kaynak sirasi daha sonra oldugu icin "hidden"i eziyordu — mobilde
    gizlenmesi gereken bir buton hep gorunur kaliyordu. display, JSX'te
    kullanan tarafindan ayrica bir Tailwind utility'siyle (inline-flex,
-   hidden sm:inline-flex, vb.) verilmeli. */
+   hidden sm:inline-flex, vb.) verilmeli. AYNI SEBEPLE position DE BURADA
+   set edilmiyor — ::before'un position:absolute ile konumlanabilmesi icin
+   bu elemanin relative/absolute bir positioning context olmasi sart, ama
+   "position: relative" burada sabit yazilsaydi, hero'daki rozet gibi
+   "absolute" utility'siyle kullanilan yerlerde AYNI display hatasi
+   tekrarlanirdi (relative, absolute utility'sini cascade sirasinda ezerdi
+   — rozet gorselin disina, sol-alta kayardi, bkz. ekran goruntusu). Her
+   kullanim kendi position utility'sini (relative veya absolute) taşımalı. */
 .btn-gold-comet {
-  position: relative;
   border-radius: 999px;
   padding: 2px;
   overflow: hidden;

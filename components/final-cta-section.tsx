@@ -11,7 +11,7 @@ export function FinalCtaSection() {
           Hesaplarınızı bağlayın, ilk taslak vergi raporunuzu birkaç dakikada
           görün.
         </p>
-        <span className="btn-gold-comet mt-8 inline-flex">
+        <span className="btn-gold-comet relative mt-8 inline-flex">
           <Link
             href="/kayit-ol"
             className="inline-flex items-center justify-center rounded-full bg-marble-dark px-8 py-4 text-base font-semibold text-cream shadow-[0_8px_24px_-8px_rgba(28,32,25,0.45)] transition-transform hover:scale-[1.02] hover:bg-marble-dark-2"
