@@ -14,8 +14,11 @@ import {
 } from "@/lib/auth-client";
 import { countryCodes } from "@/lib/data/country-codes";
 import { LegalModal, type LegalDoc } from "@/components/legal-modal";
+import { PasswordInput } from "@/components/password-input";
 
-const MIN_PASSWORD_LENGTH = 10;
+const MIN_PASSWORD_LENGTH = 6;
+const USERNAME_MIN_LENGTH = 4;
+const USERNAME_MAX_LENGTH = 16;
 
 function KayitOlContent() {
   const router = useRouter();
@@ -42,12 +45,20 @@ function KayitOlContent() {
     e.preventDefault();
     setError(null);
 
+    if (username.length < USERNAME_MIN_LENGTH || username.length > USERNAME_MAX_LENGTH) {
+      setError(`Kullanıcı adı ${USERNAME_MIN_LENGTH}-${USERNAME_MAX_LENGTH} karakter olmalı.`);
+      return;
+    }
     if (password.length < MIN_PASSWORD_LENGTH) {
       setError(`Parola en az ${MIN_PASSWORD_LENGTH} karakter olmalı.`);
       return;
     }
     if (password !== passwordConfirm) {
       setError("Parolalar birbiriyle uyuşmuyor.");
+      return;
+    }
+    if (addPhone && phoneNumber && !/^\d{10}$/.test(phoneNumber)) {
+      setError("Telefon numarası ülke kodundan sonra tam 10 rakam olmalı.");
       return;
     }
     if (!acceptedTerms) {
@@ -162,8 +173,8 @@ function KayitOlContent() {
             <input
               id="username"
               required
-              minLength={3}
-              maxLength={24}
+              minLength={USERNAME_MIN_LENGTH}
+              maxLength={USERNAME_MAX_LENGTH}
               pattern="[a-zA-Z0-9_]+"
               autoComplete="username"
               value={username}
@@ -249,9 +260,8 @@ function KayitOlContent() {
             >
               Parola
             </label>
-            <input
+            <PasswordInput
               id="password"
-              type="password"
               required
               minLength={MIN_PASSWORD_LENGTH}
               autoComplete="new-password"
@@ -270,9 +280,8 @@ function KayitOlContent() {
             >
               Parola (tekrar)
             </label>
-            <input
+            <PasswordInput
               id="passwordConfirm"
-              type="password"
               required
               autoComplete="new-password"
               value={passwordConfirm}

@@ -70,10 +70,10 @@ export function HeroSection() {
           <div className="relative w-full min-w-0 lg:h-full lg:w-auto">
             <HeroScale />
 
-            {/* Hero'daki TEK "Ücretsiz Başla" — bilerek gorselin sag-alt
+            {/* Hero'daki TEK "Ücretsiz Başla" — bilerek gorselin sol-alt
                 kosesinde, her ekran boyutunda (navbar'da AYRICA yok, bkz.
                 site-header.tsx). */}
-            <span className="btn-gold-comet absolute right-5 bottom-5 inline-flex">
+            <span className="btn-gold-comet absolute bottom-5 left-5 inline-flex">
               <Link
                 href="/kayit-ol"
                 className="inline-flex items-center justify-center rounded-full bg-marble-dark px-6 py-3 text-sm font-semibold text-cream shadow-[0_8px_24px_-8px_rgba(28,32,25,0.5)] transition-transform hover:scale-[1.03] hover:bg-marble-dark-2"

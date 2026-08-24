@@ -12,6 +12,7 @@ import {
   type LoginMethod,
 } from "@/lib/auth-client";
 import { countryCodes } from "@/lib/data/country-codes";
+import { PasswordInput } from "@/components/password-input";
 
 const METHODS: { value: LoginMethod; label: string }[] = [
   { value: "username", label: "Kullanıcı Adı" },
@@ -160,9 +161,8 @@ function GirisContent() {
                 Şifremi unuttum
               </Link>
             </div>
-            <input
+            <PasswordInput
               id="password"
-              type="password"
               required
               autoComplete="current-password"
               disabled={needsTwoFactor}

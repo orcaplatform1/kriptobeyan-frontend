@@ -4,8 +4,9 @@ import { Suspense, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ApiError, requestPasswordReset, resetPassword } from "@/lib/auth-client";
+import { PasswordInput } from "@/components/password-input";
 
-const MIN_PASSWORD_LENGTH = 10;
+const MIN_PASSWORD_LENGTH = 6;
 
 function RequestResetForm() {
   const [email, setEmail] = useState("");
@@ -164,9 +165,8 @@ function SetNewPasswordForm({ token }: { token: string }) {
           >
             Yeni parola
           </label>
-          <input
+          <PasswordInput
             id="newPassword"
-            type="password"
             required
             minLength={MIN_PASSWORD_LENGTH}
             autoComplete="new-password"

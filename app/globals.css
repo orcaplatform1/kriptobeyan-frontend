@@ -13,6 +13,17 @@
   --color-gold-deep: #7c5a26;
 }
 
+/* Native form kontrolleri (select/checkbox/radio/range) tarayicinin
+   varsayilan mavi vurgu rengiyle degil, sitenin altin paletiyle acilsin —
+   tek tek her elemana accent-gold-deep utility'si eklemek yerine site
+   genelinde tek yerden. */
+select,
+input[type="checkbox"],
+input[type="radio"],
+input[type="range"] {
+  accent-color: var(--color-gold-deep);
+}
+
 @theme inline {
   --color-cream: var(--color-cream);
   --color-cream-deep: var(--color-cream-deep);
