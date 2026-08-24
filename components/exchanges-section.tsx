@@ -1,9 +1,25 @@
 import { LIVE_EXCHANGES, UPCOMING_EXCHANGES } from "@/lib/exchanges";
+import { EXCHANGE_LOGOS } from "@/lib/exchange-logos";
 
-// Gercek borsa marka logolari (SVG/PNG) henuz eklenmedi — su an her etiketin
-// basina, borsa adinin ilk harfini tasiyan sade bir rozet konuyor. Gercek
-// logolar temin edilince bu rozetin yerine <Image> ile degistirilebilir.
+// Binance/OKX/KuCoin/Coinbase icin Simple Icons'tan (CC0 lisans, gercek
+// marka SVG'si) gelen ikon var. Digerleri (Bybit, Kraken, BTCTurk, Paribu,
+// Bitexen, ICRYPEX, Bitci, Gate.io, Bitget, HTX, MEXC, Crypto.com) icin
+// lisansli/dogrulanmis bir kaynak yok — o borsalar bas harf rozetine duser.
 function ExchangeBadge({ name, dim }: { name: string; dim?: boolean }) {
+  const logo = EXCHANGE_LOGOS[name];
+  if (logo) {
+    return (
+      <svg
+        role="img"
+        aria-hidden
+        viewBox={logo.viewBox}
+        className={`h-4 w-4 shrink-0 ${dim ? "opacity-50" : ""}`}
+        fill={logo.color}
+      >
+        <path d={logo.path} />
+      </svg>
+    );
+  }
   return (
     <span
       aria-hidden
