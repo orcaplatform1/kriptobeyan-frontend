@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import {
   ApiError,
   emailFromAccessToken,
@@ -14,6 +15,7 @@ import {
   type DashboardPosition,
   type DashboardSources,
 } from "@/lib/auth-client";
+import { SourceConnections } from "@/components/source-connections";
 
 const CURRENT_YEAR = new Date().getFullYear();
 const SELECTABLE_YEARS = [CURRENT_YEAR, CURRENT_YEAR - 1, CURRENT_YEAR - 2];
@@ -217,7 +219,7 @@ export default function PanelPage() {
               <div className="mt-10 rounded-xl border border-gold/25 bg-parchment px-5 py-4 text-sm text-ink-soft">
                 Henüz bir borsa hesabı, cüzdan veya CSV içe aktarımı
                 bağlamadın — bu yüzden aşağıdaki rakamlar sıfır görünüyor.
-                Kaynak bağlama akışı yakında burada olacak.
+                Aşağıdan bir kaynak bağlayabilirsin.
               </div>
             )}
 
@@ -327,28 +329,20 @@ export default function PanelPage() {
             </div>
 
             <div className="mt-14">
-              <h2 className="font-serif text-xl font-semibold text-ink">
-                Bağlı kaynaklar
-              </h2>
-              {hasSources ? (
-                <ul className="mt-4 space-y-2 text-sm text-ink-soft">
-                  {sources!.connections.map((c) => (
-                    <li key={c.id}>
-                      Borsa — {c.label ?? c.provider} ({c.provider})
-                    </li>
-                  ))}
-                  {sources!.wallets.map((w) => (
-                    <li key={w.id}>
-                      Cüzdan — {w.label ?? w.chain} ({w.chain})
-                    </li>
-                  ))}
-                  {sources!.csvImports.map((c) => (
-                    <li key={c.id}>CSV içe aktarım — {c.exchangeName}</li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="mt-4 text-ink-soft">Henüz kaynak bağlanmadı.</p>
-              )}
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <h2 className="font-serif text-xl font-semibold text-ink">
+                  Kaynak bağla
+                </h2>
+                <Link
+                  href="/panel/abonelik"
+                  className="text-sm font-semibold text-gold-deep hover:underline"
+                >
+                  Abonelik ve ödemeler →
+                </Link>
+              </div>
+              <div className="mt-4">
+                <SourceConnections onSourcesChanged={() => loadDashboard(taxYear)} />
+              </div>
             </div>
           </>
         )}

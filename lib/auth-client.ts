@@ -1,5 +1,8 @@
 "use client";
 
+export type { Plan } from "./api";
+import type { Plan } from "./api";
+
 const ACCESS_TOKEN_KEY = "kb_access_token";
 const REFRESH_TOKEN_KEY = "kb_refresh_token";
 
@@ -74,25 +77,29 @@ async function apiPost<T>(path: string, data: unknown): Promise<T> {
 
 export type UserRole = "INDIVIDUAL" | "ACCOUNTANT";
 
-export async function registerAccount(
-  email: string,
-  password: string,
-  role?: UserRole,
-) {
-  return apiPost<{ id: string; email: string }>("/auth/register", {
-    email,
-    password,
-    role,
-  });
+export async function registerAccount(data: {
+  email: string;
+  username: string;
+  password: string;
+  fullName?: string;
+  phone?: string;
+  phoneCountryCode?: string;
+  role?: UserRole;
+}) {
+  return apiPost<{ id: string; email: string }>("/auth/register", data);
 }
 
+export type LoginMethod = "username" | "email" | "phone";
+
 export async function login(
-  email: string,
+  identifier: string,
+  method: LoginMethod,
   password: string,
   totpCode?: string,
 ) {
   return apiPost<TokenPair | TwoFactorRequired>("/auth/login", {
-    email,
+    identifier,
+    method,
     password,
     totpCode,
   });
@@ -383,4 +390,323 @@ export async function adminUpdatePlan(
   }>,
 ) {
   return authRequest<AdminPlan>("PATCH", `/admin/plans/${id}`, data);
+}
+
+// --- Kaynak bağlama: borsa hesapları ---
+
+export type ExchangeProvider =
+  | "BINANCE"
+  | "BTCTURK"
+  | "PARIBU"
+  | "BITEXEN"
+  | "ICRYPEX"
+  | "BITCI"
+  | "BYBIT"
+  | "OKX"
+  | "COINBASE"
+  | "KRAKEN"
+  | "KUCOIN"
+  | "GATEIO"
+  | "BITGET"
+  | "HTX"
+  | "MEXC"
+  | "CRYPTOCOM";
+
+export const EXCHANGE_PROVIDER_LABELS: Record<ExchangeProvider, string> = {
+  BINANCE: "Binance",
+  BTCTURK: "BTCTurk",
+  PARIBU: "Paribu",
+  BITEXEN: "Bitexen",
+  ICRYPEX: "ICRYPEX",
+  BITCI: "Bitci",
+  BYBIT: "Bybit",
+  OKX: "OKX",
+  COINBASE: "Coinbase",
+  KRAKEN: "Kraken",
+  KUCOIN: "KuCoin",
+  GATEIO: "Gate.io",
+  BITGET: "Bitget",
+  HTX: "HTX",
+  MEXC: "MEXC",
+  CRYPTOCOM: "Crypto.com",
+};
+
+export interface ExchangeConnection {
+  id: string;
+  provider: ExchangeProvider;
+  label: string;
+  apiKeyMasked: string;
+  confirmedReadOnly: boolean;
+  verifiedPermissionLevel: string;
+  verifiedAt: string | null;
+  syncStatus: string;
+  lastSyncedAt: string | null;
+  lastSyncError: string | null;
+  createdAt: string;
+}
+
+export async function listExchangeConnections() {
+  return authRequest<ExchangeConnection[]>("GET", "/exchange-connections");
+}
+
+export async function createExchangeConnection(data: {
+  provider: ExchangeProvider;
+  label: string;
+  apiKey: string;
+  apiSecret: string;
+  passphrase?: string;
+  confirmedReadOnly: boolean;
+}) {
+  return authRequest<ExchangeConnection>(
+    "POST",
+    "/exchange-connections",
+    data,
+  );
+}
+
+export async function verifyExchangeConnection(id: string) {
+  return authRequest<ExchangeConnection>(
+    "POST",
+    `/exchange-connections/${id}/verify-permission`,
+  );
+}
+
+export async function syncExchangeConnection(id: string) {
+  return authRequest<ExchangeConnection>(
+    "POST",
+    `/exchange-connections/${id}/sync`,
+  );
+}
+
+export async function removeExchangeConnection(id: string) {
+  return authRequest<void>("DELETE", `/exchange-connections/${id}`);
+}
+
+// --- Kaynak bağlama: cüzdan adresleri ---
+
+export type WalletChain = "ETHEREUM" | "BSC" | "BITCOIN";
+
+export const WALLET_CHAIN_LABELS: Record<WalletChain, string> = {
+  ETHEREUM: "Ethereum",
+  BSC: "BNB Smart Chain",
+  BITCOIN: "Bitcoin",
+};
+
+export interface WalletAddress {
+  id: string;
+  chain: WalletChain;
+  address: string;
+  label: string | null;
+  syncStatus: string;
+  lastSyncedAt: string | null;
+  lastSyncError: string | null;
+  createdAt: string;
+}
+
+export async function listWalletAddresses() {
+  return authRequest<WalletAddress[]>("GET", "/wallet-addresses");
+}
+
+export async function addWalletAddress(data: {
+  chain: WalletChain;
+  address: string;
+  label?: string;
+}) {
+  return authRequest<WalletAddress>("POST", "/wallet-addresses", data);
+}
+
+export async function syncWalletAddress(id: string) {
+  return authRequest<WalletAddress>("POST", `/wallet-addresses/${id}/sync`);
+}
+
+export async function removeWalletAddress(id: string) {
+  return authRequest<void>("DELETE", `/wallet-addresses/${id}`);
+}
+
+// --- Çok parçalı (multipart) yükleme yardımcısı — CSV içe aktarım ve
+// ödeme dekontu/işlem kanıtı için ortak. authRequest'teki refresh-on-401
+// desenini FormData gövdesiyle tekrar eder. ---
+
+async function authUpload<T>(path: string, form: FormData): Promise<T> {
+  let token = getAccessToken();
+  if (!token) throw new ApiError("Oturum bulunamadı, tekrar giriş yap.", 401);
+
+  const doUpload = (t: string) =>
+    fetch(`/api${path}`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${t}` },
+      body: form,
+    });
+
+  let res = await doUpload(token);
+
+  if (res.status === 401) {
+    if (!pendingRefresh) {
+      pendingRefresh = refreshAccessToken().finally(() => {
+        pendingRefresh = null;
+      });
+    }
+    const refreshed = await pendingRefresh;
+    if (!refreshed) {
+      clearTokens();
+      throw new ApiError("Oturum süresi doldu, tekrar giriş yap.", 401);
+    }
+    token = getAccessToken()!;
+    res = await doUpload(token);
+  }
+
+  if (!res.ok) {
+    throw new ApiError(await parseErrorMessage(res), res.status);
+  }
+  return res.json();
+}
+
+export async function importCsv(exchangeName: string, file: File) {
+  const form = new FormData();
+  form.append("exchangeName", exchangeName);
+  form.append("file", file);
+  return authUpload<{ id: string; exchangeName: string }>(
+    "/csv-imports",
+    form,
+  );
+}
+
+// --- Abonelik / ödeme ---
+
+// Sunucu bileşenlerinde lib/api.ts'teki getPlans kullanılır (revalidate
+// cache'li); bu, panel gibi client bileşenlerinden giriş yapmış kullanıcının
+// kendi token'ıyla planları çekmesi için (aynı Plan şekli).
+export async function getPlansAuthed(type?: UserRole) {
+  return authRequest<Plan[]>(
+    "GET",
+    `/subscription/plans${type ? `?type=${type}` : ""}`,
+  );
+}
+
+export interface UsageSummary {
+  planName: string | null;
+  endDate: string | null;
+  activePlan: Plan | null;
+  transactions?: { used: number; limit: number | null };
+  clients?: { used: number; limit: number | null };
+}
+
+export async function getMyUsage() {
+  return authRequest<UsageSummary>("GET", "/subscription/me");
+}
+
+export type PaymentMethod = "CARD" | "BANK_TRANSFER" | "CRYPTO";
+export type CryptoProvider = "BINANCE" | "BYBIT" | "OKX";
+export type CryptoAsset = "BTC" | "ETH" | "USDT";
+export type PaymentStatus = "PENDING" | "COMPLETED" | "FAILED" | "REJECTED";
+
+export const CRYPTO_PROVIDER_LABELS: Record<CryptoProvider, string> = {
+  BINANCE: "Binance Pay",
+  BYBIT: "Bybit Pay",
+  OKX: "OKX",
+};
+
+export interface Payment {
+  id: string;
+  planId: string;
+  plan: Plan;
+  amount: string;
+  currency: string;
+  method: PaymentMethod;
+  cryptoProvider: CryptoProvider | null;
+  cryptoAsset: CryptoAsset | null;
+  cryptoAmountLocked: string | null;
+  cryptoRateTRY: string | null;
+  receiptUrl: string | null;
+  status: PaymentStatus;
+  isUpgrade: boolean;
+  createdAt: string;
+}
+
+export async function uploadPaymentReceipt(file: File) {
+  const form = new FormData();
+  form.append("file", file);
+  return authUpload<{ key: string }>("/subscription/payments/receipt", form);
+}
+
+// Odeme olusturulduktan SONRA (kripto akisinda: kilitli tutar/adres
+// gorulup para gonderildikten sonra) kanit eklemek icin.
+export async function attachPaymentReceipt(paymentId: string, file: File) {
+  const form = new FormData();
+  form.append("file", file);
+  return authUpload<Payment>(
+    `/subscription/payments/${paymentId}/receipt`,
+    form,
+  );
+}
+
+export async function createPayment(data: {
+  planId: string;
+  method: PaymentMethod;
+  cryptoProvider?: CryptoProvider;
+  cryptoAsset?: CryptoAsset;
+  receiptUrl?: string;
+}) {
+  return authRequest<Payment & { cryptoWalletAddress: string | null }>(
+    "POST",
+    "/subscription/payments",
+    data,
+  );
+}
+
+export async function listMyPayments() {
+  return authRequest<Payment[]>("GET", "/subscription/payments");
+}
+
+export function paymentReceiptUrl(paymentId: string) {
+  return `/api/subscription/payments/${paymentId}/receipt`;
+}
+
+// --- Admin: ödeme onayı ---
+
+export interface AdminPayment extends Payment {
+  user: { id: string; email: string; role: UserRole };
+}
+
+export interface AdminPaymentList {
+  data: AdminPayment[];
+  pagination: { page: number; limit: number; total: number; totalPages: number };
+}
+
+export async function adminListPayments(status?: PaymentStatus, page = 1) {
+  const qs = new URLSearchParams({ page: String(page) });
+  if (status) qs.set("status", status);
+  return authRequest<AdminPaymentList>(
+    "GET",
+    `/admin/payments?${qs.toString()}`,
+  );
+}
+
+export interface SalesStatsRow {
+  period: string;
+  count: number;
+  revenue: number;
+  upgradeCount: number;
+  upgradeRevenue: number;
+}
+
+export interface SalesStats {
+  daily: SalesStatsRow[];
+  monthly: SalesStatsRow[];
+  yearly: SalesStatsRow[];
+}
+
+export async function adminGetSalesStats() {
+  return authRequest<SalesStats>("GET", "/admin/payments/stats");
+}
+
+export async function adminApprovePayment(id: string) {
+  return authRequest<Payment>(
+    "POST",
+    `/subscription/payments/${id}/mark-completed`,
+  );
+}
+
+export async function adminRejectPayment(id: string) {
+  return authRequest<Payment>("POST", `/subscription/payments/${id}/reject`);
 }

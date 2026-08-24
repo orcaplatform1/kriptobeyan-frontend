@@ -9,14 +9,24 @@ import {
   postLoginRedirectPath,
   roleFromAccessToken,
   saveTokens,
+  type LoginMethod,
 } from "@/lib/auth-client";
+import { countryCodes } from "@/lib/data/country-codes";
+
+const METHODS: { value: LoginMethod; label: string }[] = [
+  { value: "username", label: "Kullanıcı Adı" },
+  { value: "email", label: "E-posta" },
+  { value: "phone", label: "Telefon" },
+];
 
 function GirisContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirect = searchParams.get("redirect");
 
-  const [email, setEmail] = useState("");
+  const [method, setMethod] = useState<LoginMethod>("username");
+  const [identifier, setIdentifier] = useState("");
+  const [phoneCountryCode, setPhoneCountryCode] = useState("+90");
   const [password, setPassword] = useState("");
   const [totpCode, setTotpCode] = useState("");
   const [needsTwoFactor, setNeedsTwoFactor] = useState(false);
@@ -28,8 +38,11 @@ function GirisContent() {
     setError(null);
     setLoading(true);
     try {
+      const finalIdentifier =
+        method === "phone" ? `${phoneCountryCode}${identifier}` : identifier;
       const result = await login(
-        email,
+        finalIdentifier,
+        method,
         password,
         needsTwoFactor ? totpCode : undefined,
       );
@@ -66,23 +79,72 @@ function GirisContent() {
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-4" noValidate>
           <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-ink"
-            >
-              E-posta
-            </label>
-            <input
-              id="email"
-              type="email"
-              required
-              autoComplete="email"
-              disabled={needsTwoFactor}
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="mt-1.5 w-full rounded-lg border border-gold/25 bg-parchment px-4 py-2.5 text-ink outline-none transition-colors focus:border-gold disabled:opacity-60"
-            />
+            <span className="block text-sm font-medium text-ink">Giriş Yöntemi</span>
+            <div className="mt-1.5 grid grid-cols-3 gap-1 rounded-xl border border-gold/25 bg-parchment p-1">
+              {METHODS.map((m) => (
+                <button
+                  key={m.value}
+                  type="button"
+                  disabled={needsTwoFactor}
+                  onClick={() => {
+                    setMethod(m.value);
+                    setIdentifier("");
+                  }}
+                  className={`rounded-lg py-2 text-xs font-semibold transition-colors sm:text-sm ${
+                    method === m.value
+                      ? "bg-marble-dark text-cream"
+                      : "text-ink-soft hover:text-ink"
+                  } disabled:opacity-60`}
+                >
+                  {m.label}
+                </button>
+              ))}
+            </div>
           </div>
+
+          <div>
+            <label htmlFor="identifier" className="block text-sm font-medium text-ink">
+              {method === "username" ? "Kullanıcı Adı" : method === "email" ? "E-posta" : "Telefon"}
+            </label>
+            {method === "phone" ? (
+              <div className="mt-1.5 flex gap-2">
+                <select
+                  value={phoneCountryCode}
+                  onChange={(e) => setPhoneCountryCode(e.target.value)}
+                  disabled={needsTwoFactor}
+                  className="w-[100px] shrink-0 rounded-lg border border-gold/25 bg-parchment px-2 py-2.5 text-sm text-ink outline-none focus:border-gold disabled:opacity-60"
+                >
+                  {countryCodes.map((c) => (
+                    <option key={c.code} value={c.dialCode}>
+                      {c.flag} {c.dialCode}
+                    </option>
+                  ))}
+                </select>
+                <input
+                  id="identifier"
+                  inputMode="numeric"
+                  required
+                  maxLength={10}
+                  disabled={needsTwoFactor}
+                  value={identifier}
+                  onChange={(e) => setIdentifier(e.target.value.replace(/\D/g, ""))}
+                  className="w-full rounded-lg border border-gold/25 bg-parchment px-4 py-2.5 text-ink outline-none transition-colors focus:border-gold disabled:opacity-60"
+                />
+              </div>
+            ) : (
+              <input
+                id="identifier"
+                type={method === "email" ? "email" : "text"}
+                required
+                autoComplete={method === "email" ? "email" : "username"}
+                disabled={needsTwoFactor}
+                value={identifier}
+                onChange={(e) => setIdentifier(e.target.value)}
+                className="mt-1.5 w-full rounded-lg border border-gold/25 bg-parchment px-4 py-2.5 text-ink outline-none transition-colors focus:border-gold disabled:opacity-60"
+              />
+            )}
+          </div>
+
           <div>
             <div className="flex items-center justify-between">
               <label

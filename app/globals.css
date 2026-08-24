@@ -102,3 +102,56 @@ body {
   font-weight: 600;
   background: var(--color-parchment);
 }
+
+/* "Ücretsiz Başla" CTA'ları icin kenarda kayan "kuyruklu yıldız" (comet)
+   efekti — ORCA'daki .premium-glow-ring ile AYNI teknik (donen buyuk bir
+   conic-gradient halka, disina tasan kismi overflow:hidden ile kesiliyor,
+   goze sadece ince bir kenarlik seklinde donen bir isik seridi carpiyor),
+   sadece renk paleti mavi/mor yerine bu sitenin altin tonlarina (gold/
+   gold-light/gold-deep) uyarlandi. Halkanin donusu transform:rotate ile GPU
+   uzerinde, render maliyeti sabit bir kac piksellik pseudo-element'e sinirli
+   kaliyor (bkz. ORCA globals.css'teki ayni yorum). */
+@keyframes gold-comet-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+.btn-gold-comet {
+  position: relative;
+  display: inline-flex;
+  border-radius: 999px;
+  padding: 2px;
+  overflow: hidden;
+  isolation: isolate;
+  box-shadow: 0 0 18px -6px rgba(169, 128, 62, 0.4);
+}
+.btn-gold-comet::before {
+  content: "";
+  position: absolute;
+  inset: -100%;
+  background: conic-gradient(
+    from 0deg,
+    var(--color-gold-deep) 0%,
+    var(--color-gold-deep) 45%,
+    var(--color-gold) 60%,
+    #fff7e6 72%,
+    var(--color-gold-light) 80%,
+    var(--color-gold-deep) 92%,
+    var(--color-gold-deep) 100%
+  );
+  animation: gold-comet-spin 4.5s linear infinite;
+  will-change: transform;
+}
+.btn-gold-comet > * {
+  position: relative;
+  z-index: 1;
+  border-radius: inherit;
+}
+@media (prefers-reduced-motion: reduce) {
+  .btn-gold-comet::before {
+    animation: none;
+  }
+}

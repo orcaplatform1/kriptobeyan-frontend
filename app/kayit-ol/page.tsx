@@ -12,6 +12,8 @@ import {
   saveTokens,
   type UserRole,
 } from "@/lib/auth-client";
+import { countryCodes } from "@/lib/data/country-codes";
+import { LegalModal, type LegalDoc } from "@/components/legal-modal";
 
 const MIN_PASSWORD_LENGTH = 10;
 
@@ -19,13 +21,22 @@ function KayitOlContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirect = searchParams.get("redirect");
+  const [fullName, setFullName] = useState("");
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
+  const [addPhone, setAddPhone] = useState(false);
+  const [phoneCountryCode, setPhoneCountryCode] = useState("+90");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [role, setRole] = useState<UserRole>("INDIVIDUAL");
-  const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [termsRead, setTermsRead] = useState(false);
+  const [privacyRead, setPrivacyRead] = useState(false);
+  const [openDoc, setOpenDoc] = useState<LegalDoc | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  const acceptedTerms = termsRead && privacyRead;
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -40,17 +51,25 @@ function KayitOlContent() {
       return;
     }
     if (!acceptedTerms) {
-      setError("Devam etmek için Kullanım Şartları'nı kabul etmelisin.");
+      setError("Devam etmek için Kullanım Şartları ve Gizlilik Politikası'nı okuyup onaylamalısın.");
       return;
     }
 
     setLoading(true);
     try {
-      await registerAccount(email, password, role);
+      await registerAccount({
+        email,
+        username,
+        password,
+        role,
+        fullName: fullName || undefined,
+        phone: addPhone && phoneNumber ? `${phoneCountryCode}${phoneNumber}` : undefined,
+        phoneCountryCode: addPhone && phoneNumber ? phoneCountryCode : undefined,
+      });
       // Hesap dogrulama e-postasi beklemeden de giris yapilabiliyor
       // (bkz. auth.service.ts login — emailVerified kontrolu yok), bu
       // yuzden kayittan hemen sonra otomatik giris yapip panele yonlendiriyoruz.
-      const result = await login(email, password);
+      const result = await login(email, "email", password);
       if ("twoFactorRequired" in result) {
         router.push("/giris");
         return;
@@ -71,6 +90,12 @@ function KayitOlContent() {
     } finally {
       setLoading(false);
     }
+  }
+
+  function handleApproveDoc() {
+    if (openDoc === "terms") setTermsRead(true);
+    if (openDoc === "privacy") setPrivacyRead(true);
+    setOpenDoc(null);
   }
 
   return (
@@ -116,13 +141,55 @@ function KayitOlContent() {
               </button>
             </div>
           </div>
+
           <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-ink"
-            >
-              E-posta
+            <label htmlFor="fullName" className="block text-sm font-medium text-ink">
+              Ad Soyad
             </label>
+            <input
+              id="fullName"
+              autoComplete="name"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              className="mt-1.5 w-full rounded-lg border border-gold/25 bg-parchment px-4 py-2.5 text-ink outline-none transition-colors focus:border-gold"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="username" className="block text-sm font-medium text-ink">
+              Kullanıcı Adı
+            </label>
+            <input
+              id="username"
+              required
+              minLength={3}
+              maxLength={24}
+              pattern="[a-zA-Z0-9_]+"
+              autoComplete="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className="mt-1.5 w-full rounded-lg border border-gold/25 bg-parchment px-4 py-2.5 text-ink outline-none transition-colors focus:border-gold"
+            />
+            <p className="mt-1.5 text-xs text-ink-soft">
+              Sadece harf, rakam ve alt çizgi — girişte de kullanabilirsin.
+            </p>
+          </div>
+
+          <div>
+            <div className="flex items-center justify-between">
+              <label htmlFor="email" className="block text-sm font-medium text-ink">
+                E-posta
+              </label>
+              {!addPhone && (
+                <button
+                  type="button"
+                  onClick={() => setAddPhone(true)}
+                  className="text-xs font-semibold text-gold-deep hover:underline"
+                >
+                  + Telefon numarası ekle (opsiyonel)
+                </button>
+              )}
+            </div>
             <input
               id="email"
               type="email"
@@ -133,6 +200,48 @@ function KayitOlContent() {
               className="mt-1.5 w-full rounded-lg border border-gold/25 bg-parchment px-4 py-2.5 text-ink outline-none transition-colors focus:border-gold"
             />
           </div>
+
+          {addPhone && (
+            <div>
+              <div className="flex items-center justify-between">
+                <label htmlFor="phoneNumber" className="block text-sm font-medium text-ink">
+                  Telefon
+                </label>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAddPhone(false);
+                    setPhoneNumber("");
+                  }}
+                  className="text-xs font-semibold text-ink-soft hover:text-ink"
+                >
+                  Kaldır
+                </button>
+              </div>
+              <div className="mt-1.5 flex gap-2">
+                <select
+                  value={phoneCountryCode}
+                  onChange={(e) => setPhoneCountryCode(e.target.value)}
+                  className="w-[100px] shrink-0 rounded-lg border border-gold/25 bg-parchment px-2 py-2.5 text-sm text-ink outline-none focus:border-gold"
+                >
+                  {countryCodes.map((c) => (
+                    <option key={c.code} value={c.dialCode}>
+                      {c.flag} {c.dialCode}
+                    </option>
+                  ))}
+                </select>
+                <input
+                  id="phoneNumber"
+                  inputMode="numeric"
+                  maxLength={10}
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, ""))}
+                  className="w-full rounded-lg border border-gold/25 bg-parchment px-4 py-2.5 text-ink outline-none transition-colors focus:border-gold"
+                />
+              </div>
+            </div>
+          )}
+
           <div>
             <label
               htmlFor="password"
@@ -172,30 +281,41 @@ function KayitOlContent() {
             />
           </div>
 
-          <label className="flex items-start gap-2.5 text-sm text-ink-soft">
-            <input
-              type="checkbox"
-              checked={acceptedTerms}
-              onChange={(e) => setAcceptedTerms(e.target.checked)}
-              className="mt-0.5 h-4 w-4 rounded border-gold/40 accent-gold-deep"
-            />
-            <span>
-              <Link
-                href="/kullanim-sartlari"
-                className="font-medium text-gold-deep hover:underline"
-              >
-                Kullanım Şartları
-              </Link>{" "}
-              ve{" "}
-              <Link
-                href="/gizlilik-politikasi"
-                className="font-medium text-gold-deep hover:underline"
-              >
-                Gizlilik Politikası
-              </Link>
-              &apos;nı okudum, kabul ediyorum.
-            </span>
-          </label>
+          <div>
+            <label className="flex items-start gap-2.5 text-sm text-ink-soft">
+              <input
+                type="checkbox"
+                checked={acceptedTerms}
+                readOnly
+                aria-readonly
+                className="mt-0.5 h-4 w-4 rounded border-gold/40 accent-gold-deep"
+              />
+              <span>
+                <button
+                  type="button"
+                  onClick={() => setOpenDoc("terms")}
+                  className="font-medium text-gold-deep hover:underline"
+                >
+                  Kullanım Şartları
+                </button>
+                {termsRead && <span className="text-emerald-700"> ✓</span>}{" "}
+                ve{" "}
+                <button
+                  type="button"
+                  onClick={() => setOpenDoc("privacy")}
+                  className="font-medium text-gold-deep hover:underline"
+                >
+                  Gizlilik Politikası
+                </button>
+                {privacyRead && <span className="text-emerald-700"> ✓</span>}
+                &apos;nı okudum, kabul ediyorum.
+              </span>
+            </label>
+            <p className="mt-1.5 pl-[1.625rem] text-xs text-ink-soft/80">
+              Bu kutucuk elle işaretlenmez — her iki metni de açıp sonundaki
+              &quot;Okudum, onaylıyorum&quot;a bastığında otomatik işaretlenir.
+            </p>
+          </div>
 
           {error && <p className="text-sm text-red-700">{error}</p>}
 
@@ -222,6 +342,14 @@ function KayitOlContent() {
           </Link>
         </p>
       </div>
+
+      {openDoc && (
+        <LegalModal
+          doc={openDoc}
+          onApprove={handleApproveDoc}
+          onClose={() => setOpenDoc(null)}
+        />
+      )}
     </main>
   );
 }

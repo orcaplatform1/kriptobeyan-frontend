@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useScaleAnimation } from "./scale-animation-context";
 import {
   adminListPlans,
@@ -102,16 +102,18 @@ export function SiteHeader() {
             <>
               <Link
                 href="/giris"
-                className="hidden text-sm font-medium text-ink-soft transition-colors hover:text-gold-deep sm:block"
+                className="hidden rounded-full bg-ink px-4 py-2 text-sm font-semibold text-cream transition-colors hover:bg-ink/85 sm:inline-flex"
               >
                 Giriş Yap
               </Link>
-              <Link
-                href="/kayit-ol"
-                className="hidden rounded-full bg-marble-dark px-4 py-2 text-sm font-semibold text-cream transition-colors hover:bg-marble-dark-2 sm:inline-flex"
-              >
-                Ücretsiz Başla
-              </Link>
+              <span className="hidden btn-gold-comet sm:inline-flex">
+                <Link
+                  href="/kayit-ol"
+                  className="rounded-full bg-marble-dark px-4 py-2 text-sm font-semibold text-cream transition-colors hover:bg-marble-dark-2"
+                >
+                  Ücretsiz Başla
+                </Link>
+              </span>
             </>
           )}
 
@@ -137,62 +139,97 @@ export function SiteHeader() {
         </div>
       </div>
 
-      {menuOpen && (
-        <div className="border-t border-gold/15 bg-cream px-6 py-4 md:hidden">
-          <nav className="flex flex-col gap-1">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setMenuOpen(false)}
-                className="rounded-lg px-3 py-2.5 text-sm font-medium text-ink-soft transition-colors hover:bg-parchment hover:text-gold-deep"
-              >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
+      <AnimatePresence>
+        {menuOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={() => setMenuOpen(false)}
+              className="fixed inset-0 z-40 bg-ink/40 md:hidden"
+            />
+            <motion.div
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", stiffness: 320, damping: 34 }}
+              className="fixed inset-y-0 right-0 z-50 flex w-[82vw] max-w-[320px] flex-col overflow-y-auto border-l border-gold/15 bg-cream px-6 py-5 shadow-2xl md:hidden"
+            >
+              <div className="flex items-center justify-between">
+                <span className="font-serif text-lg font-semibold text-ink">Menü</span>
+                <button
+                  type="button"
+                  onClick={() => setMenuOpen(false)}
+                  aria-label="Menüyü kapat"
+                  className="flex h-9 w-9 items-center justify-center rounded-full border border-gold/25 text-ink transition-colors hover:border-gold/50"
+                >
+                  <span className="relative flex h-4 w-4 items-center justify-center">
+                    <span className="absolute h-[1.5px] w-4 rotate-45 bg-current" />
+                    <span className="absolute h-[1.5px] w-4 -rotate-45 bg-current" />
+                  </span>
+                </button>
+              </div>
 
-          <div className="mt-3 flex flex-col gap-2 border-t border-gold/15 pt-3">
-            {loggedIn ? (
-              <>
-                {isAdmin && (
+              <nav className="mt-6 flex flex-col gap-1">
+                {navLinks.map((link) => (
                   <Link
-                    href="/admin"
+                    key={link.href}
+                    href={link.href}
                     onClick={() => setMenuOpen(false)}
-                    className="rounded-lg px-3 py-2.5 text-sm font-medium text-ink-soft hover:bg-parchment hover:text-gold-deep"
+                    className="rounded-lg px-3 py-2.5 text-sm font-medium text-ink-soft transition-colors hover:bg-parchment hover:text-gold-deep"
                   >
-                    Admin
+                    {link.label}
                   </Link>
+                ))}
+              </nav>
+
+              <div className="mt-3 flex flex-col gap-2 border-t border-gold/15 pt-3">
+                {loggedIn ? (
+                  <>
+                    {isAdmin && (
+                      <Link
+                        href="/admin"
+                        onClick={() => setMenuOpen(false)}
+                        className="rounded-lg px-3 py-2.5 text-sm font-medium text-ink-soft hover:bg-parchment hover:text-gold-deep"
+                      >
+                        Admin
+                      </Link>
+                    )}
+                    <Link
+                      href={isAccountant ? "/musavir-paneli" : "/panel"}
+                      onClick={() => setMenuOpen(false)}
+                      className="rounded-full bg-marble-dark px-4 py-2.5 text-center text-sm font-semibold text-cream transition-colors hover:bg-marble-dark-2"
+                    >
+                      {isAccountant ? "Müşavir Paneli" : "Panele git"}
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      href="/giris"
+                      onClick={() => setMenuOpen(false)}
+                      className="rounded-full bg-ink px-4 py-2.5 text-center text-sm font-semibold text-cream transition-colors hover:bg-ink/85"
+                    >
+                      Giriş Yap
+                    </Link>
+                    <span className="btn-gold-comet w-full">
+                      <Link
+                        href="/kayit-ol"
+                        onClick={() => setMenuOpen(false)}
+                        className="w-full rounded-full bg-marble-dark px-4 py-2.5 text-center text-sm font-semibold text-cream transition-colors hover:bg-marble-dark-2"
+                      >
+                        Ücretsiz Başla
+                      </Link>
+                    </span>
+                  </>
                 )}
-                <Link
-                  href={isAccountant ? "/musavir-paneli" : "/panel"}
-                  onClick={() => setMenuOpen(false)}
-                  className="rounded-full bg-marble-dark px-4 py-2.5 text-center text-sm font-semibold text-cream transition-colors hover:bg-marble-dark-2"
-                >
-                  {isAccountant ? "Müşavir Paneli" : "Panele git"}
-                </Link>
-              </>
-            ) : (
-              <>
-                <Link
-                  href="/giris"
-                  onClick={() => setMenuOpen(false)}
-                  className="rounded-lg px-3 py-2.5 text-sm font-medium text-ink-soft hover:bg-parchment hover:text-gold-deep"
-                >
-                  Giriş Yap
-                </Link>
-                <Link
-                  href="/kayit-ol"
-                  onClick={() => setMenuOpen(false)}
-                  className="rounded-full bg-marble-dark px-4 py-2.5 text-center text-sm font-semibold text-cream transition-colors hover:bg-marble-dark-2"
-                >
-                  Ücretsiz Başla
-                </Link>
-              </>
-            )}
-          </div>
-        </div>
-      )}
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </header>
   );
 }

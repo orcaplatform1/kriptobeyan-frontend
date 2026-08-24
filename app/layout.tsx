@@ -3,6 +3,7 @@ import { Playfair_Display, Inter } from "next/font/google";
 import { ScaleAnimationProvider } from "@/components/scale-animation-context";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import { CookieConsent } from "@/components/cookie-consent";
 import { SITE_URL, SITE_NAME, SITE_DESCRIPTION, SITE_KEYWORDS } from "@/lib/site-config";
 import "./globals.css";
 
@@ -56,6 +57,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <SiteHeader />
           {children}
           <SiteFooter />
+          <CookieConsent />
         </ScaleAnimationProvider>
       </body>
     </html>
