@@ -255,6 +255,11 @@ export default function PanelPage() {
                 label="Tahmini vergiye tabi tutar"
                 value={formatTRY(overview.estimatedTaxableAmountTRY)}
               />
+              <SummaryCard
+                label="Diğer gelirler (staking/airdrop/LP)"
+                value={formatTRY(overview.occasionalIncomeTRY)}
+                tone="positive"
+              />
             </div>
 
             <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2">
@@ -268,7 +273,7 @@ export default function PanelPage() {
               </div>
               <div className="rounded-xl border border-gold/20 bg-parchment p-5">
                 <ExemptionBar
-                  label="Arızi kazanç istisnası"
+                  label="Arızi kazanç istisnası (staking/airdrop/LP)"
                   used={overview.occasionalIncomeExemption.used}
                   total={overview.occasionalIncomeExemption.total}
                   usedPercent={overview.occasionalIncomeExemption.usedPercent}
