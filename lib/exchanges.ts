@@ -13,14 +13,14 @@ export const LIVE_EXCHANGES = [
   "HTX",
   "Bitget",
   "MEXC",
-  // Turk borsalari (hacme gore)
+  // Turk borsalari - SPK lisansli yerel TR tuzel kisiler once (kullanici
+  // istegi 2026-08-25), sonra kalan yerel borsalar hacme gore
+  "Binance TR",
+  "Bybit TR",
+  "OKX TR",
   "BTCTurk",
   "Paribu",
   "ICRYPEX",
-  // SPK lisansli yerel TR tuzel kisiler (2026-08-24 eklendi)
-  "Binance TR",
-  "OKX TR",
-  "Bybit TR",
 ];
 
 // Adaptörü henüz stub olan borsalar — dürüstlük ilkesi gereği "yakında"
