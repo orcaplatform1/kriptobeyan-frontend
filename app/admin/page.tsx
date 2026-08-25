@@ -21,6 +21,7 @@ import {
   adminListCoupons,
   adminListPayments,
   adminListPlans,
+  adminListReportDownloads,
   adminListSupportTickets,
   adminListUsers,
   adminRejectAccountantVerification,
@@ -41,6 +42,7 @@ import {
   type AdminSiteContent,
   type AdminPayment,
   type AdminPlan,
+  type AdminReportDownloadRow,
   type AdminUserDetail,
   type AdminUserRow,
   type PaymentStatus,
@@ -59,6 +61,7 @@ type Tab =
   | "plans"
   | "payments"
   | "users"
+  | "reports"
   | "announcements"
   | "support"
   | "accountants"
@@ -70,6 +73,7 @@ const TABS: { id: Tab; label: string }[] = [
   { id: "plans", label: "Planlar" },
   { id: "payments", label: "Ödemeler" },
   { id: "users", label: "Kullanıcılar" },
+  { id: "reports", label: "Raporlar" },
   { id: "accountants", label: "Müşavir Onayları" },
   { id: "coupons", label: "Kuponlar" },
   { id: "announcements", label: "Duyurular" },
@@ -664,7 +668,30 @@ function UserDetailPanel({
                     Hesap kilitli ({new Date(user.lockedUntil).toLocaleString("tr-TR")}&apos;e kadar)
                   </p>
                 )}
+                {user.invitedByAccountant && (
+                  <p className="mt-1.5 text-xs font-semibold text-gold-deep">
+                    @{user.invitedByAccountant.username} davet ile gelmiştir
+                  </p>
+                )}
               </div>
+
+              {user.reports.length > 0 && (
+                <div className="rounded-xl border border-gold/15 bg-parchment p-3">
+                  <p className="text-xs font-semibold tracking-wide text-ink-soft uppercase">
+                    İndirdiği raporlar
+                  </p>
+                  <ul className="mt-2 flex flex-col gap-1.5 text-xs text-ink">
+                    {user.reports.map((r) => (
+                      <li key={r.id}>
+                        {r.taxYear} · {r.format === "PDF" ? "PDF" : "Excel"} ·{" "}
+                        <span className="text-ink-soft">
+                          {new Date(r.createdAt).toLocaleDateString("tr-TR")}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
               <div>
                 <label className="block text-xs font-semibold tracking-wide text-ink-soft uppercase">
@@ -959,6 +986,86 @@ function UsersSection() {
           </button>
         </div>
       )}
+
+      {openUserId && (
+        <UserDetailPanel
+          userId={openUserId}
+          onClose={() => setOpenUserId(null)}
+          onChanged={reload}
+        />
+      )}
+    </div>
+  );
+}
+
+// ================= Raporlar (rapor indiren kullanıcılar) =================
+
+function ReportsSection() {
+  const [rows, setRows] = useState<AdminReportDownloadRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [openUserId, setOpenUserId] = useState<string | null>(null);
+
+  async function reload() {
+    setLoading(true);
+    try {
+      setRows(await adminListReportDownloads());
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    reload();
+  }, []);
+
+  return (
+    <div className="flex flex-col gap-4">
+      <p className="text-xs text-ink-soft">
+        {rows.length} rapor indirme · en son 200 kayıt
+      </p>
+
+      <div className="overflow-x-auto rounded-2xl border border-gold/20">
+        {loading ? (
+          <p className="p-6 text-sm text-ink-soft">Yükleniyor…</p>
+        ) : rows.length === 0 ? (
+          <p className="p-6 text-sm text-ink-soft">Henüz hiç rapor indirilmemiş.</p>
+        ) : (
+          <table className="w-full min-w-[520px] text-left text-sm">
+            <thead>
+              <tr className="border-b border-gold/20 bg-parchment text-xs font-semibold tracking-wide text-ink-soft uppercase">
+                <th className="px-4 py-3">Kullanıcı</th>
+                <th className="px-4 py-3">Rapor</th>
+                <th className="px-4 py-3">Tarih</th>
+                <th className="px-4 py-3" />
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((r) => (
+                <tr key={r.id} className="border-b border-gold/10 last:border-0">
+                  <td className="px-4 py-3">
+                    <p className="font-medium text-ink">{r.user.fullName ?? r.user.email}</p>
+                    <p className="text-xs text-ink-soft">@{r.user.username}</p>
+                  </td>
+                  <td className="px-4 py-3 text-ink-soft">
+                    {r.taxYear} · {r.format === "PDF" ? "PDF" : "Excel"}
+                  </td>
+                  <td className="px-4 py-3 text-xs text-ink-soft">
+                    {new Date(r.createdAt).toLocaleDateString("tr-TR")}
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap">
+                    <button
+                      onClick={() => setOpenUserId(r.user.id)}
+                      className="rounded-full border border-gold/25 px-3.5 py-1.5 text-xs font-semibold text-ink hover:bg-parchment"
+                    >
+                      Profile git
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
 
       {openUserId && (
         <UserDetailPanel
@@ -1755,6 +1862,7 @@ export default function AdminPage() {
           {tab === "plans" && <PlansSection plans={plans} />}
           {tab === "payments" && <PaymentsSection />}
           {tab === "users" && <UsersSection />}
+          {tab === "reports" && <ReportsSection />}
           {tab === "announcements" && <AnnouncementsSection />}
           {tab === "support" && <SupportSection />}
           {tab === "accountants" && <AccountantVerificationsSection />}

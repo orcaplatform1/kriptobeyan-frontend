@@ -122,6 +122,31 @@ export default function MusteriDetayPage({
 
             <div className="mt-10">
               <h2 className="font-serif text-lg font-semibold text-ink">
+                İndirdiği raporlar
+              </h2>
+              {summary.reports.length === 0 ? (
+                <p className="mt-4 text-ink-soft">
+                  Müşteri henüz bir rapor indirmemiş.
+                </p>
+              ) : (
+                <ul className="mt-4 flex flex-col gap-2">
+                  {summary.reports.map((r) => (
+                    <li
+                      key={r.id}
+                      className="rounded-lg border border-gold/15 bg-parchment px-4 py-2.5 text-sm text-ink"
+                    >
+                      {r.taxYear} · {r.format === "PDF" ? "PDF" : "Excel"} ·{" "}
+                      <span className="text-ink-soft">
+                        {new Date(r.createdAt).toLocaleDateString("tr-TR")}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            <div className="mt-10">
+              <h2 className="font-serif text-lg font-semibold text-ink">
                 Vergi yılı özetleri
               </h2>
               {summary.summaries.length === 0 ? (

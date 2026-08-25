@@ -5,16 +5,23 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   ApiError,
+  downloadReport,
   emailFromAccessToken,
+  generateReport,
   getAccessToken,
   getDashboardOverview,
   getDashboardPositions,
   getDashboardSources,
   getMyProfile,
+  listMyReports,
   logout,
+  runTaxCalculation,
   type DashboardOverview,
   type DashboardPosition,
   type DashboardSources,
+  type GeneratedReport,
+  type PlanRequiredErrorData,
+  type ReportFormat,
 } from "@/lib/auth-client";
 import { SourceConnections } from "@/components/source-connections";
 import { CustomSelect } from "@/components/custom-select";
@@ -54,6 +61,36 @@ function SummaryCard({
       <p className={`mt-2 font-serif text-2xl font-semibold ${toneClass}`}>
         {value}
       </p>
+    </div>
+  );
+}
+
+function isPlanRequiredError(err: unknown): err is ApiError & { data: PlanRequiredErrorData } {
+  return (
+    err instanceof ApiError &&
+    !!err.data &&
+    typeof err.data === "object" &&
+    (err.data as { error?: string }).error === "PLAN_REQUIRED"
+  );
+}
+
+function PlanRequiredBanner({
+  notice,
+}: {
+  notice: { message: string; recommendedPlanId: string | null; recommendedPlanName: string | null };
+}) {
+  const router = useRouter();
+  return (
+    <div className="mt-4 rounded-xl border border-gold/30 bg-gold/10 px-5 py-4 text-sm text-ink">
+      <p>{notice.message}</p>
+      {notice.recommendedPlanId && (
+        <button
+          onClick={() => router.push(`/panel/abonelik?plan=${notice.recommendedPlanId}`)}
+          className="mt-3 rounded-full bg-marble-dark px-4 py-2 text-xs font-semibold text-cream hover:bg-marble-dark-2"
+        >
+          → {notice.recommendedPlanName ?? "Uygun plana"} geç
+        </button>
+      )}
     </div>
   );
 }
@@ -104,6 +141,60 @@ export default function PanelPage() {
   const [loading, setLoading] = useState(true);
   const [loggingOut, setLoggingOut] = useState(false);
 
+  const [reports, setReports] = useState<GeneratedReport[]>([]);
+  const [calculating, setCalculating] = useState(false);
+  const [calcError, setCalcError] = useState<string | null>(null);
+  const [calcNotice, setCalcNotice] = useState<PlanRequiredErrorData | null>(null);
+  const [reportFormat, setReportFormat] = useState<ReportFormat>("PDF");
+  const [generating, setGenerating] = useState(false);
+  const [genError, setGenError] = useState<string | null>(null);
+  const [genNotice, setGenNotice] = useState<PlanRequiredErrorData | null>(null);
+
+  const loadReports = useCallback(async () => {
+    try {
+      setReports(await listMyReports());
+    } catch {
+      // rapor listesi yuklenemezse sessizce bos birak, panelin geri kalani calismaya devam etsin
+    }
+  }, []);
+
+  async function handleCalculate() {
+    setCalculating(true);
+    setCalcError(null);
+    setCalcNotice(null);
+    try {
+      await runTaxCalculation(taxYear);
+      await loadDashboard(taxYear);
+    } catch (err) {
+      if (isPlanRequiredError(err)) {
+        setCalcNotice(err.data);
+      } else {
+        setCalcError(err instanceof ApiError ? err.message : "Hesaplama yapılamadı.");
+      }
+    } finally {
+      setCalculating(false);
+    }
+  }
+
+  async function handleGenerateReport() {
+    setGenerating(true);
+    setGenError(null);
+    setGenNotice(null);
+    try {
+      const report = await generateReport(taxYear, reportFormat);
+      await downloadReport(report);
+      await loadReports();
+    } catch (err) {
+      if (isPlanRequiredError(err)) {
+        setGenNotice(err.data);
+      } else {
+        setGenError(err instanceof ApiError ? err.message : "Rapor oluşturulamadı.");
+      }
+    } finally {
+      setGenerating(false);
+    }
+  }
+
   const loadDashboard = useCallback(
     async (year: number) => {
       setLoading(true);
@@ -152,7 +243,8 @@ export default function PanelPage() {
   useEffect(() => {
     if (!ready) return;
     loadDashboard(taxYear);
-  }, [ready, taxYear, loadDashboard]);
+    loadReports();
+  }, [ready, taxYear, loadDashboard, loadReports]);
 
   async function handleLogout() {
     setLoggingOut(true);
@@ -208,7 +300,21 @@ export default function PanelPage() {
               Taslak
             </span>
           )}
+          <button
+            onClick={handleCalculate}
+            disabled={calculating}
+            className="ml-auto rounded-full bg-marble-dark px-4 py-2 text-xs font-semibold text-cream hover:bg-marble-dark-2 disabled:opacity-60"
+          >
+            {calculating ? "Hesaplanıyor…" : "Hesapla"}
+          </button>
         </div>
+        <p className="mt-1.5 text-xs text-ink-soft">
+          Rakamlar otomatik güncellenmez — kaynak eklediğinde/değiştirdiğinde &quot;Hesapla&quot;ya
+          tekrar bas.
+        </p>
+
+        {calcError && <p className="mt-3 text-sm text-red-700">{calcError}</p>}
+        {calcNotice && <PlanRequiredBanner notice={calcNotice} />}
 
         {loading && (
           <p className="mt-10 text-ink-soft">Panel yükleniyor…</p>
@@ -283,6 +389,65 @@ export default function PanelPage() {
             </div>
 
             <AiAuditBox taxYear={taxYear} />
+
+            <div className="mt-14 rounded-xl border border-gold/20 bg-parchment p-5">
+              <h2 className="font-serif text-lg font-semibold text-ink">
+                Vergi raporu indir
+              </h2>
+              <p className="mt-1 text-sm text-ink-soft">
+                {taxYear} yılı için PDF veya Excel rapor oluşturup indir. Rapor indirmek ücretli
+                bir plan gerektirir.
+              </p>
+              <div className="mt-4 flex flex-wrap items-center gap-3">
+                <CustomSelect
+                  value={reportFormat}
+                  onChange={(v) => setReportFormat(v as ReportFormat)}
+                  className="w-32 rounded-lg border border-gold/25 bg-cream px-3 py-2 text-sm text-ink focus:border-gold"
+                  options={[
+                    { value: "PDF", label: "PDF" },
+                    { value: "EXCEL", label: "Excel" },
+                  ]}
+                />
+                <button
+                  onClick={handleGenerateReport}
+                  disabled={generating}
+                  className="rounded-full bg-marble-dark px-4 py-2 text-xs font-semibold text-cream hover:bg-marble-dark-2 disabled:opacity-60"
+                >
+                  {generating ? "Oluşturuluyor…" : "Oluştur ve indir"}
+                </button>
+              </div>
+              {genError && <p className="mt-3 text-sm text-red-700">{genError}</p>}
+              {genNotice && <PlanRequiredBanner notice={genNotice} />}
+
+              {reports.length > 0 && (
+                <div className="mt-6 border-t border-gold/15 pt-4">
+                  <p className="text-xs font-semibold tracking-wide text-ink-soft uppercase">
+                    İndirdiğim raporlar
+                  </p>
+                  <ul className="mt-2 flex flex-col gap-2">
+                    {reports.map((r) => (
+                      <li
+                        key={r.id}
+                        className="flex items-center justify-between gap-2 rounded-lg border border-gold/15 bg-cream px-3 py-2 text-sm"
+                      >
+                        <span className="text-ink">
+                          {r.taxYear} · {r.format === "PDF" ? "PDF" : "Excel"} ·{" "}
+                          <span className="text-ink-soft">
+                            {new Date(r.createdAt).toLocaleDateString("tr-TR")}
+                          </span>
+                        </span>
+                        <button
+                          onClick={() => downloadReport(r)}
+                          className="text-xs font-semibold text-gold-deep hover:underline"
+                        >
+                          İndir
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
 
             <div className="mt-14">
               <h2 className="font-serif text-xl font-semibold text-ink">

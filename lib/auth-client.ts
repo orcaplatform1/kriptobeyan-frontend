@@ -40,26 +40,48 @@ export function isLoggedIn(): boolean {
   return !!getAccessToken();
 }
 
+// PLAN_REQUIRED gibi yapisal hatalarda backend'in dondurdugu ekstra alanlar
+// (used/limit/recommendedPlanId) - "kendine uygun plana yonlendir" akisi
+// icin (bkz. ApiError.data).
+export interface PlanRequiredErrorData {
+  error: "PLAN_REQUIRED";
+  message: string;
+  used: number;
+  limit: number | null;
+  recommendedPlanId: string | null;
+  recommendedPlanName: string | null;
+}
+
 export class ApiError extends Error {
   status: number;
-  constructor(message: string, status: number) {
+  data: unknown;
+  constructor(message: string, status: number, data?: unknown) {
     super(message);
     this.status = status;
+    this.data = data;
+  }
+}
+
+async function parseErrorBody(res: Response): Promise<{ message: string; data: unknown }> {
+  if (res.status === 429) {
+    return { message: "Çok fazla deneme yaptın, biraz sonra tekrar dene.", data: undefined };
+  }
+  try {
+    const body = await res.json();
+    const message = Array.isArray(body.message)
+      ? body.message.join(", ")
+      : typeof body.message === "string"
+        ? body.message
+        : "Bir şeyler ters gitti, lütfen tekrar dene.";
+    return { message, data: body };
+  } catch {
+    // yanit JSON degilse genel mesaja dus
+    return { message: "Bir şeyler ters gitti, lütfen tekrar dene.", data: undefined };
   }
 }
 
 async function parseErrorMessage(res: Response): Promise<string> {
-  if (res.status === 429) {
-    return "Çok fazla deneme yaptın, biraz sonra tekrar dene.";
-  }
-  try {
-    const body = await res.json();
-    if (Array.isArray(body.message)) return body.message.join(", ");
-    if (typeof body.message === "string") return body.message;
-  } catch {
-    // yanit JSON degilse asagidaki genel mesaja dus
-  }
-  return "Bir şeyler ters gitti, lütfen tekrar dene.";
+  return (await parseErrorBody(res)).message;
 }
 
 // Nest'te void donen POST uc noktalari (ör. /auth/phone/verify) bos govdeli
@@ -78,7 +100,8 @@ async function apiPost<T>(path: string, data: unknown): Promise<T> {
     body: JSON.stringify(data),
   });
   if (!res.ok) {
-    throw new ApiError(await parseErrorMessage(res), res.status);
+    const { message, data: errData } = await parseErrorBody(res);
+    throw new ApiError(message, res.status, errData);
   }
   return parseJsonBody<T>(res);
 }
@@ -239,7 +262,8 @@ async function authRequest<T>(
   }
 
   if (!res.ok) {
-    throw new ApiError(await parseErrorMessage(res), res.status);
+    const { message, data } = await parseErrorBody(res);
+    throw new ApiError(message, res.status, data);
   }
   return parseJsonBody<T>(res);
 }
@@ -330,6 +354,55 @@ export async function getAiAudit(taxYear: number) {
   return authGet<AiAuditResult>(`/ai-audit/${taxYear}`);
 }
 
+// --- Vergi hesaplama + rapor indirme ---
+
+export async function runTaxCalculation(taxYear: number) {
+  return authRequest<unknown>("POST", `/tax-calculation/${taxYear}/calculate`);
+}
+
+export type ReportFormat = "PDF" | "EXCEL";
+
+export interface GeneratedReport {
+  id: string;
+  taxYear: number;
+  format: ReportFormat;
+  createdAt: string;
+}
+
+export async function listMyReports() {
+  return authGet<GeneratedReport[]>("/reports");
+}
+
+export async function generateReport(taxYear: number, format: ReportFormat) {
+  return authRequest<GeneratedReport>(
+    "POST",
+    `/reports/${taxYear}/generate?format=${format}`,
+  );
+}
+
+// Rapor dosyasi Authorization header'i gerektiriyor, bu yuzden duz <a href>
+// calismiyor — blob olarak cekip tarayiciya indirtiyoruz (bkz.
+// openPaymentReceipt ile ayni desen, tek fark burda "indir" — yeni sekmede
+// acmak yerine dosya olarak kaydediliyor).
+export async function downloadReport(report: GeneratedReport) {
+  const token = getAccessToken();
+  if (!token) throw new ApiError("Oturum bulunamadı, tekrar giriş yap.", 401);
+  const res = await fetch(`/api/reports/${report.id}/download`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new ApiError("Rapor indirilemedi", res.status);
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const ext = report.format === "PDF" ? "pdf" : "xlsx";
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `kriptobeyan-${report.taxYear}.${ext}`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 60_000);
+}
+
 // --- Mali müşavir paneli ---
 
 export type AccountantClientStatus = "PENDING" | "ACTIVE" | "REMOVED";
@@ -399,6 +472,9 @@ export interface AccountantClientSummary {
     description: string;
     createdAt: string;
   }[];
+  // Sadece metadata (yil/format/tarih) - dosyanin kendisi degil, bkz.
+  // AccountantService.getClientSummary yorumu.
+  reports: { id: string; taxYear: number; format: "PDF" | "EXCEL"; createdAt: string }[];
 }
 
 export async function getAccountantClientSummary(clientUserId: string) {
@@ -844,6 +920,10 @@ export interface AdminUserDetail extends AdminUserRow {
     endDate: string;
     plan: Plan;
   } | null;
+  reports: { id: string; taxYear: number; format: "PDF" | "EXCEL"; createdAt: string }[];
+  // SADECE ADMIN gorur (kullanici istegi 2026-08-25) - musavir/kullanicinin
+  // kendi profilinde bu alan hic gelmez (backend zaten dondurmuyor).
+  invitedByAccountant: { username: string } | null;
 }
 
 export interface AdminUserList {
@@ -895,6 +975,20 @@ export async function adminRevokeStaff(id: string) {
 
 export async function adminDeleteUser(id: string) {
   return authRequest<void>("DELETE", `/admin/users/${id}`);
+}
+
+// --- Admin: rapor indiren kullanıcılar (kullanıcı adı + tarih) ---
+
+export interface AdminReportDownloadRow {
+  id: string;
+  taxYear: number;
+  format: "PDF" | "EXCEL";
+  createdAt: string;
+  user: { id: string; username: string; email: string; fullName: string | null };
+}
+
+export async function adminListReportDownloads() {
+  return authRequest<AdminReportDownloadRow[]>("GET", "/admin/reports");
 }
 
 // --- Admin: analitik (site trafiği + aktif kullanıcılar) ---
