@@ -37,7 +37,7 @@ export function SiteFooter({ content }: { content?: SiteContent | null }) {
     content?.footerDescription ?? "Türkiye'nin kripto varlık vergi beyan asistanı.";
   const copyrightText =
     content?.footerCopyrightText ||
-    `© ${new Date().getFullYear()} KriptoBeyan. Bir Traders.TR markasıdır. Tüm hakları saklıdır. Bu platformda yer alan tüm içerikler, tasarımlar, marka unsurları ve fikrî mülkiyet hakları ilgili yasal mevzuat kapsamında korunmaktadır.`;
+    `© ${new Date().getFullYear()} KriptoBeyan. Tüm hakları saklıdır. KriptoBeyan bir Traders.TR ticari markasıdır. Bu platformda yer alan tüm içerikler, tasarımlar, marka unsurları ve fikrî mülkiyet hakları ilgili yasal mevzuat kapsamında korunmaktadır.`;
 
   return (
     <footer className="bg-marble-dark text-cream/70">
