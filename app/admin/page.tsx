@@ -51,6 +51,7 @@ import {
   type SalesStatsRow,
   type SupportTicketRow,
   type SupportTicketStatus,
+  type SupportTicketCategory,
   type UserRole,
   type VisitorStats,
 } from "@/lib/auth-client";
@@ -1412,6 +1413,14 @@ const SUPPORT_STATUS_LABELS: Record<SupportTicketStatus, string> = {
 
 const SUPPORT_STATUS_TABS: SupportTicketStatus[] = ["OPEN", "IN_PROGRESS", "RESOLVED", "CLOSED"];
 
+const SUPPORT_CATEGORY_LABELS: Record<SupportTicketCategory, string> = {
+  PAYMENT: "Ödeme",
+  TECHNICAL: "Teknik Sorun",
+  ACCOUNT: "Hesap",
+  EMAIL_PHONE_CHANGE: "E-posta/Telefon Değiştir",
+  OTHER: "Diğer",
+};
+
 function SupportSection() {
   const [tickets, setTickets] = useState<SupportTicketRow[]>([]);
   const [status, setStatus] = useState<SupportTicketStatus>("OPEN");
@@ -1494,7 +1503,8 @@ function SupportSection() {
                 >
                   <p className="text-sm font-medium text-ink">{t.subject}</p>
                   <p className="mt-0.5 text-xs text-ink-soft">
-                    {t.user?.email} · {new Date(t.updatedAt).toLocaleString("tr-TR")}
+                    {SUPPORT_CATEGORY_LABELS[t.category]} · {t.user?.email} ·{" "}
+                    {new Date(t.updatedAt).toLocaleString("tr-TR")}
                   </p>
                 </button>
               ))}
@@ -1510,7 +1520,9 @@ function SupportSection() {
               <div className="flex items-center justify-between gap-2">
                 <div>
                   <p className="font-serif text-lg font-semibold text-ink">{openTicket.subject}</p>
-                  <p className="text-xs text-ink-soft">{openTicket.user?.email}</p>
+                  <p className="text-xs text-ink-soft">
+                    {SUPPORT_CATEGORY_LABELS[openTicket.category]} · {openTicket.user?.email}
+                  </p>
                 </div>
                 <CustomSelect
                   value={openTicket.status}

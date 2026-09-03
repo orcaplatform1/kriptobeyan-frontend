@@ -1,15 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   ApiError,
   addSupportMessage,
   createSupportTicket,
   getAccessToken,
   listMySupportTickets,
+  type SupportTicketCategory,
   type SupportTicketRow,
 } from "@/lib/auth-client";
+import { CustomSelect } from "@/components/custom-select";
 
 const STATUS_LABELS: Record<string, { label: string; className: string }> = {
   OPEN: { label: "Açık", className: "bg-gold/15 text-gold-deep" },
@@ -18,14 +20,29 @@ const STATUS_LABELS: Record<string, { label: string; className: string }> = {
   CLOSED: { label: "Kapalı", className: "bg-parchment text-ink-soft" },
 };
 
-export default function DestekPage() {
+const CATEGORY_OPTIONS: { value: SupportTicketCategory; label: string }[] = [
+  { value: "PAYMENT", label: "Ödeme" },
+  { value: "TECHNICAL", label: "Teknik Sorun" },
+  { value: "ACCOUNT", label: "Hesap" },
+  { value: "EMAIL_PHONE_CHANGE", label: "E-posta/Telefon Değiştir" },
+  { value: "OTHER", label: "Diğer" },
+];
+
+const CATEGORY_LABELS: Record<SupportTicketCategory, string> = Object.fromEntries(
+  CATEGORY_OPTIONS.map((o) => [o.value, o.label]),
+) as Record<SupportTicketCategory, string>;
+
+function DestekPageInner() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const categoryParam = searchParams.get("category") as SupportTicketCategory | null;
   const [ready, setReady] = useState(false);
   const [tickets, setTickets] = useState<SupportTicketRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [openTicket, setOpenTicket] = useState<SupportTicketRow | null>(null);
 
-  const [view, setView] = useState<"list" | "new">("list");
+  const [view, setView] = useState<"list" | "new">(categoryParam ? "new" : "list");
+  const [category, setCategory] = useState<SupportTicketCategory>(categoryParam ?? "OTHER");
   const [subject, setSubject] = useState("");
   const [body, setBody] = useState("");
   const [reply, setReply] = useState("");
@@ -68,9 +85,10 @@ export default function DestekPage() {
     setSubmitting(true);
     setError(null);
     try {
-      const ticket = await createSupportTicket(subject.trim(), body.trim());
+      const ticket = await createSupportTicket(category, subject.trim(), body.trim());
       setSubject("");
       setBody("");
+      setCategory("OTHER");
       setView("list");
       await reload();
       setOpenTicket(ticket);
@@ -145,7 +163,10 @@ export default function DestekPage() {
               ← Biletlere dön
             </button>
             <div className="mt-3 flex items-center justify-between">
-              <p className="font-serif text-lg font-semibold text-ink">{openTicket.subject}</p>
+              <div>
+                <p className="font-serif text-lg font-semibold text-ink">{openTicket.subject}</p>
+                <p className="mt-0.5 text-xs text-ink-soft">{CATEGORY_LABELS[openTicket.category]}</p>
+              </div>
               <span
                 className={`rounded-full px-2.5 py-1 text-xs font-semibold ${STATUS_LABELS[openTicket.status].className}`}
               >
@@ -194,6 +215,17 @@ export default function DestekPage() {
           <div className="mt-6 rounded-2xl border border-gold/20 bg-parchment p-6">
             <div>
               <label className="block text-xs font-semibold tracking-wide text-ink-soft uppercase">
+                Kategori
+              </label>
+              <CustomSelect
+                value={category}
+                onChange={(v) => setCategory(v as SupportTicketCategory)}
+                className="mt-1.5 w-full rounded-lg border border-gold/25 bg-cream px-3 py-2 text-sm text-ink focus:border-gold"
+                options={CATEGORY_OPTIONS}
+              />
+            </div>
+            <div className="mt-4">
+              <label className="block text-xs font-semibold tracking-wide text-ink-soft uppercase">
                 Konu
               </label>
               <input
@@ -240,6 +272,7 @@ export default function DestekPage() {
                       <div>
                         <p className="font-medium text-ink">{t.subject}</p>
                         <p className="mt-0.5 text-xs text-ink-soft">
+                          {CATEGORY_LABELS[t.category]} ·{" "}
                           {new Date(t.updatedAt).toLocaleString("tr-TR")}
                         </p>
                       </div>
@@ -257,5 +290,13 @@ export default function DestekPage() {
         )}
       </div>
     </main>
+  );
+}
+
+export default function DestekPage() {
+  return (
+    <Suspense fallback={null}>
+      <DestekPageInner />
+    </Suspense>
   );
 }

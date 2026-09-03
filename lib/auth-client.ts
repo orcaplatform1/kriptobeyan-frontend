@@ -152,6 +152,16 @@ export async function resendPhoneCode() {
   return authRequest<void>("POST", "/auth/phone/resend-code");
 }
 
+export async function changePassword(
+  currentPassword: string,
+  newPassword: string,
+) {
+  return authRequest<void>("POST", "/auth/change-password", {
+    currentPassword,
+    newPassword,
+  });
+}
+
 export async function requestPasswordReset(email: string) {
   return apiPost<void>("/auth/request-password-reset", { email });
 }
@@ -311,6 +321,9 @@ export interface MyProfile {
   id: string;
   email: string;
   fullName: string | null;
+  phone: string | null;
+  emailVerified: boolean;
+  phoneVerified: boolean;
 }
 
 export async function getMyProfile() {
@@ -1086,6 +1099,12 @@ export async function markNotificationRead(id: string) {
 // --- Destek merkezi ---
 
 export type SupportTicketStatus = "OPEN" | "IN_PROGRESS" | "RESOLVED" | "CLOSED";
+export type SupportTicketCategory =
+  | "PAYMENT"
+  | "TECHNICAL"
+  | "ACCOUNT"
+  | "EMAIL_PHONE_CHANGE"
+  | "OTHER";
 
 export interface SupportMessageRow {
   id: string;
@@ -1100,6 +1119,7 @@ export interface SupportTicketRow {
   id: string;
   userId: string;
   subject: string;
+  category: SupportTicketCategory;
   status: SupportTicketStatus;
   createdAt: string;
   updatedAt: string;
@@ -1107,8 +1127,13 @@ export interface SupportTicketRow {
   user?: { id: string; email: string; username: string };
 }
 
-export async function createSupportTicket(subject: string, body: string) {
+export async function createSupportTicket(
+  category: SupportTicketCategory,
+  subject: string,
+  body: string,
+) {
   return authRequest<SupportTicketRow>("POST", "/support/tickets", {
+    category,
     subject,
     body,
   });
