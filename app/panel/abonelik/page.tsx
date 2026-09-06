@@ -7,11 +7,10 @@ import {
   CRYPTO_PROVIDER_LABELS,
   attachPaymentReceipt,
   createPayment,
-  getAccessToken,
+  getMyProfile,
   getMyUsage,
   getPlansAuthed,
   listMyPayments,
-  roleFromAccessToken,
   uploadPaymentReceipt,
   type CryptoAsset,
   type CryptoProvider,
@@ -104,8 +103,8 @@ function AbonelikPageInner() {
     setLoading(true);
     setError(null);
     try {
-      const token = getAccessToken();
-      const userRole = token ? roleFromAccessToken(token) : null;
+      const profile = await getMyProfile();
+      const userRole = profile.role;
       setRole(userRole);
       const [plansRes, usageRes, paymentsRes] = await Promise.all([
         getPlansAuthed(userRole ?? undefined),
@@ -136,12 +135,8 @@ function AbonelikPageInner() {
   }, [router]);
 
   useEffect(() => {
-    if (!getAccessToken()) {
-      router.replace("/giris?redirect=/panel/abonelik");
-      return;
-    }
     setReady(true);
-  }, [router]);
+  }, []);
 
   useEffect(() => {
     if (ready) load();

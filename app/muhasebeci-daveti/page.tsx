@@ -6,7 +6,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import {
   ApiError,
   acceptAccountantInvite,
-  getAccessToken,
 } from "@/lib/auth-client";
 
 type Status = "checking" | "needs-auth" | "accepting" | "success" | "error";
@@ -25,14 +24,14 @@ function MuhasebeciDavetiContent() {
       setErrorMessage("Davet bağlantısı eksik veya geçersiz.");
       return;
     }
-    if (!getAccessToken()) {
-      setStatus("needs-auth");
-      return;
-    }
     setStatus("accepting");
     acceptAccountantInvite(token)
       .then(() => setStatus("success"))
       .catch((err) => {
+        if (err instanceof ApiError && err.status === 401) {
+          setStatus("needs-auth");
+          return;
+        }
         setErrorMessage(
           err instanceof ApiError
             ? err.message

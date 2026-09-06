@@ -6,15 +6,14 @@ import { useRouter } from "next/navigation";
 import {
   ApiError,
   createMyCoupon,
-  getAccessToken,
   getAccountantOverview,
   getAccountantVerificationStatus,
   getMyCoupon,
+  getMyProfile,
   inviteAccountantClient,
   logout,
   openAccountantVerificationDoc,
   removeAccountantClient,
-  roleFromAccessToken,
   uploadAccountantVerificationDocs,
   type AccountantClientRow,
   type AccountantVerificationStatus,
@@ -104,13 +103,18 @@ export default function MusavirPaneliPage() {
   }, []);
 
   useEffect(() => {
-    const token = getAccessToken();
-    if (!token) {
-      router.replace("/giris?redirect=/musavir-paneli");
-      return;
-    }
-    setAuthorized(roleFromAccessToken(token) === "ACCOUNTANT");
-    setChecked(true);
+    getMyProfile()
+      .then((profile) => {
+        setAuthorized(profile.role === "ACCOUNTANT");
+        setChecked(true);
+      })
+      .catch((err) => {
+        if (err instanceof ApiError && err.status === 401) {
+          router.replace("/giris?redirect=/musavir-paneli");
+          return;
+        }
+        setChecked(true);
+      });
   }, [router]);
 
   useEffect(() => {

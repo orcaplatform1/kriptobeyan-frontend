@@ -8,13 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useScaleAnimation } from "./scale-animation-context";
 import { NotificationBell } from "./notification-bell";
 import { useRouter } from "next/navigation";
-import {
-  adminListPlans,
-  getAccessToken,
-  isLoggedIn,
-  logout,
-  roleFromAccessToken,
-} from "@/lib/auth-client";
+import { adminListPlans, getCurrentUser, logout } from "@/lib/auth-client";
 
 const navLinks = [
   { href: "/nasil-calisir", label: "Nasıl Çalışır" },
@@ -42,10 +36,10 @@ export function SiteHeader() {
   }, []);
 
   useEffect(() => {
-    setLoggedIn(isLoggedIn());
-    const token = getAccessToken();
-    if (!token) return;
-    setIsAccountant(roleFromAccessToken(token) === "ACCOUNTANT");
+    getCurrentUser().then((user) => {
+      setLoggedIn(!!user);
+      setIsAccountant(user?.role === "ACCOUNTANT");
+    });
     // Admin olup olmadigini ogrenmenin tek yolu su an admin ucuna gercekten
     // istek atmak — ayri bir "ben admin miyim" ucu yok. Sonuc yan etkisiz
     // (GET), bu yuzden guvenli.

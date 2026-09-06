@@ -6,7 +6,6 @@ import Link from "next/link";
 import {
   ApiError,
   changePassword,
-  getAccessToken,
   getMyProfile,
   type MyProfile,
 } from "@/lib/auth-client";
@@ -36,15 +35,19 @@ export default function HesapAyarlariPage() {
   const [success, setSuccess] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!getAccessToken()) {
-      router.replace("/giris?redirect=/panel/hesap");
-      return;
-    }
-    setReady(true);
     getMyProfile()
-      .then(setProfile)
-      .catch(() => {
-        // profil cekilemezse asagidaki kilitli alanlar bos gorunur, kritik degil
+      .then((p) => {
+        setProfile(p);
+        setReady(true);
+      })
+      .catch((err) => {
+        if (err instanceof ApiError && err.status === 401) {
+          router.replace("/giris?redirect=/panel/hesap");
+          return;
+        }
+        // profil cekilemezse (401 disi) asagidaki kilitli alanlar bos gorunur,
+        // kritik degil
+        setReady(true);
       });
   }, [router]);
 

@@ -3,41 +3,14 @@
 export type { Plan } from "./api";
 import type { Plan } from "./api";
 
-const ACCESS_TOKEN_KEY = "kb_access_token";
-const REFRESH_TOKEN_KEY = "kb_refresh_token";
-
-export interface TokenPair {
-  accessToken: string;
-  refreshToken: string;
-  expiresIn: string;
-}
+// Access/refresh token'lar artik backend'de httpOnly cookie olarak set
+// ediliyor (kb_access_token/kb_refresh_token, bkz. backend auth.controller.ts) -
+// JS'den hic okunamiyor/yazilamiyor (eskiden localStorage'da duz metin
+// duruyordu, XSS kalici oturum calabiliyordu). Kimlik dogrulama durumu artik
+// sadece sunucudan (/user/me) ogrenilebiliyor.
 
 export interface TwoFactorRequired {
   twoFactorRequired: true;
-}
-
-export function saveTokens(tokens: TokenPair) {
-  localStorage.setItem(ACCESS_TOKEN_KEY, tokens.accessToken);
-  localStorage.setItem(REFRESH_TOKEN_KEY, tokens.refreshToken);
-}
-
-export function getAccessToken(): string | null {
-  if (typeof window === "undefined") return null;
-  return localStorage.getItem(ACCESS_TOKEN_KEY);
-}
-
-export function getRefreshToken(): string | null {
-  if (typeof window === "undefined") return null;
-  return localStorage.getItem(REFRESH_TOKEN_KEY);
-}
-
-export function clearTokens() {
-  localStorage.removeItem(ACCESS_TOKEN_KEY);
-  localStorage.removeItem(REFRESH_TOKEN_KEY);
-}
-
-export function isLoggedIn(): boolean {
-  return !!getAccessToken();
 }
 
 // PLAN_REQUIRED gibi yapisal hatalarda backend'in dondurdugu ekstra alanlar
@@ -93,11 +66,13 @@ async function parseJsonBody<T>(res: Response): Promise<T> {
   return text ? (JSON.parse(text) as T) : (undefined as T);
 }
 
-async function apiPost<T>(path: string, data: unknown): Promise<T> {
+async function apiPost<T>(path: string, data?: unknown): Promise<T> {
   const res = await fetch(`/api${path}`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
+    credentials: "include",
+    ...(data !== undefined
+      ? { headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) }
+      : {}),
   });
   if (!res.ok) {
     const { message, data: errData } = await parseErrorBody(res);
@@ -128,7 +103,9 @@ export async function login(
   password: string,
   totpCode?: string,
 ) {
-  return apiPost<TokenPair | TwoFactorRequired>("/auth/login", {
+  // Basarili girişte token'lar backend tarafindan Set-Cookie ile yazilir
+  // (gövdede artik token yok) - burada sadece kullanici profili doner.
+  return apiPost<{ user: MyProfile } | TwoFactorRequired>("/auth/login", {
     identifier,
     method,
     password,
@@ -171,38 +148,13 @@ export async function resetPassword(token: string, newPassword: string) {
 }
 
 export async function logout() {
-  const refreshToken = getRefreshToken();
-  clearTokens();
-  if (refreshToken) {
-    try {
-      await apiPost("/auth/logout", { refreshToken });
-    } catch {
-      // cikis en kotu ihtimalle sadece lokal token'lari temizler, backend'e
-      // ulasamasa bile kullanici tarayicida cikis yapmis olur
-    }
-  }
-}
-
-export interface AccessTokenPayload {
-  sub: string;
-  email: string;
-  role: UserRole;
-}
-
-export function decodeAccessToken(token: string): AccessTokenPayload | null {
   try {
-    return JSON.parse(atob(token.split(".")[1]));
+    await apiPost("/auth/logout");
   } catch {
-    return null;
+    // cikis en kotu ihtimalle backend'e ulasamaz, cookie'ler client tarafinda
+    // zaten okunamadigi/degistirilemedigi icin en azindan yerel profil
+    // onbellegini temizlemek (bkz. cagiran taraf) yeterli olur
   }
-}
-
-export function emailFromAccessToken(token: string): string | null {
-  return decodeAccessToken(token)?.email ?? null;
-}
-
-export function roleFromAccessToken(token: string): UserRole | null {
-  return decodeAccessToken(token)?.role ?? null;
 }
 
 export function postLoginRedirectPath(
@@ -218,12 +170,9 @@ export function postLoginRedirectPath(
 }
 
 async function refreshAccessToken(): Promise<boolean> {
-  const refreshToken = getRefreshToken();
-  if (!refreshToken) return false;
   try {
-    const tokens = await apiPost<TokenPair>("/auth/refresh", { refreshToken });
-    saveTokens(tokens);
-    return true;
+    const res = await fetch("/api/auth/refresh", { method: "POST", credentials: "include" });
+    return res.ok;
   } catch {
     return false;
   }
@@ -235,14 +184,13 @@ let pendingRefresh: Promise<boolean> | null = null;
 
 type HttpMethod = "GET" | "POST" | "PATCH" | "DELETE";
 
-function doAuthFetch(method: HttpMethod, path: string, token: string, body?: unknown) {
+function doAuthFetch(method: HttpMethod, path: string, body?: unknown) {
   return fetch(`/api${path}`, {
     method,
-    headers: {
-      Authorization: `Bearer ${token}`,
-      ...(body !== undefined ? { "Content-Type": "application/json" } : {}),
-    },
-    ...(body !== undefined ? { body: JSON.stringify(body) } : {}),
+    credentials: "include",
+    ...(body !== undefined
+      ? { headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }
+      : {}),
   });
 }
 
@@ -251,10 +199,7 @@ async function authRequest<T>(
   path: string,
   body?: unknown,
 ): Promise<T> {
-  let token = getAccessToken();
-  if (!token) throw new ApiError("Oturum bulunamadı, tekrar giriş yap.", 401);
-
-  let res = await doAuthFetch(method, path, token, body);
+  let res = await doAuthFetch(method, path, body);
 
   if (res.status === 401) {
     if (!pendingRefresh) {
@@ -264,11 +209,9 @@ async function authRequest<T>(
     }
     const refreshed = await pendingRefresh;
     if (!refreshed) {
-      clearTokens();
       throw new ApiError("Oturum süresi doldu, tekrar giriş yap.", 401);
     }
-    token = getAccessToken()!;
-    res = await doAuthFetch(method, path, token, body);
+    res = await doAuthFetch(method, path, body);
   }
 
   if (!res.ok) {
@@ -324,10 +267,25 @@ export interface MyProfile {
   phone: string | null;
   emailVerified: boolean;
   phoneVerified: boolean;
+  // NOT: token artik httpOnly cookie'de oldugu icin client-side JWT decode
+  // ile role okunamiyor (eskiden roleFromAccessToken vardi) - GET /user/me
+  // backend yanitina role alanini eklemesi gerekiyor, aksi halde asagidaki
+  // role-bagli sayfalar (musavir paneli yonlendirmesi vb.) calismaz.
+  role: UserRole;
 }
 
 export async function getMyProfile() {
   return authRequest<MyProfile>("GET", "/user/me");
+}
+
+// Sayfa guard'larinin ortak kullandigi: giris yapilmis mi + rolu ne - token
+// artik httpOnly cookie'de oldugu icin varlik kontrolu sunucudan yapiliyor.
+export async function getCurrentUser(): Promise<MyProfile | null> {
+  try {
+    return await getMyProfile();
+  } catch {
+    return null;
+  }
 }
 
 export async function getDashboardOverview(taxYear: number) {
@@ -393,15 +351,12 @@ export async function generateReport(taxYear: number, format: ReportFormat) {
   );
 }
 
-// Rapor dosyasi Authorization header'i gerektiriyor, bu yuzden duz <a href>
-// calismiyor — blob olarak cekip tarayiciya indirtiyoruz (bkz.
-// openPaymentReceipt ile ayni desen, tek fark burda "indir" — yeni sekmede
-// acmak yerine dosya olarak kaydediliyor).
+// Rapor dosyasi auth gerektirdigi icin duz <a href> calismaz — blob olarak
+// cekip tarayiciya indirtiyoruz (bkz. openPaymentReceipt ile ayni desen, tek
+// fark burda "indir" — yeni sekmede acmak yerine dosya olarak kaydediliyor).
 export async function downloadReport(report: GeneratedReport) {
-  const token = getAccessToken();
-  if (!token) throw new ApiError("Oturum bulunamadı, tekrar giriş yap.", 401);
   const res = await fetch(`/api/reports/${report.id}/download`, {
-    headers: { Authorization: `Bearer ${token}` },
+    credentials: "include",
   });
   if (!res.ok) throw new ApiError("Rapor indirilemedi", res.status);
   const blob = await res.blob();
@@ -700,17 +655,14 @@ export async function removeWalletAddress(id: string) {
 // desenini FormData gövdesiyle tekrar eder. ---
 
 async function authUpload<T>(path: string, form: FormData): Promise<T> {
-  let token = getAccessToken();
-  if (!token) throw new ApiError("Oturum bulunamadı, tekrar giriş yap.", 401);
-
-  const doUpload = (t: string) =>
+  const doUpload = () =>
     fetch(`/api${path}`, {
       method: "POST",
-      headers: { Authorization: `Bearer ${t}` },
+      credentials: "include",
       body: form,
     });
 
-  let res = await doUpload(token);
+  let res = await doUpload();
 
   if (res.status === 401) {
     if (!pendingRefresh) {
@@ -720,11 +672,9 @@ async function authUpload<T>(path: string, form: FormData): Promise<T> {
     }
     const refreshed = await pendingRefresh;
     if (!refreshed) {
-      clearTokens();
       throw new ApiError("Oturum süresi doldu, tekrar giriş yap.", 401);
     }
-    token = getAccessToken()!;
-    res = await doUpload(token);
+    res = await doUpload();
   }
 
   if (!res.ok) {
@@ -836,13 +786,10 @@ export function paymentReceiptUrl(paymentId: string) {
 }
 
 // Dekont/kanıt görüntüleme — endpoint auth gerektirdiği için düz <a href>
-// çalışmaz (Authorization header taşımaz), bu yüzden blob olarak çekip
-// geçici bir object URL açıyoruz.
+// çalışmaz, bu yüzden blob olarak çekip geçici bir object URL açıyoruz.
 export async function openPaymentReceipt(paymentId: string) {
-  const token = getAccessToken();
-  if (!token) throw new ApiError("Oturum bulunamadı, tekrar giriş yap.", 401);
   const res = await fetch(paymentReceiptUrl(paymentId), {
-    headers: { Authorization: `Bearer ${token}` },
+    credentials: "include",
   });
   if (!res.ok) throw new ApiError("Dekont açılamadı", res.status);
   const blob = await res.blob();
@@ -1243,12 +1190,10 @@ export async function openAccountantVerificationDoc(
   kind: "license" | "taxPlate",
   isAdmin: boolean,
 ) {
-  const token = getAccessToken();
-  if (!token) throw new ApiError("Oturum bulunamadı, tekrar giriş yap.", 401);
   const path = isAdmin
     ? `/api/admin/accountant-verifications/${userId}/documents/${kind}`
     : `/api/accountant/verification/documents/${kind}`;
-  const res = await fetch(path, { headers: { Authorization: `Bearer ${token}` } });
+  const res = await fetch(path, { credentials: "include" });
   if (!res.ok) throw new ApiError("Belge açılamadı", res.status);
   const blob = await res.blob();
   const url = URL.createObjectURL(blob);

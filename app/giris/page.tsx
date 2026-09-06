@@ -7,8 +7,6 @@ import {
   ApiError,
   login,
   postLoginRedirectPath,
-  roleFromAccessToken,
-  saveTokens,
   type LoginMethod,
 } from "@/lib/auth-client";
 import { countryCodes } from "@/lib/data/country-codes";
@@ -52,9 +50,7 @@ function GirisContent() {
         setNeedsTwoFactor(true);
         return;
       }
-      saveTokens(result);
-      const role = roleFromAccessToken(result.accessToken);
-      router.push(postLoginRedirectPath(role, redirect));
+      router.push(postLoginRedirectPath(result.user.role, redirect));
     } catch (err) {
       setError(
         err instanceof ApiError

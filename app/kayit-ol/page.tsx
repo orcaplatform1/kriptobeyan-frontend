@@ -9,8 +9,6 @@ import {
   postLoginRedirectPath,
   registerAccount,
   resendPhoneCode,
-  roleFromAccessToken,
-  saveTokens,
   verifyPhoneCode,
   type UserRole,
 } from "@/lib/auth-client";
@@ -100,10 +98,7 @@ function KayitOlContent() {
         router.push("/giris");
         return;
       }
-      saveTokens(result);
-      setRedirectPath(
-        postLoginRedirectPath(roleFromAccessToken(result.accessToken), redirect),
-      );
+      setRedirectPath(postLoginRedirectPath(result.user.role, redirect));
       setStep("verify-phone");
     } catch (err) {
       setError(

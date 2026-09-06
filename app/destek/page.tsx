@@ -6,7 +6,6 @@ import {
   ApiError,
   addSupportMessage,
   createSupportTicket,
-  getAccessToken,
   listMySupportTickets,
   type SupportTicketCategory,
   type SupportTicketRow,
@@ -36,7 +35,6 @@ function DestekPageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const categoryParam = searchParams.get("category") as SupportTicketCategory | null;
-  const [ready, setReady] = useState(false);
   const [tickets, setTickets] = useState<SupportTicketRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [openTicket, setOpenTicket] = useState<SupportTicketRow | null>(null);
@@ -68,17 +66,9 @@ function DestekPageInner() {
   }
 
   useEffect(() => {
-    if (!getAccessToken()) {
-      router.replace("/giris?redirect=/destek");
-      return;
-    }
-    setReady(true);
-  }, [router]);
-
-  useEffect(() => {
-    if (ready) reload();
+    reload();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ready]);
+  }, []);
 
   async function handleCreate() {
     if (!subject.trim() || !body.trim()) return;
@@ -114,8 +104,6 @@ function DestekPageInner() {
       setSubmitting(false);
     }
   }
-
-  if (!ready) return null;
 
   return (
     <main className="bg-cream">

@@ -6,9 +6,7 @@ import Link from "next/link";
 import {
   ApiError,
   downloadReport,
-  emailFromAccessToken,
   generateReport,
-  getAccessToken,
   getDashboardOverview,
   getDashboardPositions,
   getDashboardSources,
@@ -226,17 +224,19 @@ export default function PanelPage() {
   );
 
   useEffect(() => {
-    const token = getAccessToken();
-    if (!token) {
-      router.replace("/giris");
-      return;
-    }
-    setEmail(emailFromAccessToken(token));
-    setReady(true);
     getMyProfile()
-      .then((profile) => setDisplayName(profile.fullName))
-      .catch(() => {
-        // isim cekilemezse asagida email'e dusuluyor, kritik degil
+      .then((profile) => {
+        setEmail(profile.email);
+        setDisplayName(profile.fullName);
+        setReady(true);
+      })
+      .catch((err) => {
+        if (err instanceof ApiError && err.status === 401) {
+          router.replace("/giris");
+          return;
+        }
+        // isim/email cekilemezse (401 disi) asagida bos gorunur, kritik degil
+        setReady(true);
       });
   }, [router]);
 

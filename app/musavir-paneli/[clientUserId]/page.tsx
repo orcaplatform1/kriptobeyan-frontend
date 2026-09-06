@@ -5,9 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   ApiError,
-  getAccessToken,
   getAccountantClientSummary,
-  roleFromAccessToken,
+  getMyProfile,
   type AccountantClientSummary,
 } from "@/lib/auth-client";
 
@@ -35,13 +34,18 @@ export default function MusteriDetayPage({
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const token = getAccessToken();
-    if (!token) {
-      router.replace(`/giris?redirect=/musavir-paneli/${clientUserId}`);
-      return;
-    }
-    setAuthorized(roleFromAccessToken(token) === "ACCOUNTANT");
-    setChecked(true);
+    getMyProfile()
+      .then((profile) => {
+        setAuthorized(profile.role === "ACCOUNTANT");
+        setChecked(true);
+      })
+      .catch((err) => {
+        if (err instanceof ApiError && err.status === 401) {
+          router.replace(`/giris?redirect=/musavir-paneli/${clientUserId}`);
+          return;
+        }
+        setChecked(true);
+      });
   }, [router, clientUserId]);
 
   useEffect(() => {

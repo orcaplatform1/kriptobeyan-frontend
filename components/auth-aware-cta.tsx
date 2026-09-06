@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState, type ReactNode } from "react";
-import { getAccessToken, postLoginRedirectPath, roleFromAccessToken } from "@/lib/auth-client";
+import { getCurrentUser, postLoginRedirectPath } from "@/lib/auth-client";
 
 function loggedOutHref(planId?: string): string {
   return planId
@@ -27,14 +27,14 @@ export function AuthAwareCta({
   const [href, setHref] = useState(() => loggedOutHref(planId));
 
   useEffect(() => {
-    const token = getAccessToken();
-    if (token) {
+    getCurrentUser().then((user) => {
+      if (!user) return;
       setHref(
         planId
           ? `/panel/abonelik?plan=${planId}`
-          : postLoginRedirectPath(roleFromAccessToken(token)),
+          : postLoginRedirectPath(user.role),
       );
-    }
+    });
   }, [planId]);
 
   return (

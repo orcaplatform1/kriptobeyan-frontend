@@ -33,7 +33,6 @@ import {
   adminUpdatePlan,
   adminUpdateSupportTicketStatus,
   adminUpdateUser,
-  getAccessToken,
   openAccountantVerificationDoc,
   openPaymentReceipt,
   type AccountantVerificationRow,
@@ -1798,16 +1797,16 @@ export default function AdminPage() {
   const [tab, setTab] = useState<Tab>("plans");
 
   useEffect(() => {
-    if (!getAccessToken()) {
-      router.replace("/giris?redirect=/admin");
-      return;
-    }
     adminListPlans()
       .then((res) => {
         setPlans(res);
         setStatus("ready");
       })
       .catch((err) => {
+        if (err instanceof ApiError && err.status === 401) {
+          router.replace("/giris?redirect=/admin");
+          return;
+        }
         if (err instanceof ApiError && err.status === 403) {
           setStatus("forbidden");
           return;
