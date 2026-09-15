@@ -4,11 +4,11 @@ import { FOOTER_LINK_GROUPS } from "@/lib/site-config";
 import type { SiteContent } from "@/lib/api";
 
 // Telif metni admin panelden (SiteContentSettings.footerCopyrightText) duz
-// metin olarak geliyor — "Traders.TR" gecen kismini kullanici istegiyle
-// (2026-08-24: "Traders'i premium kırmızı, .TR'yi premium beyaz yap, yanına
-// bayrak simgesi koy") ozel stille vurgulayip yaninda bayrak ikonu gostermek
-// icin metni bu sabit alt dizeye gore boluyoruz, geri kalani duz metin
-// kaliyor. ORCA'daki (traders.tr) site-footer.tsx ile ayni desen/class.
+// metin olarak geliyor — "Traders.TR" gecen kismini ozel stille vurgulayip
+// yaninda bayrak ikonu gostermek icin metni bu sabit alt dizeye gore
+// boluyoruz, geri kalani duz metin kaliyor. Renkler traders.tr logosuyla
+// tutarli (2026-09-15): "Traders" beyaz, ".TR" mavi. Bayrak ikonuna
+// dokunulmadi. ORCA'daki (traders.tr) site-footer.tsx ile ayni desen/class.
 function renderCopyrightWithBrandHighlight(text: string) {
   const marker = "Traders.TR";
   const parts = text.split(marker);
@@ -18,8 +18,8 @@ function renderCopyrightWithBrandHighlight(text: string) {
       ? [part]
       : [
           <span key={i} className="whitespace-nowrap">
-            <span className="text-traders-red">Traders</span>
-            <span className="text-traders-white">.TR</span>{" "}
+            <span className="text-traders-white">Traders</span>
+            <span className="text-traders-blue">.TR</span>{" "}
             <img
               src="/footerflag.png"
               alt=""
