@@ -125,10 +125,18 @@ export function HeroSection({ content }: { content?: SiteContent | null }) {
                 sutununda "Nasıl çalışır?" yaninda da var, o yuzden burada
                 md:hidden — masaustunde ikisi ayni anda gorunmesin diye,
                 bkz. yukaridaki motion.div icindeki Link). */}
-            <span className="btn-gold-comet absolute bottom-5 left-5 inline-flex md:hidden">
-              <AuthAwareCta className="inline-flex items-center justify-center rounded-full bg-marble-dark px-6 py-3 text-sm font-semibold text-cream shadow-[0_8px_24px_-8px_rgba(28,32,25,0.5)] transition-transform hover:scale-[1.03] hover:bg-marble-dark-2">
-                {c.heroPrimaryCtaLabel}
-              </AuthAwareCta>
+            {/* Konumlandirma (absolute bottom/left) ve .btn-gold-comet'in kendi
+                position:relative'i AYNI elemanda çakışıyordu (ikisi de tek
+                class specificity'sinde, comet kazanip butonu "relative" akışa
+                düşürüyor, gorselin dışına/altına kayıyordu — bkz. ekran
+                görüntüsü). Masaüstündeki gibi konumlandırmayı DIŞ bir span'a,
+                comet efektini İÇ span'a ayırdık. */}
+            <span className="absolute bottom-5 left-5 md:hidden">
+              <span className="btn-gold-comet relative inline-flex">
+                <AuthAwareCta className="inline-flex items-center justify-center rounded-full bg-marble-dark px-6 py-3 text-sm font-semibold text-cream shadow-[0_8px_24px_-8px_rgba(28,32,25,0.5)] transition-transform hover:scale-[1.03] hover:bg-marble-dark-2">
+                  {c.heroPrimaryCtaLabel}
+                </AuthAwareCta>
+              </span>
             </span>
           </div>
         </div>
