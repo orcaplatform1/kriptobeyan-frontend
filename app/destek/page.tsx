@@ -1,8 +1,20 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import {
+  BookOpen,
+  Building2,
+  Calculator,
+  ChevronDown,
+  CreditCard,
+  LifeBuoy,
+  Repeat,
+  Search,
+  ShieldCheck,
+  Users,
+} from "lucide-react";
 import {
   ApiError,
   addSupportMessage,
@@ -12,6 +24,7 @@ import {
   type SupportTicketRow,
 } from "@/lib/auth-client";
 import { CustomSelect } from "@/components/custom-select";
+import { faqGroups } from "@/lib/faq-data";
 
 const STATUS_LABELS: Record<string, { label: string; className: string }> = {
   OPEN: { label: "Açık", className: "bg-gold/15 text-gold-deep" },
@@ -32,42 +45,35 @@ const CATEGORY_LABELS: Record<SupportTicketCategory, string> = Object.fromEntrie
   CATEGORY_OPTIONS.map((o) => [o.value, o.label]),
 ) as Record<SupportTicketCategory, string>;
 
-// Koinly'nin destek merkezindeki kategori yapisindan (Getting started,
-// Instructions, Common questions, Account related) uyarlandi — bizde ayri
-// yazilmis yardim makaleleri yerine, bu konulari zaten anlatan GERCEK
-// sayfalara yonlendiriyoruz (uydurma/dogrulanmamis icerik eklememek icin).
-const HELP_TOPICS = [
-  {
-    title: "Başlarken",
-    desc: "Hesap bağlama, otomatik birleştirme ve FIFO hesaplama adım adım.",
-    href: "/nasil-calisir",
-  },
-  {
-    title: "Sık Sorulan Sorular",
-    desc: "Vergi hesaplama, güvenlik, borsalar ve fiyatlandırma hakkında hızlı yanıtlar.",
-    href: "/sss",
-  },
-  {
-    title: "Güvenlik",
-    desc: "API anahtarı izinleri, şifreleme ve veri koruması nasıl çalışır.",
-    href: "/guvenlik",
-  },
-  {
-    title: "Fiyatlandırma",
-    desc: "Plan karşılaştırması, işlem limitleri ve ödeme yöntemleri.",
-    href: "/fiyatlandirma",
-  },
-  {
-    title: "Mali Müşavirler İçin",
-    desc: "Müşteri davet etme, portföy takibi ve yetkilendirme kontrolleri.",
-    href: "/mali-musavirler",
-  },
-  {
-    title: "İşletmeler İçin",
-    desc: "Ticari kazanç esaslı hesaplama ve yüksek hacimli planlar.",
-    href: "/isletmeler",
-  },
+// faqGroups (lib/faq-data.ts) /sss ile PAYLASILAN gercek icerik — burada
+// linkle baska sayfaya atmak yerine dogrudan arama+kategori filtresiyle
+// gomulu (inline) gosteriliyor (Koinly'nin destek merkezindeki gibi).
+const GROUP_ICONS: Record<string, typeof Calculator> = {
+  "Vergi ve hesaplama": Calculator,
+  "Güvenlik ve veri": ShieldCheck,
+  "Borsalar ve entegrasyon": Repeat,
+  "Hesap ve fiyatlandırma": CreditCard,
+};
+
+// Tek bir soruya sigmayan, daha derin konular icin ikincil rehber linkleri.
+const DEEP_DIVE_LINKS = [
+  { title: "Nasıl Çalışır", icon: BookOpen, href: "/nasil-calisir" },
+  { title: "Güvenlik", icon: ShieldCheck, href: "/guvenlik" },
+  { title: "Fiyatlandırma", icon: CreditCard, href: "/fiyatlandirma" },
+  { title: "Mali Müşavirler İçin", icon: Users, href: "/mali-musavirler" },
+  { title: "İşletmeler İçin", icon: Building2, href: "/isletmeler" },
 ];
+
+function normalize(s: string) {
+  return s
+    .toLocaleLowerCase("tr")
+    .replace(/[ıİ]/g, "i")
+    .replace(/[şŞ]/g, "s")
+    .replace(/[ğĞ]/g, "g")
+    .replace(/[üÜ]/g, "u")
+    .replace(/[öÖ]/g, "o")
+    .replace(/[çÇ]/g, "c");
+}
 
 function DestekPageInner() {
   const searchParams = useSearchParams();
@@ -76,6 +82,25 @@ function DestekPageInner() {
   const [loading, setLoading] = useState(true);
   const [openTicket, setOpenTicket] = useState<SupportTicketRow | null>(null);
   const [notAuthenticated, setNotAuthenticated] = useState(false);
+
+  const [query, setQuery] = useState("");
+  const [activeGroup, setActiveGroup] = useState<string | null>(null);
+
+  const filteredGroups = useMemo(() => {
+    const q = normalize(query.trim());
+    return faqGroups
+      .filter((g) => !activeGroup || g.title === activeGroup)
+      .map((g) => ({
+        ...g,
+        items: g.items.filter(
+          (item) => !q || normalize(item.q).includes(q) || normalize(item.a).includes(q),
+        ),
+      }))
+      .filter((g) => g.items.length > 0);
+  }, [query, activeGroup]);
+
+  const totalResults = filteredGroups.reduce((sum, g) => sum + g.items.length, 0);
+  const isSearching = query.trim().length > 0;
 
   const [view, setView] = useState<"list" | "new">(categoryParam ? "new" : "list");
   const [category, setCategory] = useState<SupportTicketCategory>(categoryParam ?? "OTHER");
@@ -145,33 +170,137 @@ function DestekPageInner() {
 
   return (
     <main className="bg-cream">
-      <div className="mx-auto max-w-5xl px-6 py-16 lg:px-10 lg:py-24">
-        <p className="text-xs font-semibold tracking-wide text-gold-deep uppercase">
-          Yardım ve Destek
-        </p>
-        <h1 className="mt-3 font-serif text-3xl font-semibold text-ink sm:text-4xl">
-          Sana nasıl yardımcı olabiliriz?
-        </h1>
-        <p className="mt-3 max-w-2xl text-ink-soft">
-          Aşağıdaki konu başlıklarından hızlıca yanıt bul, ya da bulamadığın
-          bir şey varsa doğrudan destek ekibimize bilet aç.
-        </p>
+      {/* Hero + arama — koyu zemin, Koinly'nin destek merkezi girisine
+          benzer daha "premium" bir ac; icerigin gerisi cream zeminde devam eder. */}
+      <div className="bg-marble-dark py-16 lg:py-20">
+        <div className="mx-auto max-w-3xl px-6 text-center lg:px-10">
+          <p className="text-xs font-semibold tracking-wide text-gold-light uppercase">
+            Yardım ve Destek
+          </p>
+          <h1 className="mt-3 font-serif text-3xl font-semibold text-cream sm:text-4xl">
+            Sana nasıl yardımcı olabiliriz?
+          </h1>
+          <p className="mt-3 text-cream/65">
+            Sorunu birkaç kelimeyle yaz, aşağıda hemen yanıtı bul.
+          </p>
 
-        <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {HELP_TOPICS.map((topic) => (
-            <Link
-              key={topic.href}
-              href={topic.href}
-              className="rounded-2xl border border-gold/20 bg-parchment p-5 transition-colors hover:border-gold/40"
-            >
-              <p className="font-serif text-base font-semibold text-ink">{topic.title}</p>
-              <p className="mt-1.5 text-sm leading-relaxed text-ink-soft">{topic.desc}</p>
-            </Link>
-          ))}
+          <div className="relative mx-auto mt-8 max-w-xl">
+            <Search className="pointer-events-none absolute left-5 top-1/2 size-5 -translate-y-1/2 text-ink-soft" />
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Örn. API anahtarı güvenli mi, zarar mahsubu, iptal…"
+              className="w-full rounded-full border-0 bg-cream py-4 pl-14 pr-5 text-sm text-ink shadow-[0_12px_32px_-12px_rgba(0,0,0,0.35)] outline-none placeholder:text-ink-soft/70 focus:ring-2 focus:ring-gold"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="mx-auto max-w-5xl px-6 py-16 lg:px-10 lg:py-20">
+        {/* Kategori filtre pilleri */}
+        <div className="flex flex-wrap items-center justify-center gap-2.5">
+          <button
+            onClick={() => setActiveGroup(null)}
+            className={`rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
+              activeGroup === null
+                ? "bg-marble-dark text-cream"
+                : "border border-gold/25 text-ink-soft hover:border-gold/40"
+            }`}
+          >
+            Tümü
+          </button>
+          {faqGroups.map((g) => {
+            const Icon = GROUP_ICONS[g.title] ?? BookOpen;
+            return (
+              <button
+                key={g.title}
+                onClick={() => setActiveGroup(activeGroup === g.title ? null : g.title)}
+                className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
+                  activeGroup === g.title
+                    ? "bg-marble-dark text-cream"
+                    : "border border-gold/25 text-ink-soft hover:border-gold/40"
+                }`}
+              >
+                <Icon className="size-3.5" />
+                {g.title}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Sonuclar — gercek SSS icerigi gomulu, baska sayfaya atmadan */}
+        <div className="mt-10">
+          {isSearching && (
+            <p className="mb-4 text-sm text-ink-soft">
+              {totalResults > 0
+                ? `"${query}" için ${totalResults} sonuç bulundu.`
+                : `"${query}" için sonuç bulunamadı.`}
+            </p>
+          )}
+
+          {totalResults === 0 && isSearching ? (
+            <div className="rounded-2xl border border-gold/20 bg-parchment p-8 text-center">
+              <p className="text-ink-soft">
+                Aradığın konuyu bulamadık. Aşağıdan doğrudan destek ekibimize
+                yazabilirsin.
+              </p>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-10">
+              {(isSearching || activeGroup ? filteredGroups : faqGroups).map((group) => {
+                const Icon = GROUP_ICONS[group.title] ?? BookOpen;
+                return (
+                  <div key={group.title}>
+                    <h2 className="flex items-center gap-2 font-serif text-lg font-semibold text-ink">
+                      <Icon className="size-4.5 text-gold-deep" />
+                      {group.title}
+                    </h2>
+                    <div className="mt-4 flex flex-col gap-3">
+                      {group.items.map((item) => (
+                        <details
+                          key={item.id}
+                          open={isSearching}
+                          className="group rounded-xl border border-gold/20 bg-parchment px-5 py-4 open:bg-parchment"
+                        >
+                          <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-base font-semibold text-ink marker:content-none">
+                            {item.q}
+                            <ChevronDown className="size-4 shrink-0 text-ink-soft transition-transform group-open:rotate-180" />
+                          </summary>
+                          <p className="mt-3 text-sm leading-relaxed text-ink-soft">
+                            {item.a}
+                          </p>
+                        </details>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* Ikincil: daha derin rehberler */}
+        <div className="mt-16 border-t border-gold/15 pt-10">
+          <h2 className="font-serif text-lg font-semibold text-ink">Detaylı rehberler</h2>
+          <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+            {DEEP_DIVE_LINKS.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="flex flex-col items-center gap-2 rounded-xl border border-gold/20 bg-parchment px-3 py-5 text-center transition-colors hover:border-gold/40"
+              >
+                <link.icon className="size-5 text-gold-deep" />
+                <span className="text-xs font-semibold text-ink">{link.title}</span>
+              </Link>
+            ))}
+          </div>
         </div>
 
         <div className="mt-14 border-t border-gold/15 pt-10">
-          <h2 className="font-serif text-2xl font-semibold text-ink">Destek Bileti</h2>
+          <h2 className="flex items-center gap-2 font-serif text-2xl font-semibold text-ink">
+            <LifeBuoy className="size-5 text-gold-deep" />
+            Destek Bileti
+          </h2>
           <p className="mt-2 text-ink-soft">
             Bir sorun mu yaşıyorsun? Bilet oluştur, ekibimiz cevap verdiğinde
             bildirim panelinde göreceksin.
