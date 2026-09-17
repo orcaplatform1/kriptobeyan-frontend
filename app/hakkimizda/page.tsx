@@ -80,15 +80,6 @@ export default function HakkimizdaPage() {
             ağına sahip bir platform inşa etmek.
           </p>
 
-          <h2>Ne değiliz</h2>
-          <p>
-            KriptoBeyan bir vergi danışmanlık şirketi veya aracı kurum
-            değildir. Ürettiğimiz tüm rakamlar taslak/tahminidir; resmi
-            beyanınız için her zaman bir mali müşavire danışmanızı öneririz.
-            Detaylar için{" "}
-            <a href="/sorumluluk-reddi">Sorumluluk Reddi</a> sayfamıza
-            bakabilirsiniz.
-          </p>
           <h2>Bize ulaşın</h2>
           <p>
             Sorularınız, geri bildirimleriniz veya iş birliği talepleriniz

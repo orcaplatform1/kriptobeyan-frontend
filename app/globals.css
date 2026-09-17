@@ -212,6 +212,7 @@ body {
 }
 
 .btn-gold-comet {
+  position: relative;
   border-radius: 999px;
   padding: 2px;
   overflow: hidden;
@@ -253,6 +254,7 @@ body {
    dursun diye. Ayni display/position-yok deseni yukaridaki .btn-gold-comet
    yorumuyla ayni sebepten. */
 .btn-indigo-comet {
+  position: relative;
   border-radius: 999px;
   padding: 2px;
   overflow: hidden;

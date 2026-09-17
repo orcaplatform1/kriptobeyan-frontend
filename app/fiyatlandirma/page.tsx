@@ -79,8 +79,14 @@ function PlanCard({
 
 export default async function FiyatlandirmaPage() {
   const plans = await getPlans();
+  // "İşletme " on ekiyle baslayan planlar INDIVIDUAL tipini paylasir (satin
+  // alma akisi plan.type ile user.role'u karsilastirmiyor, degisiklik
+  // gerekmedi) ama isim onekine gore ayri bir bolumde gosteriliyor.
   const individual = plans
-    .filter((p) => p.type === "INDIVIDUAL")
+    .filter((p) => p.type === "INDIVIDUAL" && !p.name.startsWith("İşletme "))
+    .sort((a, b) => Number(a.priceTRY) - Number(b.priceTRY));
+  const business = plans
+    .filter((p) => p.type === "INDIVIDUAL" && p.name.startsWith("İşletme "))
     .sort((a, b) => Number(a.priceTRY) - Number(b.priceTRY));
   const accountant = plans
     .filter((p) => p.type === "ACCOUNTANT")
@@ -153,6 +159,34 @@ export default async function FiyatlandirmaPage() {
                         : `Yılda ${new Intl.NumberFormat("tr-TR").format(plan.transactionLimit)} işleme kadar`
                   }
                   highlighted={i === Math.min(2, individual.length - 1)}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {business.length > 0 && (
+          <div className="mt-16">
+            <h2 className="font-serif text-2xl font-semibold text-ink">
+              İşletmeler
+            </h2>
+            <p className="mt-2 text-ink-soft">
+              Yüksek işlem hacmine sahip işletmeler için — ticari kazanç
+              (değer artışı değil) esaslı vergi hesabı dahildir.
+            </p>
+            <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {business.map((plan, i) => (
+                <PlanCard
+                  key={plan.id}
+                  planId={plan.id}
+                  name={plan.name}
+                  priceTRY={plan.priceTRY}
+                  limitLabel={
+                    plan.transactionLimit === null
+                      ? "Sınırsız işlem"
+                      : `Yılda ${new Intl.NumberFormat("tr-TR").format(plan.transactionLimit)} işleme kadar`
+                  }
+                  highlighted={i === 1}
                 />
               ))}
             </div>

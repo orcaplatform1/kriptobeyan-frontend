@@ -1,7 +1,8 @@
 "use client";
 
 import { Suspense, useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import {
   ApiError,
   addSupportMessage,
@@ -31,13 +32,50 @@ const CATEGORY_LABELS: Record<SupportTicketCategory, string> = Object.fromEntrie
   CATEGORY_OPTIONS.map((o) => [o.value, o.label]),
 ) as Record<SupportTicketCategory, string>;
 
+// Koinly'nin destek merkezindeki kategori yapisindan (Getting started,
+// Instructions, Common questions, Account related) uyarlandi — bizde ayri
+// yazilmis yardim makaleleri yerine, bu konulari zaten anlatan GERCEK
+// sayfalara yonlendiriyoruz (uydurma/dogrulanmamis icerik eklememek icin).
+const HELP_TOPICS = [
+  {
+    title: "Başlarken",
+    desc: "Hesap bağlama, otomatik birleştirme ve FIFO hesaplama adım adım.",
+    href: "/nasil-calisir",
+  },
+  {
+    title: "Sık Sorulan Sorular",
+    desc: "Vergi hesaplama, güvenlik, borsalar ve fiyatlandırma hakkında hızlı yanıtlar.",
+    href: "/sss",
+  },
+  {
+    title: "Güvenlik",
+    desc: "API anahtarı izinleri, şifreleme ve veri koruması nasıl çalışır.",
+    href: "/guvenlik",
+  },
+  {
+    title: "Fiyatlandırma",
+    desc: "Plan karşılaştırması, işlem limitleri ve ödeme yöntemleri.",
+    href: "/fiyatlandirma",
+  },
+  {
+    title: "Mali Müşavirler İçin",
+    desc: "Müşteri davet etme, portföy takibi ve yetkilendirme kontrolleri.",
+    href: "/mali-musavirler",
+  },
+  {
+    title: "İşletmeler İçin",
+    desc: "Ticari kazanç esaslı hesaplama ve yüksek hacimli planlar.",
+    href: "/isletmeler",
+  },
+];
+
 function DestekPageInner() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const categoryParam = searchParams.get("category") as SupportTicketCategory | null;
   const [tickets, setTickets] = useState<SupportTicketRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [openTicket, setOpenTicket] = useState<SupportTicketRow | null>(null);
+  const [notAuthenticated, setNotAuthenticated] = useState(false);
 
   const [view, setView] = useState<"list" | "new">(categoryParam ? "new" : "list");
   const [category, setCategory] = useState<SupportTicketCategory>(categoryParam ?? "OTHER");
@@ -58,7 +96,7 @@ function DestekPageInner() {
       }
     } catch (err) {
       if (err instanceof ApiError && err.status === 401) {
-        router.replace("/giris?redirect=/destek");
+        setNotAuthenticated(true);
       }
     } finally {
       setLoading(false);
@@ -107,16 +145,48 @@ function DestekPageInner() {
 
   return (
     <main className="bg-cream">
-      <div className="mx-auto max-w-3xl px-6 py-16 lg:px-10 lg:py-24">
-        <p className="text-xs font-semibold tracking-wide text-gold-deep uppercase">Destek</p>
+      <div className="mx-auto max-w-5xl px-6 py-16 lg:px-10 lg:py-24">
+        <p className="text-xs font-semibold tracking-wide text-gold-deep uppercase">
+          Yardım ve Destek
+        </p>
         <h1 className="mt-3 font-serif text-3xl font-semibold text-ink sm:text-4xl">
-          Destek merkezi
+          Sana nasıl yardımcı olabiliriz?
         </h1>
-        <p className="mt-3 text-ink-soft">
-          Bir sorun mu yaşıyorsun? Bilet oluştur, ekibimiz cevap verdiğinde
-          bildirim panelinde göreceksin.
+        <p className="mt-3 max-w-2xl text-ink-soft">
+          Aşağıdaki konu başlıklarından hızlıca yanıt bul, ya da bulamadığın
+          bir şey varsa doğrudan destek ekibimize bilet aç.
         </p>
 
+        <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {HELP_TOPICS.map((topic) => (
+            <Link
+              key={topic.href}
+              href={topic.href}
+              className="rounded-2xl border border-gold/20 bg-parchment p-5 transition-colors hover:border-gold/40"
+            >
+              <p className="font-serif text-base font-semibold text-ink">{topic.title}</p>
+              <p className="mt-1.5 text-sm leading-relaxed text-ink-soft">{topic.desc}</p>
+            </Link>
+          ))}
+        </div>
+
+        <div className="mt-14 border-t border-gold/15 pt-10">
+          <h2 className="font-serif text-2xl font-semibold text-ink">Destek Bileti</h2>
+          <p className="mt-2 text-ink-soft">
+            Bir sorun mu yaşıyorsun? Bilet oluştur, ekibimiz cevap verdiğinde
+            bildirim panelinde göreceksin.
+          </p>
+
+          {notAuthenticated ? (
+            <div className="mt-6 rounded-2xl border border-gold/20 bg-parchment p-6 text-sm text-ink-soft">
+              Bilet oluşturmak veya mevcut biletlerini görmek için{" "}
+              <Link href="/giris?redirect=/destek" className="font-semibold text-gold-deep underline">
+                giriş yapmalısın
+              </Link>
+              .
+            </div>
+          ) : (
+            <>
         {!openTicket && (
           <div className="mt-8 flex items-center justify-between">
             <div className="flex gap-2">
@@ -276,6 +346,9 @@ function DestekPageInner() {
             )}
           </div>
         )}
+            </>
+          )}
+        </div>
       </div>
     </main>
   );

@@ -38,7 +38,7 @@ const PAGE_META: Record<string, { label: string; group: string }> = {
   "/destek": { label: "Destek", group: "Şirket" },
   "/sorumluluk-reddi": { label: "Sorumluluk Reddi / Vergi Uyarısı", group: "Yasal" },
   "/gizlilik-politikasi": { label: "Gizlilik Politikası", group: "Yasal" },
-  "/kvkk-aydinlatma-metni": { label: "KVKK Aydınlatma Metni", group: "Yasal" },
+  "/kvkk-aydinlatma-metni": { label: "KVKK", group: "Yasal" },
   "/cerez-politikasi": { label: "Çerez Politikası", group: "Yasal" },
   "/kullanim-sartlari": { label: "Kullanım Şartları", group: "Yasal" },
   "/mesafeli-satis-sozlesmesi": { label: "Mesafeli Satış Sözleşmesi", group: "Yasal" },

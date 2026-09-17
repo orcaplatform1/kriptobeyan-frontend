@@ -13,7 +13,8 @@ import { adminListPlans, getCurrentUser, logout } from "@/lib/auth-client";
 const navLinks = [
   { href: "/nasil-calisir", label: "Nasıl Çalışır" },
   { href: "/fiyatlandirma", label: "Fiyatlandırma" },
-  { href: "/#muhasebeciler", label: "Mali Müşavirler İçin" },
+  { href: "/isletmeler", label: "İşletmeler İçin" },
+  { href: "/mali-musavirler", label: "Mali Müşavirler İçin" },
   { href: "/sss", label: "SSS" },
 ];
 

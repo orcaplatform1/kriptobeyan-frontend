@@ -13,11 +13,16 @@ import type { NextRequest } from "next/server";
 // client-side kontrolleri zaten aynı işi yapıyordu, bu sadece daha erken ve
 // flash'sız hale getiriyor).
 //
-// /muhasebeci-daveti kasıtlı olarak buraya dahil DEĞİL: o sayfa hem giriş
-// yapmış hem yapmamış ziyaretçi için render edilip davet linkini tıklayan
-// ama henüz hesabı olmayan kişiye "önce giriş yap" mesajı gösteriyor (bkz.
-// app/muhasebeci-daveti/page.tsx "needs-auth" durumu) - buradan zorla
-// yönlendirmek o mesajı hiç göstermeden kullanıcıyı bounce ettirir.
+// /muhasebeci-daveti VE /destek kasıtlı olarak buraya dahil DEĞİL: ikisi de
+// hem giriş yapmış hem yapmamış ziyaretçi için render edilir.
+// /muhasebeci-daveti davet linkini tıklayan ama henüz hesabı olmayan
+// kişiye "önce giriş yap" mesajı gösteriyor (bkz. app/muhasebeci-daveti/
+// page.tsx "needs-auth" durumu); /destek ise artık herkese açık bir
+// "Yardım ve Destek" merkezi (kategori kartları + SSS'e linkler) ve yalnızca
+// bilet oluşturma/görüntüleme kısmı giriş istiyor, bunu sayfanın kendisi
+// client-side kontrol ediyor (bkz. app/destek/page.tsx "notAuthenticated").
+// Buradan zorla yönlendirmek, herkese açık olması gereken yardım içeriğini
+// hiç göstermeden ziyaretçiyi bounce ettirir.
 export function proxy(request: NextRequest) {
   const hasSession = Boolean(
     request.cookies.get("kb_access_token") || request.cookies.get("kb_refresh_token")
@@ -33,5 +38,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/panel/:path*", "/admin/:path*", "/musavir-paneli/:path*", "/destek/:path*"],
+  matcher: ["/panel/:path*", "/admin/:path*", "/musavir-paneli/:path*"],
 };

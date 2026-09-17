@@ -6,7 +6,11 @@ import Link from "next/link";
 import {
   ApiError,
   changePassword,
+  getBusinessVerificationStatus,
   getMyProfile,
+  openBusinessVerificationDoc,
+  uploadBusinessVerificationDocs,
+  type BusinessVerificationStatus,
   type MyProfile,
 } from "@/lib/auth-client";
 
@@ -34,11 +38,23 @@ export default function HesapAyarlariPage() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
+  const [verification, setVerification] = useState<BusinessVerificationStatus | null>(null);
+  const [taxPlateFile, setTaxPlateFile] = useState<File | null>(null);
+  const [signatureFile, setSignatureFile] = useState<File | null>(null);
+  const [docsUploading, setDocsUploading] = useState(false);
+  const [docsError, setDocsError] = useState<string | null>(null);
+  const [docsSuccess, setDocsSuccess] = useState<string | null>(null);
+
   useEffect(() => {
     getMyProfile()
       .then((p) => {
         setProfile(p);
         setReady(true);
+        if (p.taxpayerType === "BUSINESS") {
+          getBusinessVerificationStatus()
+            .then(setVerification)
+            .catch(() => {});
+        }
       })
       .catch((err) => {
         if (err instanceof ApiError && err.status === 401) {
@@ -50,6 +66,28 @@ export default function HesapAyarlariPage() {
         setReady(true);
       });
   }, [router]);
+
+  async function handleUploadDocs() {
+    setDocsError(null);
+    setDocsSuccess(null);
+    if (!taxPlateFile && !signatureFile) {
+      setDocsError("En az bir belge seç.");
+      return;
+    }
+    setDocsUploading(true);
+    try {
+      await uploadBusinessVerificationDocs(taxPlateFile, signatureFile);
+      setDocsSuccess("Belgeler yüklendi, admin onayı bekleniyor.");
+      setTaxPlateFile(null);
+      setSignatureFile(null);
+      const status = await getBusinessVerificationStatus();
+      setVerification(status);
+    } catch (err) {
+      setDocsError(err instanceof ApiError ? err.message : "Belgeler yüklenemedi.");
+    } finally {
+      setDocsUploading(false);
+    }
+  }
 
   async function handleChangePassword() {
     setError(null);
@@ -127,6 +165,88 @@ export default function HesapAyarlariPage() {
             Destek Merkezi&apos;ne Git
           </Link>
         </div>
+
+        {profile?.taxpayerType === "BUSINESS" && (
+          <div className="mt-6 rounded-2xl border border-gold/20 bg-parchment p-6">
+            <div className="flex items-center justify-between gap-2">
+              <h2 className="font-serif text-lg font-semibold text-ink">
+                İşletme Doğrulama
+              </h2>
+              {verification && (
+                <span
+                  className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${
+                    verification.verified
+                      ? "bg-emerald-100 text-emerald-700"
+                      : "bg-amber-100 text-amber-700"
+                  }`}
+                >
+                  {verification.verified ? "Onaylandı" : "Onay bekleniyor"}
+                </span>
+              )}
+            </div>
+            <p className="mt-1 text-sm text-ink-soft">
+              İşletme planlarını satın alabilmek için vergi levhanı ve imza
+              sirkülerini yükle — admin incelemesinin ardından planlar
+              açılır.
+            </p>
+
+            <div className="mt-4 flex flex-col gap-4">
+              <div>
+                <label className="block text-xs font-semibold tracking-wide text-ink-soft uppercase">
+                  Vergi Levhası
+                  {verification?.hasTaxPlateDoc && (
+                    <button
+                      type="button"
+                      onClick={() => openBusinessVerificationDoc("me", "taxPlate", false)}
+                      className="ml-2 normal-case text-gold-deep hover:underline"
+                    >
+                      (yüklüyü görüntüle)
+                    </button>
+                  )}
+                </label>
+                <input
+                  type="file"
+                  accept=".png,.jpg,.jpeg,.webp,.pdf"
+                  onChange={(e) => setTaxPlateFile(e.target.files?.[0] ?? null)}
+                  className="mt-1.5 w-full text-sm text-ink-soft"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold tracking-wide text-ink-soft uppercase">
+                  İmza Sirküsü
+                  {verification?.hasSignatureCircularDoc && (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        openBusinessVerificationDoc("me", "signatureCircular", false)
+                      }
+                      className="ml-2 normal-case text-gold-deep hover:underline"
+                    >
+                      (yüklüyü görüntüle)
+                    </button>
+                  )}
+                </label>
+                <input
+                  type="file"
+                  accept=".png,.jpg,.jpeg,.webp,.pdf"
+                  onChange={(e) => setSignatureFile(e.target.files?.[0] ?? null)}
+                  className="mt-1.5 w-full text-sm text-ink-soft"
+                />
+              </div>
+            </div>
+
+            {docsError && <p className="mt-3 text-sm text-red-700">{docsError}</p>}
+            {docsSuccess && <p className="mt-3 text-sm text-emerald-700">{docsSuccess}</p>}
+
+            <button
+              onClick={handleUploadDocs}
+              disabled={docsUploading || (!taxPlateFile && !signatureFile)}
+              className="mt-4 rounded-full bg-marble-dark px-5 py-2.5 text-sm font-semibold text-cream hover:bg-marble-dark-2 disabled:opacity-60"
+            >
+              {docsUploading ? "Yükleniyor…" : "Belgeleri Yükle"}
+            </button>
+          </div>
+        )}
 
         <div className="mt-6 rounded-2xl border border-gold/20 bg-parchment p-6">
           <h2 className="font-serif text-lg font-semibold text-ink">Şifre Değiştir</h2>

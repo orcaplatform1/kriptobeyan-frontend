@@ -32,7 +32,14 @@ function KayitOlContent() {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
-  const [role, setRole] = useState<UserRole>("INDIVIDUAL");
+  // "business" da rol olarak INDIVIDUAL kalir (bkz. RegisterDto yorumu),
+  // sadece taxpayerType=BUSINESS gonderilir — kayit sonrasi Panel > Hesap
+  // Ayarlari'nda vergi levhasi/imza sirkuleri yuklenip admin onayi
+  // beklenir (bkz. BusinessVerificationService).
+  const [accountKind, setAccountKind] = useState<"individual" | "business" | "accountant">(
+    "individual",
+  );
+  const role: UserRole = accountKind === "accountant" ? "ACCOUNTANT" : "INDIVIDUAL";
   const [termsRead, setTermsRead] = useState(false);
   const [privacyRead, setPrivacyRead] = useState(false);
   const [openDoc, setOpenDoc] = useState<LegalDoc | null>(null);
@@ -84,6 +91,7 @@ function KayitOlContent() {
         username,
         password,
         role,
+        taxpayerType: accountKind === "business" ? "BUSINESS" : "INDIVIDUAL",
         fullName: fullName || undefined,
         phone: `${phoneCountryCode}${phoneNumber}`,
         phoneCountryCode,
@@ -231,12 +239,12 @@ function KayitOlContent() {
             <span className="block text-sm font-medium text-ink">
               Hesap türü
             </span>
-            <div className="mt-1.5 grid grid-cols-2 gap-2">
+            <div className="mt-1.5 grid grid-cols-3 gap-2">
               <button
                 type="button"
-                onClick={() => setRole("INDIVIDUAL")}
+                onClick={() => setAccountKind("individual")}
                 className={`rounded-lg border px-4 py-2.5 text-sm font-medium transition-colors ${
-                  role === "INDIVIDUAL"
+                  accountKind === "individual"
                     ? "border-gold bg-marble-dark text-cream"
                     : "border-gold/25 bg-parchment text-ink-soft"
                 }`}
@@ -245,9 +253,20 @@ function KayitOlContent() {
               </button>
               <button
                 type="button"
-                onClick={() => setRole("ACCOUNTANT")}
+                onClick={() => setAccountKind("business")}
                 className={`rounded-lg border px-4 py-2.5 text-sm font-medium transition-colors ${
-                  role === "ACCOUNTANT"
+                  accountKind === "business"
+                    ? "border-gold bg-marble-dark text-cream"
+                    : "border-gold/25 bg-parchment text-ink-soft"
+                }`}
+              >
+                İşletme
+              </button>
+              <button
+                type="button"
+                onClick={() => setAccountKind("accountant")}
+                className={`rounded-lg border px-4 py-2.5 text-sm font-medium transition-colors ${
+                  accountKind === "accountant"
                     ? "border-gold bg-marble-dark text-cream"
                     : "border-gold/25 bg-parchment text-ink-soft"
                 }`}
@@ -255,6 +274,13 @@ function KayitOlContent() {
                 Mali Müşavir
               </button>
             </div>
+            {accountKind === "business" && (
+              <p className="mt-2 text-xs text-ink-soft">
+                İşletme planlarını satın alabilmek için kayıttan sonra Hesap
+                Ayarları&apos;ndan vergi levhası ve imza sirküsü yüklemen ve
+                admin onayı beklemen gerekir.
+              </p>
+            )}
           </div>
 
           <div>

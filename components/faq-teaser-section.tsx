@@ -2,8 +2,8 @@ import Link from "next/link";
 
 const faqs = [
   {
-    q: "KriptoBeyan bana vergi tavsiyesi mi veriyor?",
-    a: "Hayır. KriptoBeyan bir vergi danışmanlık hizmeti değil, bir vergi hesaplama hizmetidir: işlemlerini FIFO yöntemiyle ve güncel mevzuata göre hesaplar. Nihai beyanında bir mali müşavirle birlikte çalışmanı öneririz.",
+    q: "Vergimi nasıl hesaplıyorsunuz?",
+    a: "Bağladığın her borsayı, cüzdanı ve CSV kaydını tek bir zaman çizelgesinde birleştirip FIFO yöntemiyle, güncel TCMB kuru ve piyasa verisiyle otomatik hesaplarız. Sonuç, beyan dönemine hazır bir taslak rapor olarak saniyeler içinde önünde.",
   },
   {
     q: "Borsa API anahtarlarım güvende mi?",

@@ -4,7 +4,7 @@ import { LegalNotice } from "@/components/legal-notice";
 import { SITE_URL, KVKK_EMAIL, COMPANY_INFO } from "@/lib/site-config";
 
 export const metadata: Metadata = {
-  title: "KVKK Aydınlatma Metni",
+  title: "KVKK",
   description:
     "6698 sayılı Kişisel Verilerin Korunması Kanunu kapsamında veri sorumlusu, işleme amaçları ve veri sahibi hakları.",
   alternates: { canonical: `${SITE_URL}/kvkk-aydinlatma-metni` },
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 
 export default function KvkkAydinlatmaMetniPage() {
   return (
-    <LegalPageShell title="KVKK Aydınlatma Metni" updated="24 Ağustos 2026">
+    <LegalPageShell title="KVKK" updated="24 Ağustos 2026">
       <LegalNotice>
         <strong>Bu sayfadaki şirket kimlik bilgileri (unvan, adres, MERSİS,
         vergi no) henüz gerçek/doğrulanmış değildir</strong> — herhangi bir

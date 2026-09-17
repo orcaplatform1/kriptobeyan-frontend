@@ -74,8 +74,7 @@ export function GizlilikPolitikasiContent() {
         Verilerinize erişim, düzeltme veya silme talebiniz için{" "}
         <a href={`mailto:${KVKK_EMAIL}`}>{KVKK_EMAIL}</a> adresinden bize
         ulaşabilirsiniz. KVKK kapsamındaki haklarınızın tam listesi için{" "}
-        <a href="/kvkk-aydinlatma-metni">KVKK Aydınlatma Metni</a>
-        &apos;ni inceleyin.
+        <a href="/kvkk-aydinlatma-metni">KVKK</a> sayfasını inceleyin.
       </p>
 
       <h2>7. İletişim</h2>

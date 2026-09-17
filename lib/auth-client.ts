@@ -91,6 +91,7 @@ export async function registerAccount(data: {
   phone: string;
   phoneCountryCode: string;
   role?: UserRole;
+  taxpayerType?: "INDIVIDUAL" | "BUSINESS";
 }) {
   return apiPost<{ id: string; email: string }>("/auth/register", data);
 }
@@ -272,6 +273,7 @@ export interface MyProfile {
   // backend yanitina role alanini eklemesi gerekiyor, aksi halde asagidaki
   // role-bagli sayfalar (musavir paneli yonlendirmesi vb.) calismaz.
   role: UserRole;
+  taxpayerType: "INDIVIDUAL" | "BUSINESS";
 }
 
 export async function getMyProfile() {
@@ -1193,6 +1195,83 @@ export async function openAccountantVerificationDoc(
   const path = isAdmin
     ? `/api/admin/accountant-verifications/${userId}/documents/${kind}`
     : `/api/accountant/verification/documents/${kind}`;
+  const res = await fetch(path, { credentials: "include" });
+  if (!res.ok) throw new ApiError("Belge açılamadı", res.status);
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  window.open(url, "_blank", "noopener,noreferrer");
+  setTimeout(() => URL.revokeObjectURL(url), 60_000);
+}
+
+// --- İşletme belge doğrulama ---
+
+export interface BusinessVerificationStatus {
+  hasTaxPlateDoc: boolean;
+  hasSignatureCircularDoc: boolean;
+  verified: boolean;
+  verifiedAt: string | null;
+}
+
+export async function getBusinessVerificationStatus() {
+  return authRequest<BusinessVerificationStatus>(
+    "GET",
+    "/business/verification/status",
+  );
+}
+
+export async function uploadBusinessVerificationDocs(
+  taxPlate: File | null,
+  signatureCircular: File | null,
+) {
+  const form = new FormData();
+  if (taxPlate) form.append("taxPlate", taxPlate);
+  if (signatureCircular) form.append("signatureCircular", signatureCircular);
+  return authUpload<{
+    businessTaxPlateDocUrl: string | null;
+    businessSignatureCircularDocUrl: string | null;
+    businessVerified: boolean;
+  }>("/business/verification/documents", form);
+}
+
+export interface BusinessVerificationRow {
+  id: string;
+  email: string;
+  username: string;
+  fullName: string | null;
+  businessTaxPlateDocUrl: string | null;
+  businessSignatureCircularDocUrl: string | null;
+  createdAt: string;
+}
+
+export async function adminListBusinessVerifications() {
+  return authRequest<BusinessVerificationRow[]>(
+    "GET",
+    "/admin/business-verifications",
+  );
+}
+
+export async function adminApproveBusinessVerification(userId: string) {
+  return authRequest<void>(
+    "POST",
+    `/admin/business-verifications/${userId}/approve`,
+  );
+}
+
+export async function adminRejectBusinessVerification(userId: string) {
+  return authRequest<void>(
+    "POST",
+    `/admin/business-verifications/${userId}/reject`,
+  );
+}
+
+export async function openBusinessVerificationDoc(
+  userId: string,
+  kind: "taxPlate" | "signatureCircular",
+  isAdmin: boolean,
+) {
+  const path = isAdmin
+    ? `/api/admin/business-verifications/${userId}/documents/${kind}`
+    : `/api/business/verification/documents/${kind}`;
   const res = await fetch(path, { credentials: "include" });
   if (!res.ok) throw new ApiError("Belge açılamadı", res.status);
   const blob = await res.blob();

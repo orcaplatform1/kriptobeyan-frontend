@@ -156,10 +156,7 @@ export default function NasilCalisirPage() {
       <p>
         Raporu doğrudan panelden indirebilir, ya da tek bir paylaşım
         linkiyle mali müşavirinize gönderip incelettirebilirsiniz — ayrıca
-        dosya e-postalaşmanıza gerek kalmaz. KriptoBeyan bir vergi
-        danışmanlık hizmeti değildir; nihai beyanınızda raporu bir mali
-        müşavirle birlikte teyit etmenizi öneririz (bkz.{" "}
-        <a href="/sorumluluk-reddi">Sorumluluk Reddi</a>).
+        dosya e-postalaşmanıza gerek kalmaz.
       </p>
 
       <h3>Yapay Zeka Kontrolörü</h3>

@@ -7,6 +7,7 @@ import { CustomSelect } from "@/components/custom-select";
 import {
   ApiError,
   adminApproveAccountantVerification,
+  adminApproveBusinessVerification,
   adminApprovePayment,
   adminGetSiteContent,
   adminUpdateSiteContent,
@@ -18,6 +19,7 @@ import {
   adminGetVisitorStats,
   adminGrantStaff,
   adminListAccountantVerifications,
+  adminListBusinessVerifications,
   adminListCoupons,
   adminListPayments,
   adminListPlans,
@@ -25,6 +27,7 @@ import {
   adminListSupportTickets,
   adminListUsers,
   adminRejectAccountantVerification,
+  adminRejectBusinessVerification,
   adminRejectPayment,
   adminReplySupportTicket,
   adminRevokeStaff,
@@ -34,8 +37,10 @@ import {
   adminUpdateSupportTicketStatus,
   adminUpdateUser,
   openAccountantVerificationDoc,
+  openBusinessVerificationDoc,
   openPaymentReceipt,
   type AccountantVerificationRow,
+  type BusinessVerificationRow,
   type ActiveUsers,
   type AdminCouponRow,
   type AdminSiteContent,
@@ -65,6 +70,7 @@ type Tab =
   | "announcements"
   | "support"
   | "accountants"
+  | "businesses"
   | "coupons"
   | "site-content";
 
@@ -75,6 +81,7 @@ const TABS: { id: Tab; label: string }[] = [
   { id: "users", label: "Kullanıcılar" },
   { id: "reports", label: "Raporlar" },
   { id: "accountants", label: "Müşavir Onayları" },
+  { id: "businesses", label: "İşletme Onayları" },
   { id: "coupons", label: "Kuponlar" },
   { id: "announcements", label: "Duyurular" },
   { id: "support", label: "Destek" },
@@ -1679,6 +1686,107 @@ function AccountantVerificationsSection() {
   );
 }
 
+function BusinessVerificationsSection() {
+  const [rows, setRows] = useState<BusinessVerificationRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [busyId, setBusyId] = useState<string | null>(null);
+
+  async function reload() {
+    setLoading(true);
+    try {
+      setRows(await adminListBusinessVerifications());
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    reload();
+  }, []);
+
+  async function handleApprove(userId: string) {
+    setBusyId(userId);
+    try {
+      await adminApproveBusinessVerification(userId);
+      await reload();
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  async function handleReject(userId: string) {
+    setBusyId(userId);
+    try {
+      await adminRejectBusinessVerification(userId);
+      await reload();
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  return (
+    <div>
+      <h2 className="font-serif text-lg font-semibold text-ink">Onay bekleyen işletmeler</h2>
+      <p className="mt-1 text-sm text-ink-soft">
+        Vergi levhası ve/veya imza sirküsü yüklenmiş, henüz onaylanmamış işletme hesapları.
+      </p>
+
+      <div className="mt-4 overflow-hidden rounded-2xl border border-gold/20">
+        {loading ? (
+          <p className="p-6 text-sm text-ink-soft">Yükleniyor…</p>
+        ) : rows.length === 0 ? (
+          <p className="p-6 text-sm text-ink-soft">Bekleyen onay yok.</p>
+        ) : (
+          <div className="divide-y divide-gold/10">
+            {rows.map((r) => (
+              <div key={r.id} className="bg-parchment p-4">
+                <p className="font-medium text-ink">{r.fullName || r.email}</p>
+                <p className="text-xs text-ink-soft">
+                  {r.email} · @{r.username} · {new Date(r.createdAt).toLocaleDateString("tr-TR")}
+                </p>
+                <div className="mt-2 flex flex-wrap items-center gap-3">
+                  {r.businessTaxPlateDocUrl && (
+                    <button
+                      onClick={() => openBusinessVerificationDoc(r.id, "taxPlate", true)}
+                      className="text-xs font-semibold text-gold-deep hover:underline"
+                    >
+                      Vergi levhası
+                    </button>
+                  )}
+                  {r.businessSignatureCircularDocUrl && (
+                    <button
+                      onClick={() => openBusinessVerificationDoc(r.id, "signatureCircular", true)}
+                      className="text-xs font-semibold text-gold-deep hover:underline"
+                    >
+                      İmza sirküsü
+                    </button>
+                  )}
+                  <div className="ml-auto flex gap-2">
+                    <button
+                      onClick={() => handleApprove(r.id)}
+                      disabled={busyId === r.id}
+                      className="rounded-full bg-marble-dark px-3.5 py-1.5 text-xs font-semibold text-cream hover:bg-marble-dark-2 disabled:opacity-60"
+                    >
+                      Onayla
+                    </button>
+                    <button
+                      onClick={() => handleReject(r.id)}
+                      disabled={busyId === r.id}
+                      className="rounded-full border border-red-200 px-3.5 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-50 disabled:opacity-60"
+                    >
+                      Reddet
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ================= Kuponlar =================
 
 function CouponsSection() {
@@ -1877,6 +1985,7 @@ export default function AdminPage() {
           {tab === "announcements" && <AnnouncementsSection />}
           {tab === "support" && <SupportSection />}
           {tab === "accountants" && <AccountantVerificationsSection />}
+          {tab === "businesses" && <BusinessVerificationsSection />}
           {tab === "coupons" && <CouponsSection />}
           {tab === "site-content" && <SiteContentSection />}
         </div>

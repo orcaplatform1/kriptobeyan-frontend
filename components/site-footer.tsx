@@ -84,7 +84,19 @@ export function SiteFooter({ content }: { content?: SiteContent | null }) {
           ))}
         </div>
 
-        <div className="mt-14 flex flex-col items-center gap-3 border-t border-cream/10 pt-6 text-xs text-cream/45 sm:flex-row sm:gap-4">
+        <p className="mx-auto mt-14 max-w-3xl text-center text-[11px] leading-relaxed text-cream/30">
+          KriptoBeyan&apos;dan alınan bilgiler profesyonel tavsiye olarak
+          değerlendirilmemelidir. KriptoBeyan bir finansal danışman değildir.
+          Web sitesindeki bilgilerin sizin özel durumunuzla nasıl ilişkili
+          olduğunu kontrol etmek için bağımsız yasal, finansal, vergi veya
+          diğer konularda danışmanlık almayı düşünmelisiniz. KriptoBeyan, bu
+          web sitesinin kullanımıyla doğrudan veya dolaylı olarak sağlanan
+          bilgilerin kullanımından veya bunlara güvenilmesinden kaynaklanan,
+          ihmalden veya başka bir nedenden dolayı oluşan herhangi bir
+          kayıptan sorumlu değildir.
+        </p>
+
+        <div className="mt-4 flex flex-col items-center gap-3 border-t border-cream/10 pt-6 text-xs text-cream/45 sm:flex-row sm:gap-4">
           <p>{renderCopyrightWithBrandHighlight(copyrightText)}</p>
           <Link href="/sitemap" className="transition-colors hover:text-cream/80">
             Site Haritası

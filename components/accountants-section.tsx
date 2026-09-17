@@ -24,7 +24,7 @@ export function AccountantsSection() {
             kontrolüne bağlıdır.
           </p>
           <Link
-            href="/fiyatlandirma"
+            href="/mali-musavirler"
             className="mt-8 inline-flex items-center justify-center rounded-full bg-cream px-7 py-3.5 text-base font-semibold text-marble-dark transition-transform hover:scale-[1.02]"
           >
             Mali müşavir planlarını gör

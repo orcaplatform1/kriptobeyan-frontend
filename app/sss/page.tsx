@@ -5,7 +5,7 @@ import { SITE_URL } from "@/lib/site-config";
 export const metadata: Metadata = {
   title: "Sık Sorulan Sorular",
   description:
-    "KriptoBeyan hakkında sık sorulan sorular: vergi tavsiyesi, veri güvenliği, borsa bağlantıları, fiyatlandırma ve daha fazlası.",
+    "KriptoBeyan hakkında sık sorulan sorular: vergi hesaplama, veri güvenliği, borsa bağlantıları, fiyatlandırma ve daha fazlası.",
   alternates: { canonical: `${SITE_URL}/sss` },
 };
 
@@ -14,8 +14,8 @@ const faqGroups: { title: string; items: { q: string; a: string }[] }[] = [
     title: "Vergi ve hesaplama",
     items: [
       {
-        q: "KriptoBeyan bana vergi tavsiyesi mi veriyor?",
-        a: "Hayır. KriptoBeyan bir vergi danışmanlık hizmeti değil, bir vergi hesaplama hizmetidir: işlemlerinizi FIFO yöntemiyle ve güncel mevzuata göre hesaplar, size taslak bir rapor çıkarır. Kişiye özel danışmanlık gerektiren durumlarda (örneğin karma gelir kaynakları, yurt dışı borsa kullanımı veya miras/hibe yoluyla edinilen kripto varlıklar) ya da nihai beyanınızda mutlaka bir mali müşavirle birlikte çalışmanızı öneririz. Ayrıntılar için Sorumluluk Reddi sayfamıza bakın.",
+        q: "Vergimi nasıl hesaplıyorsunuz?",
+        a: "İşlemlerinizi FIFO yöntemiyle ve güncel mevzuata göre otomatik hesaplarız, size taslak bir rapor çıkarırız. Karma gelir kaynakları, yurt dışı borsa kullanımı veya miras/hibe yoluyla edinilen kripto varlıklar gibi özel durumlarda raporunuzu doğrudan mali müşavirinizle paylaşabilirsiniz.",
       },
       {
         q: "Hangi hesaplama yöntemini kullanıyorsunuz?",
@@ -27,11 +27,19 @@ const faqGroups: { title: string; items: { q: string; a: string }[] }[] = [
       },
       {
         q: "Zararlarımı sonraki döneme taşıyabilir miyim (zarar mahsubu)?",
-        a: "Evet, sistem aynı dönem içindeki gerçekleşmiş zararları kazançlardan otomatik olarak mahsup eder. Döneme taşınabilecek zarar tutarları taslak raporunuzda ayrıca gösterilir; nihai mahsup hakkının uygulanabilirliğini mali müşavirinizle teyit etmenizi öneririz.",
+        a: "Evet, sistem aynı dönem içindeki gerçekleşmiş zararları kazançlardan otomatik olarak mahsup eder. Döneme taşınabilecek zarar tutarları taslak raporunuzda ayrıca gösterilir.",
       },
       {
-        q: "Rakamlar neden 'taslak/tahmini' olarak işaretleniyor?",
-        a: "Otomatik hesaplama, girdiğiniz/bağladığınız verinin doğruluğuna ve eksiksizliğine bağlıdır (örneğin başka bir platformda gerçekleşmiş ama sisteme hiç bağlanmamış bir işlem hesaba katılamaz) ve mali müşavir onayından geçmemiştir. Bu nedenle her raporda taslak/tahmini uyarısı yer alır; nihai beyan öncesi bir mali müşavirin kontrolünden geçirilmesini tavsiye ederiz.",
+        q: "Rapor neden 'taslak' olarak işaretleniyor?",
+        a: "Rapor, bağladığınız borsa/cüzdan verisi üzerinden otomatik üretilir ve beyannameye doğrudan yapıştırabileceğiniz nihai bir hazır belge değil, beyan sürecinizi hızlandıran bir taslaktır — dilerseniz doğrudan mali müşavirinizle paylaşabilirsiniz.",
+      },
+      {
+        q: "Hangi kripto varlıkları takip edebilirim?",
+        a: "Bağladığınız borsa, cüzdan veya CSV'de yer alan her kripto varlık ve token otomatik tanınır — ayrı bir 'desteklenen coin listesi' veya kısıtlama yoktur.",
+      },
+      {
+        q: "Sadece Türkiye için mi vergi hesaplıyorsunuz?",
+        a: "Evet, şu an yalnızca Türkiye mevzuatına göre, TL bazında ve TCMB kuru üzerinden hesaplama yapıyoruz. Farklı bir ülke için beyan hazırlıyorsanız KriptoBeyan şu an uygun değil.",
       },
     ],
   },
