@@ -10,42 +10,73 @@ export const metadata: Metadata = {
 
 export default function CerezPolitikasiPage() {
   return (
-    <LegalPageShell title="Çerez Politikası" updated="24 Ağustos 2026">
+    <LegalPageShell title="Çerez Politikası" updated="17 Eylül 2026">
       <h2>Çerez nedir?</h2>
       <p>
         Çerezler, bir web sitesini ziyaret ettiğinizde tarayıcınıza
-        kaydedilen küçük metin dosyalarıdır. KriptoBeyan, platformun
-        çalışması ve kullanım deneyimini iyileştirmek için sınırlı sayıda
-        çerez kullanır.
+        kaydedilen küçük metin dosyalarıdır. KriptoBeyan, borsa ve cüzdan
+        verileriniz üzerinden vergi taslak raporlama deneyiminizi en verimli
+        şekilde sunabilmek amacıyla yasalara uygun, sınırlı sayıda çerez
+        kullanır. Hizmetlerimiz SPK mevzuatları ve ilgili mali düzenlemeler
+        uyarınca herhangi bir piyasa analizi, sinyal veya yatırım danışmanlığı
+        hizmeti sunmaz; resmi bir mali müşavirlik ofisi değildir.
       </p>
 
-      <h2>Kullandığımız çerez türleri</h2>
+      <h2>Siteye ilk girişte karşınıza çıkan çerez tercihleri</h2>
+      <p>
+        Siteyi ilk ziyaretinizde ekranın altında bir bilgilendirme kutusu
+        görürsünüz. Buradan &quot;Tüm Çerezleri Kabul Et&quot;, &quot;Zorunlu
+        Olmayanları Reddet&quot; seçeneklerinden birini seçebilir, veya
+        &quot;Çerez Tercihlerini Yönet&quot; ile aşağıdaki üç kategoriyi ayrı
+        ayrı açıp kapatabilirsiniz. Seçiminiz tarayıcınızda yerel olarak
+        hatırlanır ve dilediğiniz zaman geri çekilebilir.
+      </p>
+
+      <h2>Kullandığımız çerez kategorileri</h2>
       <table>
         <thead>
           <tr>
-            <th>Tür</th>
+            <th>Kategori</th>
             <th>Amaç</th>
-            <th>Süre</th>
+            <th>Kapatılabilir mi?</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>Zorunlu / Oturum</td>
-            <td>Oturum açık tutma, kimlik doğrulama (erişim/yenileme token yönetimi)</td>
-            <td>Oturum süresince / kısa süreli</td>
+            <td>Zorunlu Çerezler</td>
+            <td>
+              Borsa API/CSV verilerinizi yüklediğiniz güvenli kullanıcı
+              paneline giriş yapabilmeniz, entegrasyon formlarının çalışması
+              ve site güvenliği için zorunludur.
+            </td>
+            <td>Hayır (her zaman aktif)</td>
           </tr>
           <tr>
-            <td>Tercih</td>
-            <td>Dil, tema gibi kullanıcı tercihlerinin hatırlanması</td>
-            <td>Kalıcı (silene kadar)</td>
+            <td>Performans ve Analiz Çerezleri</td>
+            <td>
+              Kullanıcıların vergi hesaplama adımlarında nerede zorlandığını
+              analiz ederek yazılım altyapımızı ve online eğitim modüllerimizi
+              geliştirmemize yardımcı olur.
+            </td>
+            <td>Evet</td>
           </tr>
           <tr>
-            <td>Analitik</td>
-            <td>Ürünü iyileştirmek için toplulaştırılmış kullanım istatistikleri (aktif edilirse)</td>
-            <td>Sağlayıcıya göre değişir</td>
+            <td>Pazarlama ve Reklam Çerezleri</td>
+            <td>
+              Kripto vergi beyan dönemlerine yaklaşırken KriptoBeyan
+              bünyesindeki erken kayıt indirimleri, paket güncellemeleri veya
+              offline workshop duyurularından haberdar olmanızı sağlar.
+            </td>
+            <td>Evet</td>
           </tr>
         </tbody>
       </table>
+      <p>
+        Sitemizde kullanılan çerezler yalnızca; API/CSV işlem geçmişlerinizi
+        güvenle birleştirerek FIFO yöntemiyle taslak kazanç/kayıp hesaplaması
+        yapan panele erişebilmeniz ve eğitim faaliyetlerimizi optimize
+        edebilmek amacıyla KVKK/GDPR süreçlerine uygun olarak işlenmektedir.
+      </p>
 
       <h2>Çerezleri yönetme</h2>
       <p>
