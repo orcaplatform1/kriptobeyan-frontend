@@ -1411,8 +1411,8 @@ function SiteContentSection() {
 // ================= Destek merkezi =================
 
 const SUPPORT_STATUS_LABELS: Record<SupportTicketStatus, string> = {
-  OPEN: "Açık",
-  IN_PROGRESS: "İşlemde",
+  OPEN: "Beklemede",
+  IN_PROGRESS: "Cevaplandı",
   RESOLVED: "Çözüldü",
   CLOSED: "Kapalı",
 };

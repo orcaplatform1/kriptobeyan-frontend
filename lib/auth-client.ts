@@ -1100,6 +1100,13 @@ export async function addSupportMessage(ticketId: string, body: string) {
   );
 }
 
+export async function closeSupportTicket(ticketId: string) {
+  return authRequest<SupportTicketRow>(
+    "POST",
+    `/support/tickets/${ticketId}/close`,
+  );
+}
+
 export async function adminListSupportTickets(status?: SupportTicketStatus) {
   return authRequest<SupportTicketRow[]>(
     "GET",

@@ -18,6 +18,7 @@ import {
 import {
   ApiError,
   addSupportMessage,
+  closeSupportTicket,
   createSupportTicket,
   listMySupportTickets,
   type SupportTicketCategory,
@@ -26,9 +27,12 @@ import {
 import { CustomSelect } from "@/components/custom-select";
 import { faqGroups } from "@/lib/faq-data";
 
+// OPEN: kullanici yazdi, destek ekibi henuz yanitlamadi.
+// IN_PROGRESS: destek ekibi yanitladi, kullanicinin onayi/kapatmasi bekleniyor
+// (48 saat icinde yanit gelmezse otomatik CLOSED'a geciyor, bkz. backend).
 const STATUS_LABELS: Record<string, { label: string; className: string }> = {
-  OPEN: { label: "Açık", className: "bg-gold/15 text-gold-deep" },
-  IN_PROGRESS: { label: "İşlemde", className: "bg-gold/15 text-gold-deep" },
+  OPEN: { label: "Beklemede", className: "bg-gold/15 text-gold-deep" },
+  IN_PROGRESS: { label: "Cevaplandı", className: "bg-emerald-100 text-emerald-700" },
   RESOLVED: { label: "Çözüldü", className: "bg-emerald-100 text-emerald-700" },
   CLOSED: { label: "Kapalı", className: "bg-parchment text-ink-soft" },
 };
@@ -163,6 +167,21 @@ function DestekPageInner() {
       await reload();
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Mesaj gönderilemedi.");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  async function handleClose() {
+    if (!openTicket) return;
+    setSubmitting(true);
+    setError(null);
+    try {
+      const updated = await closeSupportTicket(openTicket.id);
+      setOpenTicket(updated);
+      await reload();
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Bilet kapatılamadı.");
     } finally {
       setSubmitting(false);
     }
@@ -380,13 +399,21 @@ function DestekPageInner() {
               ))}
             </div>
 
+            {(openTicket.status === "IN_PROGRESS" || openTicket.status === "RESOLVED") && (
+              <p className="mt-4 text-xs text-ink-soft">
+                Destek ekibi yanıtladı. Sorun çözüldüyse bileti kapatabilirsin
+                — 48 saat içinde yeni bir mesaj yazmazsan bilet otomatik
+                kapanır.
+              </p>
+            )}
+
             {openTicket.status !== "CLOSED" && (
-              <div className="mt-4 flex gap-2">
+              <div className="mt-4 flex flex-wrap gap-2">
                 <input
                   value={reply}
                   onChange={(e) => setReply(e.target.value)}
                   placeholder="Mesaj yaz…"
-                  className="flex-1 rounded-lg border border-gold/25 bg-cream px-3 py-2 text-sm text-ink outline-none focus:border-gold"
+                  className="min-w-0 flex-1 rounded-lg border border-gold/25 bg-cream px-3 py-2 text-sm text-ink outline-none focus:border-gold"
                 />
                 <button
                   onClick={handleReply}
@@ -395,6 +422,15 @@ function DestekPageInner() {
                 >
                   Gönder
                 </button>
+                {(openTicket.status === "IN_PROGRESS" || openTicket.status === "RESOLVED") && (
+                  <button
+                    onClick={handleClose}
+                    disabled={submitting}
+                    className="rounded-full border border-gold/30 px-4 py-2 text-sm font-semibold text-ink-soft hover:border-gold/50 hover:text-ink disabled:opacity-60"
+                  >
+                    Bileti Kapat
+                  </button>
+                )}
               </div>
             )}
           </div>

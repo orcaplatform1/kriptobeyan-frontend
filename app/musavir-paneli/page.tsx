@@ -214,13 +214,21 @@ export default function MusavirPaneliPage() {
               Müşterilerin
             </h1>
           </div>
-          <button
-            onClick={handleLogout}
-            disabled={loggingOut}
-            className="rounded-full border border-gold/30 px-5 py-2.5 text-sm font-semibold text-ink transition-colors hover:bg-parchment disabled:opacity-60"
-          >
-            {loggingOut ? "Çıkış yapılıyor…" : "Çıkış yap"}
-          </button>
+          <div className="flex items-center gap-4">
+            <Link
+              href="/destek"
+              className="text-sm font-semibold text-gold-deep hover:underline"
+            >
+              Destek merkezi →
+            </Link>
+            <button
+              onClick={handleLogout}
+              disabled={loggingOut}
+              className="rounded-full border border-gold/30 px-5 py-2.5 text-sm font-semibold text-ink transition-colors hover:bg-parchment disabled:opacity-60"
+            >
+              {loggingOut ? "Çıkış yapılıyor…" : "Çıkış yap"}
+            </button>
+          </div>
         </div>
 
         {verification && !verification.verified && (
