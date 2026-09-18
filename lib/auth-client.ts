@@ -276,8 +276,20 @@ export interface MyProfile {
   taxpayerType: "INDIVIDUAL" | "BUSINESS";
 }
 
+// Header, CTA butonlari gibi birden fazla bilesen ayni sayfada bagimsiz
+// olarak mount olup ayni anda getCurrentUser() cagirabiliyor (ör. anasayfada
+// header + birkac AuthAwareCta) - pendingRefresh'teki desenin ayni: eszamanli
+// cagrilar tek bir /user/me istegini paylassin, her biri kendi isteğini
+// atmasin.
+let pendingProfileRequest: Promise<MyProfile> | null = null;
+
 export async function getMyProfile() {
-  return authRequest<MyProfile>("GET", "/user/me");
+  if (!pendingProfileRequest) {
+    pendingProfileRequest = authRequest<MyProfile>("GET", "/user/me").finally(() => {
+      pendingProfileRequest = null;
+    });
+  }
+  return pendingProfileRequest;
 }
 
 // Sayfa guard'larinin ortak kullandigi: giris yapilmis mi + rolu ne - token
