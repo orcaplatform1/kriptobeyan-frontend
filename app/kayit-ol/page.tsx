@@ -41,7 +41,7 @@ function KayitOlContent() {
   );
   const role: UserRole = accountKind === "accountant" ? "ACCOUNTANT" : "INDIVIDUAL";
   const [termsRead, setTermsRead] = useState(false);
-  const [privacyRead, setPrivacyRead] = useState(false);
+  const [kvkkRead, setKvkkRead] = useState(false);
   const [openDoc, setOpenDoc] = useState<LegalDoc | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -57,7 +57,7 @@ function KayitOlContent() {
   const [codeLoading, setCodeLoading] = useState(false);
   const [resendMessage, setResendMessage] = useState<string | null>(null);
 
-  const acceptedTerms = termsRead && privacyRead;
+  const acceptedTerms = termsRead && kvkkRead;
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -80,7 +80,7 @@ function KayitOlContent() {
       return;
     }
     if (!acceptedTerms) {
-      setError("Devam etmek için Kullanım Şartları ve Gizlilik Politikası'nı okuyup onaylamalısın.");
+      setError("Devam etmek için Kullanım Şartları ve KVKK Aydınlatma Metni'ni okuyup onaylamalısın.");
       return;
     }
 
@@ -150,7 +150,7 @@ function KayitOlContent() {
 
   function handleApproveDoc() {
     if (openDoc === "terms") setTermsRead(true);
-    if (openDoc === "privacy") setPrivacyRead(true);
+    if (openDoc === "kvkk") setKvkkRead(true);
     setOpenDoc(null);
   }
 
@@ -397,39 +397,38 @@ function KayitOlContent() {
             />
           </div>
 
-          <div>
-            <label className="flex items-start gap-2.5 text-sm text-ink-soft">
-              <input
-                type="checkbox"
-                checked={acceptedTerms}
-                readOnly
-                aria-readonly
-                className="mt-0.5 h-4 w-4 rounded border-gold/40 accent-gold-deep"
-              />
-              <span>
-                <button
-                  type="button"
-                  onClick={() => setOpenDoc("terms")}
-                  className="font-medium text-gold-deep hover:underline"
-                >
-                  Kullanım Şartları
-                </button>
-                {termsRead && <span className="text-emerald-700"> ✓</span>}{" "}
-                ve{" "}
-                <button
-                  type="button"
-                  onClick={() => setOpenDoc("privacy")}
-                  className="font-medium text-gold-deep hover:underline"
-                >
-                  Gizlilik Politikası
-                </button>
-                {privacyRead && <span className="text-emerald-700"> ✓</span>}
-                &apos;nı okudum, kabul ediyorum.
-              </span>
-            </label>
-            <p className="mt-1.5 pl-[1.625rem] text-xs text-ink-soft/80">
-              Bu kutucuk elle işaretlenmez — her iki metni de açıp sonundaki
-              &quot;Okudum, onaylıyorum&quot;a bastığında otomatik işaretlenir.
+          <div className="space-y-3">
+            {([
+              ["terms", "Kullanım Şartları", "'nı okudum, anladım ve kabul ediyorum.", termsRead],
+              ["kvkk", "KVKK Aydınlatma Metni", "'ni okudum ve anladım.", kvkkRead],
+            ] as const).map(([doc, title, tail, done]) => (
+              <div key={doc} className="flex items-start gap-2.5 text-sm text-ink-soft">
+                <input
+                  type="checkbox"
+                  checked={done}
+                  readOnly
+                  aria-readonly
+                  tabIndex={-1}
+                  onClick={(e) => e.preventDefault()}
+                  className="pointer-events-none mt-0.5 h-4 w-4 rounded border-gold/40 accent-gold-deep"
+                />
+                <span>
+                  <strong className="font-medium text-ink">{title}</strong>{tail}
+                  <br />
+                  <button
+                    type="button"
+                    onClick={() => setOpenDoc(doc)}
+                    className="font-medium text-gold-deep hover:underline"
+                  >
+                    {done ? "Metni tekrar oku" : "Metni aç ve oku"}
+                  </button>
+                </span>
+              </div>
+            ))}
+            <p className="text-xs text-ink-soft/80">
+              Elle işaretlenemez. Her iki metni de açın, en alta kadar okuyup
+              &quot;Okudum, anladım, kabul ediyorum&quot;a basın; kutucuklar
+              otomatik işaretlenecektir.
             </p>
           </div>
 
