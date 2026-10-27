@@ -216,7 +216,7 @@ export function SiteHeader() {
                 priority
               />
             </span>
-            <span className="font-heading text-base font-semibold tracking-tight text-ink">
+            <span className="font-heading text-base font-semibold tracking-tight text-white">
               KriptoBeyan
             </span>
           </Link>
