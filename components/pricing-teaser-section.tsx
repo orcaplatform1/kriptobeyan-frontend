@@ -10,13 +10,13 @@ export async function PricingTeaserSection() {
 
   return (
     <section id="fiyatlandirma" className="bg-cream py-20 lg:py-28">
-      <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <div className="container-edit">
         <div className="flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-end">
           <div className="max-w-xl">
-            <p className="text-xs font-semibold tracking-wide text-gold-deep uppercase">
+            <p className="text-xs font-semibold tracking-[0.15em] text-gold-deep uppercase">
               Fiyatlandırma
             </p>
-            <h2 className="mt-3 font-serif text-3xl font-semibold text-ink sm:text-4xl">
+            <h2 className="mt-3 font-heading text-3xl font-semibold text-ink sm:text-4xl">
               İşlem hacmine göre şeffaf fiyatlandırma
             </h2>
           </div>
@@ -29,16 +29,16 @@ export async function PricingTeaserSection() {
         </div>
 
         {individual.length > 0 ? (
-          <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-3">
+          <div className="mt-12 grid grid-cols-1 border border-gold/15 sm:grid-cols-3">
             {individual.map((plan) => (
               <div
                 key={plan.id}
-                className="rounded-2xl border border-gold/20 bg-parchment p-7"
+                className="glass-card haptic p-7"
               >
-                <h3 className="text-sm font-semibold tracking-wide text-ink-soft uppercase">
+                <h3 className="text-[11px] font-semibold tracking-[0.15em] text-ink-soft uppercase">
                   {plan.name}
                 </h3>
-                <p className="mt-3 font-serif text-3xl font-semibold text-ink">
+                <p className="mt-3 font-heading text-3xl font-semibold text-ink">
                   {formatTRY(plan.priceTRY)}
                   {Number(plan.priceTRY) > 0 && (
                     <span className="ml-1 text-base font-normal text-ink-soft">

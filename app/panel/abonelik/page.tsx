@@ -313,7 +313,7 @@ function AbonelikPageInner() {
         {!loading && !error && (
           <>
             {view === "package" && (
-              <div className="mt-8 rounded-2xl border border-gold/20 bg-parchment p-6">
+              <div className="mt-8 border border-gold/20 bg-parchment p-6">
                 <h2 className="font-serif text-lg font-semibold text-ink">
                   Plan seç
                 </h2>
@@ -366,7 +366,7 @@ function AbonelikPageInner() {
                           resetFormState();
                           setView("card");
                         }}
-                        className="rounded-xl border border-gold/25 bg-cream px-4 py-4 text-center text-sm font-semibold text-ink transition-colors hover:border-gold"
+                        className="border border-gold/25 bg-cream px-4 py-4 text-center text-sm font-semibold text-ink transition-colors hover:border-gold"
                       >
                         Kredi/Banka Kartı
                       </button>
@@ -375,7 +375,7 @@ function AbonelikPageInner() {
                           resetFormState();
                           setView("bank-transfer");
                         }}
-                        className="rounded-xl border border-gold/25 bg-cream px-4 py-4 text-center text-sm font-semibold text-ink transition-colors hover:border-gold"
+                        className="border border-gold/25 bg-cream px-4 py-4 text-center text-sm font-semibold text-ink transition-colors hover:border-gold"
                       >
                         Havale / EFT
                       </button>
@@ -384,7 +384,7 @@ function AbonelikPageInner() {
                           resetFormState();
                           setView("crypto");
                         }}
-                        className="rounded-xl border border-gold/25 bg-cream px-4 py-4 text-center text-sm font-semibold text-ink transition-colors hover:border-gold"
+                        className="border border-gold/25 bg-cream px-4 py-4 text-center text-sm font-semibold text-ink transition-colors hover:border-gold"
                       >
                         Kripto
                       </button>
@@ -395,7 +395,7 @@ function AbonelikPageInner() {
             )}
 
             {view === "card" && selectedPlan && (
-              <div className="mt-8 rounded-2xl border border-gold/20 bg-parchment p-6">
+              <div className="mt-8 border border-gold/20 bg-parchment p-6">
                 <button onClick={backToPackage} className="text-sm text-ink-soft hover:text-ink">
                   ← Geri
                 </button>
@@ -410,14 +410,14 @@ function AbonelikPageInner() {
                     value={cardName}
                     onChange={(e) => setCardName(e.target.value)}
                     placeholder="Kart üzerindeki isim"
-                    className="rounded-lg border border-gold/25 bg-cream px-3 py-2 text-sm text-ink outline-none focus:border-gold"
+                    className="border border-gold/25 bg-cream px-3 py-2 text-sm text-ink outline-none focus:border-gold"
                   />
                   <input
                     value={cardNumber}
                     onChange={(e) => setCardNumber(formatCardNumber(e.target.value))}
                     placeholder="0000 0000 0000 0000"
                     inputMode="numeric"
-                    className="rounded-lg border border-gold/25 bg-cream px-3 py-2 text-sm text-ink outline-none focus:border-gold"
+                    className="border border-gold/25 bg-cream px-3 py-2 text-sm text-ink outline-none focus:border-gold"
                   />
                   <div className="grid grid-cols-2 gap-3">
                     <input
@@ -425,14 +425,14 @@ function AbonelikPageInner() {
                       onChange={(e) => setCardExpiry(formatExpiry(e.target.value))}
                       placeholder="AA/YY"
                       inputMode="numeric"
-                      className="rounded-lg border border-gold/25 bg-cream px-3 py-2 text-sm text-ink outline-none focus:border-gold"
+                      className="border border-gold/25 bg-cream px-3 py-2 text-sm text-ink outline-none focus:border-gold"
                     />
                     <input
                       value={cardCvv}
                       onChange={(e) => setCardCvv(e.target.value.replace(/\D/g, "").slice(0, 4))}
                       placeholder="CVV"
                       inputMode="numeric"
-                      className="rounded-lg border border-gold/25 bg-cream px-3 py-2 text-sm text-ink outline-none focus:border-gold"
+                      className="border border-gold/25 bg-cream px-3 py-2 text-sm text-ink outline-none focus:border-gold"
                     />
                   </div>
                 </div>
@@ -448,7 +448,7 @@ function AbonelikPageInner() {
             )}
 
             {view === "bank-transfer" && selectedPlan && (
-              <div className="mt-8 rounded-2xl border border-gold/20 bg-parchment p-6">
+              <div className="mt-8 border border-gold/20 bg-parchment p-6">
                 <button onClick={backToPackage} className="text-sm text-ink-soft hover:text-ink">
                   ← Geri
                 </button>
@@ -459,7 +459,7 @@ function AbonelikPageInner() {
                   Aşağıdaki hesaba <strong className="text-ink">{formatTRY(displayAmountTRY)}</strong>{" "}
                   gönderip dekontunu yükle — onaylandığında planın otomatik açılır.
                 </p>
-                <div className="mt-4 flex flex-col gap-2 rounded-xl border border-gold/15 bg-cream p-4 text-sm">
+                <div className="mt-4 flex flex-col gap-2 border border-gold/15 bg-cream p-4 text-sm">
                   <div className="flex items-center justify-between">
                     <span className="text-ink-soft">Banka</span>
                     <span className="font-medium text-ink">{BANK_DETAILS.bankName}</span>
@@ -494,7 +494,7 @@ function AbonelikPageInner() {
             )}
 
             {view === "crypto" && selectedPlan && (
-              <div className="mt-8 rounded-2xl border border-gold/20 bg-parchment p-6">
+              <div className="mt-8 border border-gold/20 bg-parchment p-6">
                 <button onClick={backToPackage} className="text-sm text-ink-soft hover:text-ink">
                   ← Geri
                 </button>
@@ -575,7 +575,7 @@ function AbonelikPageInner() {
                         Yükseltme — sadece fark
                       </span>
                     )}
-                    <div className="mt-4 flex flex-col gap-2 rounded-xl border border-gold/15 bg-cream p-4 text-sm">
+                    <div className="mt-4 flex flex-col gap-2 border border-gold/15 bg-cream p-4 text-sm">
                       <div className="flex items-center justify-between">
                         <span className="text-ink-soft">Sağlayıcı</span>
                         <span className="font-medium text-ink">
@@ -653,7 +653,7 @@ function AbonelikPageInner() {
                     return (
                       <li
                         key={p.id}
-                        className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-gold/20 bg-parchment px-4 py-3 text-sm"
+                        className="flex flex-wrap items-center justify-between gap-2 border border-gold/20 bg-parchment px-4 py-3 text-sm"
                       >
                         <div>
                           <p className="font-medium text-ink">

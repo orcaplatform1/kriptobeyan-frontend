@@ -24,12 +24,12 @@ const steps = [
 export function HowItWorksSection() {
   return (
     <section id="nasil-calisir" className="bg-cream py-20 lg:py-28">
-      <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <div className="container-edit">
         <div className="max-w-2xl">
-          <p className="text-xs font-semibold tracking-wide text-gold-deep uppercase">
+          <p className="text-xs font-semibold tracking-[0.15em] text-gold-deep uppercase">
             Nasıl çalışır
           </p>
-          <h2 className="mt-3 font-serif text-3xl font-semibold text-ink sm:text-4xl">
+          <h2 className="mt-3 font-heading text-3xl font-semibold text-ink sm:text-4xl">
             4 Adımda Kripto Vergi Hesaplama
           </h2>
           <p className="mt-4 text-lg leading-relaxed text-ink-soft">
@@ -38,16 +38,16 @@ export function HowItWorksSection() {
           </p>
         </div>
 
-        <div className="mt-14 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
+        <div className="mt-14 grid grid-cols-1 gap-px border border-gold/15 bg-gold/15 sm:grid-cols-2 lg:grid-cols-4">
           {steps.map((step) => (
             <div
               key={step.n}
-              className="rounded-2xl border border-gold/15 bg-parchment p-6"
+              className="glass-card haptic p-6"
             >
-              <span className="font-serif text-3xl font-semibold text-gold">
+              <span className="font-heading text-3xl font-semibold text-gold">
                 {step.n}
               </span>
-              <h3 className="mt-4 text-lg font-semibold text-ink">
+              <h3 className="mt-4 text-base font-semibold tracking-tight text-ink">
                 {step.title}
               </h3>
               <p className="mt-2 text-sm leading-relaxed text-ink-soft">

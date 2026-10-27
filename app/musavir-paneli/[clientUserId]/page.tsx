@@ -137,7 +137,7 @@ export default function MusteriDetayPage({
                   {summary.reports.map((r) => (
                     <li
                       key={r.id}
-                      className="rounded-lg border border-gold/15 bg-parchment px-4 py-2.5 text-sm text-ink"
+                      className="border border-gold/15 bg-parchment px-4 py-2.5 text-sm text-ink"
                     >
                       {r.taxYear} · {r.format === "PDF" ? "PDF" : "Excel"} ·{" "}
                       <span className="text-ink-soft">
@@ -158,7 +158,7 @@ export default function MusteriDetayPage({
                   Henüz hesaplanmış bir vergi özeti yok.
                 </p>
               ) : (
-                <div className="mt-4 overflow-x-auto rounded-xl border border-gold/20">
+                <div className="mt-4 overflow-x-auto border border-gold/20">
                   <table className="w-full min-w-[560px] text-left text-sm">
                     <thead>
                       <tr className="border-b border-gold/20 bg-parchment text-xs font-semibold tracking-wide text-ink-soft uppercase">

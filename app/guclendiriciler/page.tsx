@@ -121,7 +121,7 @@ export default function GuclendiricilerPage() {
                 {group.items.map((item) => (
                   <div
                     key={item.name}
-                    className="rounded-2xl border border-gold/20 bg-parchment p-5 transition-colors hover:border-gold/40"
+                    className="border border-gold/20 bg-parchment p-5 transition-colors hover:border-gold/40"
                   >
                     <h3 className="font-semibold text-ink">{item.name}</h3>
                     <p className="mt-2 text-sm leading-relaxed text-ink-soft">

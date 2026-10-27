@@ -24,7 +24,7 @@ export default function IletisimPage() {
         </p>
 
         <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2">
-          <div className="rounded-2xl border border-gold/20 bg-parchment p-6">
+          <div className="border border-gold/20 bg-parchment p-6">
             <h2 className="text-sm font-semibold tracking-wide text-gold-deep uppercase">
               Genel destek
             </h2>
@@ -39,7 +39,7 @@ export default function IletisimPage() {
             </p>
           </div>
 
-          <div className="rounded-2xl border border-gold/20 bg-parchment p-6">
+          <div className="border border-gold/20 bg-parchment p-6">
             <h2 className="text-sm font-semibold tracking-wide text-gold-deep uppercase">
               KVKK talepleri
             </h2>

@@ -1,6 +1,9 @@
 @import "tailwindcss";
 
+/* ─── KriptoBeyan renk paleti ─── */
 :root {
+  color-scheme: light;
+
   --color-cream: #f6efe1;
   --color-cream-deep: #eadfc6;
   --color-parchment: #fbf7ec;
@@ -11,12 +14,32 @@
   --color-gold: #a9803e;
   --color-gold-light: #d3ac6c;
   --color-gold-deep: #7c5a26;
+
+  /* Tasarım sistemi sabitleri */
+  --ease-kinetic: cubic-bezier(0.16, 1, 0.3, 1);
+  --border-hairline: rgba(169, 128, 62, 0.18);
+  --bg-deep-velvet: var(--color-cream);
+  --bg-card-surface: rgba(251, 247, 236, 0.7);
+
+  /* Semantik yüzeyler */
+  --surface-background: var(--color-cream);
+  --surface-1: #ffffff;
+  --surface-2: var(--color-parchment);
+
+  /* Semantik metin */
+  --text-primary: var(--color-ink);
+  --text-secondary: var(--color-ink-soft);
+  --text-muted: var(--color-ink-soft);
+
+  /* Border */
+  --border-subtle: var(--border-hairline);
+  --border-default: var(--border-hairline);
+  --border-focus: var(--color-ink);
+
+  --background: var(--color-cream);
+  --foreground: var(--color-ink);
 }
 
-/* Native form kontrolleri (select/checkbox/radio/range) tarayicinin
-   varsayilan mavi vurgu rengiyle degil, sitenin altin paletiyle acilsin —
-   tek tek her elemana accent-gold-deep utility'si eklemek yerine site
-   genelinde tek yerden. */
 select,
 input[type="checkbox"],
 input[type="radio"],
@@ -35,17 +58,303 @@ input[type="range"] {
   --color-gold: var(--color-gold);
   --color-gold-light: var(--color-gold-light);
   --color-gold-deep: var(--color-gold-deep);
-  --font-serif: var(--font-display);
+
+  /* font-serif artık Plus Jakarta Sans kullanır */
+  --font-serif: var(--font-jakarta);
+  --font-heading: var(--font-jakarta);
   --font-sans: var(--font-body);
+
+  --color-muted: var(--color-ink-soft);
+  --color-accent: var(--color-gold-deep);
+  --color-border: var(--border-hairline);
+  --color-text-secondary: var(--color-ink-soft);
+  --color-text-tertiary: var(--color-ink-soft);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+}
+
+* {
+  border-color: var(--border-hairline);
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--color-cream);
-  color: var(--color-ink);
+  background: var(--bg-deep-velvet);
+  color: var(--foreground);
+  /* Altta yüzen navigasyon için güvenlik payı */
+  padding-bottom: calc(80px + env(safe-area-inset-bottom));
+  font-feature-settings: "ss01" on, "cv01" on;
 }
 
+/* Başlıklar: Plus Jakarta Sans, gövde: Inter */
+h1,
+h2,
+h3,
+.font-heading {
+  font-family: var(--font-jakarta), var(--font-body), sans-serif;
+  letter-spacing: -0.025em;
+  font-weight: 600;
+}
+
+@layer base {
+  p,
+  span,
+  label {
+    font-family: var(--font-body), sans-serif;
+    line-height: 1.6;
+  }
+
+  :where(h1, h2, h3, .font-heading) span {
+    font-family: inherit;
+  }
+}
+
+::selection {
+  background: var(--color-ink);
+  color: var(--color-cream);
+}
+
+:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline-color: rgba(169, 128, 62, 0.4);
+}
+
+/* ─── Container ─── */
+.container-edit {
+  max-width: 1280px;
+  margin-inline: auto;
+  padding-inline: 20px;
+}
+
+@media (min-width: 768px) {
+  .container-edit {
+    padding-inline: 40px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .container-edit {
+    padding-inline: 64px;
+  }
+}
+
+/* ─── Kart: keskin köşe, altın ince çizgi ─── */
+.glass-card {
+  position: relative;
+  border-radius: 0 !important;
+  background: var(--bg-card-surface);
+  border: 1px solid var(--border-hairline);
+  box-shadow: none;
+  transition:
+    transform 0.6s var(--ease-kinetic),
+    opacity 0.8s var(--ease-kinetic);
+}
+
+/* ─── Buton: keskin köşe, koyu mürekkep ─── */
+.btn-liquid {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 48px;
+  background: var(--color-ink);
+  border: 1px solid var(--color-ink);
+  border-radius: 0;
+  color: var(--color-cream);
+  transition:
+    transform 0.5s var(--ease-kinetic),
+    opacity 0.5s var(--ease-kinetic);
+}
+
+.btn-liquid:active {
+  transform: scale(0.98);
+  transition-duration: 0.1s;
+}
+
+/* ─── Buton üzerinden kayan ışık bandı ─── */
+@keyframes btn-shine-sweep {
+  0%,
+  10% {
+    transform: translateX(-130%) skewX(-20deg);
+  }
+  45%,
+  100% {
+    transform: translateX(230%) skewX(-20deg);
+  }
+}
+
+.btn-shine {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.btn-shine::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 40%;
+  background: linear-gradient(
+    100deg,
+    transparent,
+    rgba(169, 128, 62, 0.25),
+    rgba(211, 172, 108, 0.15),
+    transparent
+  );
+  animation: btn-shine-sweep 2.2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* ─── Kaydırma görünüm animasyonu ─── */
+.reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity 500ms var(--ease-kinetic),
+    transform 500ms var(--ease-kinetic);
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ─── Haptik dokunuş ─── */
+.haptic {
+  transition: transform 0.6s var(--ease-kinetic);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.haptic:active {
+  transform: scale(0.98);
+  transition-duration: 0.12s;
+}
+
+/* ─── Kart tarama efekti ─── */
+@keyframes card-scan {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+  }
+  35% {
+    transform: translateY(var(--scan-distance, 700px));
+    opacity: 1;
+  }
+  40%,
+  100% {
+    transform: translateY(var(--scan-distance, 700px));
+    opacity: 0;
+  }
+}
+
+.card-scan {
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 80px;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(169, 128, 62, 0.08) 70%,
+    rgba(169, 128, 62, 0.18) 98%,
+    transparent
+  );
+  animation: card-scan 7s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  pointer-events: none;
+}
+
+/* ─── Hero animasyonları ─── */
+@keyframes hero-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero-fade-up {
+  opacity: 0;
+  animation: hero-fade-up 800ms var(--ease-kinetic) forwards;
+}
+
+@keyframes hero-word-shimmer {
+  from {
+    background-position: 150% 0;
+  }
+  to {
+    background-position: -50% 0;
+  }
+}
+
+.hero-word {
+  display: inline-block;
+  opacity: 0;
+  background-image: linear-gradient(
+    105deg,
+    var(--color-ink) 40%,
+    var(--color-gold) 48%,
+    var(--color-gold-light) 50%,
+    var(--color-gold) 52%,
+    var(--color-ink) 60%
+  );
+  background-size: 250% 100%;
+  background-position: 150% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation:
+    hero-fade-up 800ms var(--ease-kinetic) var(--word-delay, 0ms) forwards,
+    hero-word-shimmer 1.8s ease-in-out calc(var(--word-delay, 0ms) + 500ms) forwards;
+}
+
+/* ─── Form: sadece alt çizgi ─── */
+.lux-input {
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--border-hairline);
+  border-radius: 0;
+  transition: border-color 0.4s var(--ease-kinetic);
+}
+
+.lux-input:focus,
+.lux-input:focus-visible {
+  outline: none;
+  border-bottom-color: var(--color-gold);
+}
+
+/* ─── Kinetik menü animasyonu ─── */
+.kinetic-menu-item {
+  opacity: 0;
+  transform: translateY(var(--burst-from, 0px)) scale(0.6);
+  transition:
+    transform 0.9s var(--ease-kinetic),
+    opacity 0.6s var(--ease-kinetic);
+}
+
+.kinetic-menu-open .kinetic-menu-item {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* ─── Yasal metin ─── */
 .prose-legal h2 {
-  font-family: var(--font-display);
+  font-family: var(--font-jakarta);
   font-size: 1.375rem;
   font-weight: 600;
   color: var(--color-ink);
@@ -102,7 +411,7 @@ body {
 
 .prose-legal th,
 .prose-legal td {
-  border: 1px solid rgba(169, 128, 62, 0.25);
+  border: 1px solid var(--border-hairline);
   padding: 0.5rem 0.75rem;
   text-align: left;
   color: var(--color-ink-soft);
@@ -114,90 +423,7 @@ body {
   background: var(--color-parchment);
 }
 
-/* "Ücretsiz Başla" CTA'ları icin kenarda kayan "kuyruklu yıldız" (comet)
-   efekti — ORCA'daki .premium-glow-ring ile AYNI teknik (donen buyuk bir
-   conic-gradient halka, disina tasan kismi overflow:hidden ile kesiliyor,
-   goze sadece ince bir kenarlik seklinde donen bir isik seridi carpiyor),
-   sadece renk paleti mavi/mor yerine bu sitenin altin tonlarina (gold/
-   gold-light/gold-deep) uyarlandi. Halkanin donusu transform:rotate ile GPU
-   uzerinde, render maliyeti sabit bir kac piksellik pseudo-element'e sinirli
-   kaliyor (bkz. ORCA globals.css'teki ayni yorum). */
-@keyframes gold-comet-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-/* display BILEREK burada set edilmiyor — bu dosyadaki kural Tailwind'in
-   uretilen utility'lerinden (ozellikle responsive "hidden"/"sm:inline-flex"
-   gibi varyantlar) SONRA derleniyor, ayni ozgullukte (tek class secici) ama
-   kaynak sirasi daha sonra oldugu icin "hidden"i eziyordu — mobilde
-   gizlenmesi gereken bir buton hep gorunur kaliyordu. display, JSX'te
-   kullanan tarafindan ayrica bir Tailwind utility'siyle (inline-flex,
-   hidden sm:inline-flex, vb.) verilmeli. AYNI SEBEPLE position DE BURADA
-   set edilmiyor — ::before'un position:absolute ile konumlanabilmesi icin
-   bu elemanin relative/absolute bir positioning context olmasi sart, ama
-   "position: relative" burada sabit yazilsaydi, hero'daki rozet gibi
-   "absolute" utility'siyle kullanilan yerlerde AYNI display hatasi
-   tekrarlanirdi (relative, absolute utility'sini cascade sirasinda ezerdi
-   — rozet gorselin disina, sol-alta kayardi, bkz. ekran goruntusu). Her
-   kullanim kendi position utility'sini (relative veya absolute) taşımalı. */
-/* Hero'nun "ekrani kapla" tasarimi (100dvh + gorseli h-full/w-auto ile
-   yukseklikten genislik turetme) sadece GENIS/KISA (yatay) ekranlar icin
-   guvenli. Telefonda Chrome "Masaustu sitesi" 980px genislik verir ama
-   YUKSEKLIK degismez (dar+uzun/dikey kalir) — bu durumda h-full bir 2000px+
-   yuksekligi baz alip genisligi de orantiyla ~2100px'e sisiriyor, gorsel
-   ekranin disina tasip hero bomboş gorunuyordu. min-aspect-ratio ile bu
-   davranisi sadece gercekten yatay (genislik >= yukseklik) ekranlara
-   kisitliyoruz; dikey ekranlarda gorsel normal (genislige gore) boyutlanir. */
-@media (min-width: 768px) and (min-aspect-ratio: 1/1) {
-  .hero-landscape-min-h {
-    min-height: 100dvh;
-  }
-  .hero-landscape-fill-h {
-    height: 100%;
-  }
-  .hero-landscape-fill-w {
-    width: auto;
-  }
-  /* Ayni sebep: 2 sutunlu grid (metin sutunu + gorsel sutunu) de sadece
-     yatay ekranlarda mantikli — dikey "masaustu modu"nda metin sutunu zaten
-     bos (md:hidden) ama grid yine de ona %45 pay ayirip gorseli ekranin
-     sagina, kucuk bir dikdortgene sikistiriyordu (bkz. ekran goruntusu,
-     "sag tarafa kaymis" sikayeti). Dikeyde tek sutuna donup gorsel tam
-     genislikte ustte, panel uzerine bindirilmis halde kalsin. */
-  .hero-landscape-grid-cols {
-    grid-template-columns: 0.85fr 1.15fr;
-  }
-  .hero-landscape-order-1 {
-    order: 1;
-  }
-  .hero-landscape-order-2 {
-    order: 2;
-  }
-  .hero-landscape-col-2 {
-    grid-column-start: 2;
-  }
-  /* Ayni sebep: sol ic bosluk (pl-16/xl:pl-24) ve gorsel sutununun mx-0'i
-     sadece gercek 2-sutunlu duzende (metin sutunu icin yer acmak amaciyla)
-     gerekliydi. Dikey tek-sutun halinde bunlar gorseli sol kenardan 64px+
-     iceri itip mobildeki gibi TAM GENISLIKTE (edge-to-edge) oturmasini
-     engelliyordu (kullanicinin "sol yani bos, tam otur" sikayeti). */
-  .hero-landscape-pl-16 {
-    padding-left: 4rem;
-  }
-  .hero-landscape-mx-0 {
-    margin-left: 0;
-    margin-right: 0;
-  }
-}
-
-/* Footer'daki "Traders.TR" marka gecisi icin — kullanici istegi 2026-08-24:
-   duz (premium/glow olmadan) kırmızı ve beyaz. Sitenin altin/krem
-   paletinden BAGIMSIZ (bilerek), ORCA'daki (traders.tr) site-footer.tsx'teki
-   AYNI class ile tutarli. */
+/* ─── Traders.TR footer renk işaretçileri ─── */
 .text-traders-red {
   font-weight: 700;
   color: #dc2626;
@@ -209,6 +435,16 @@ body {
 .text-traders-blue {
   font-weight: 700;
   color: #3b82f6;
+}
+
+/* ─── Altın kuyruklu yıldız efekti (birincil CTA) ─── */
+@keyframes gold-comet-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .btn-gold-comet {
@@ -241,18 +477,8 @@ body {
   z-index: 1;
   border-radius: inherit;
 }
-@media (prefers-reduced-motion: reduce) {
-  .btn-gold-comet::before {
-    animation: none;
-  }
-}
 
-/* Admin/"M Dashboard" linki icin — bilerek sitenin altin/krem paletinden
-   BAGIMSIZ, ORCA'daki .premium-glow-ring ile ayni mavi/mor "kuyruklu
-   yildiz" tonlari (kullanicinin "temadan bagimsiz, gosterisli" istegi) —
-   bu link normal nav ogelerinden kasitli olarak ayriksi/dikkat cekici
-   dursun diye. Ayni display/position-yok deseni yukaridaki .btn-gold-comet
-   yorumuyla ayni sebepten. */
+/* ─── İndigo kuyruklu yıldız (admin bağlantısı) ─── */
 .btn-indigo-comet {
   position: relative;
   border-radius: 999px;
@@ -283,8 +509,84 @@ body {
   z-index: 1;
   border-radius: inherit;
 }
+
+/* ─── Hero görsel: yatay/dikey ekran adaptasyonu ─── */
+@media (min-width: 768px) and (min-aspect-ratio: 1/1) {
+  .hero-landscape-min-h {
+    min-height: 100dvh;
+  }
+  .hero-landscape-fill-h {
+    height: 100%;
+  }
+  .hero-landscape-fill-w {
+    width: auto;
+  }
+  .hero-landscape-grid-cols {
+    grid-template-columns: 0.85fr 1.15fr;
+  }
+  .hero-landscape-order-1 {
+    order: 1;
+  }
+  .hero-landscape-order-2 {
+    order: 2;
+  }
+  .hero-landscape-col-2 {
+    grid-column-start: 2;
+  }
+  .hero-landscape-pl-16 {
+    padding-left: 4rem;
+  }
+  .hero-landscape-mx-0 {
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+
+/* ─── Otomatik doldurma arkaplanı düzeltmesi ─── */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+select:-webkit-autofill {
+  -webkit-text-fill-color: var(--color-ink);
+  -webkit-box-shadow: 0 0 0px 1000px var(--color-cream) inset;
+  box-shadow: 0 0 0px 1000px var(--color-cream) inset;
+  transition: background-color 9999s ease-in-out 0s;
+}
+
+/* ─── Reduced motion ─── */
 @media (prefers-reduced-motion: reduce) {
-  .btn-indigo-comet::before {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .hero-word {
     animation: none;
+    opacity: 1;
+    color: var(--color-ink);
+    background: none;
+  }
+  .reveal {
+    transform: none;
+    transition: opacity 300ms ease;
+  }
+  .kinetic-menu-item {
+    transform: none !important;
+  }
+}
+
+@layer utilities {
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 }

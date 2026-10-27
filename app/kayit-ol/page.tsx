@@ -182,7 +182,7 @@ function KayitOlContent() {
                 autoFocus
                 value={code}
                 onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
-                className="mt-1.5 w-full rounded-lg border border-gold/25 bg-parchment px-4 py-2.5 text-center text-lg tracking-[0.3em] text-ink outline-none transition-colors focus:border-gold"
+                className="mt-1.5 w-full border border-gold/25 bg-parchment px-4 py-2.5 text-center text-lg tracking-[0.3em] text-ink outline-none transition-colors focus:border-gold"
               />
             </div>
 
@@ -292,7 +292,7 @@ function KayitOlContent() {
               autoComplete="name"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              className="mt-1.5 w-full rounded-lg border border-gold/25 bg-parchment px-4 py-2.5 text-ink outline-none transition-colors focus:border-gold"
+              className="mt-1.5 w-full border border-gold/25 bg-parchment px-4 py-2.5 text-ink outline-none transition-colors focus:border-gold"
             />
           </div>
 
@@ -309,7 +309,7 @@ function KayitOlContent() {
               autoComplete="username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="mt-1.5 w-full rounded-lg border border-gold/25 bg-parchment px-4 py-2.5 text-ink outline-none transition-colors focus:border-gold"
+              className="mt-1.5 w-full border border-gold/25 bg-parchment px-4 py-2.5 text-ink outline-none transition-colors focus:border-gold"
             />
             <p className="mt-1.5 text-xs text-ink-soft">
               Sadece harf, rakam ve alt çizgi — girişte de kullanabilirsin.
@@ -327,7 +327,7 @@ function KayitOlContent() {
               autoComplete="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="mt-1.5 w-full rounded-lg border border-gold/25 bg-parchment px-4 py-2.5 text-ink outline-none transition-colors focus:border-gold"
+              className="mt-1.5 w-full border border-gold/25 bg-parchment px-4 py-2.5 text-ink outline-none transition-colors focus:border-gold"
             />
           </div>
 
@@ -339,7 +339,7 @@ function KayitOlContent() {
               <CustomSelect
                 value={phoneCountryCode}
                 onChange={setPhoneCountryCode}
-                className="w-[100px] shrink-0 rounded-lg border border-gold/25 bg-parchment px-2 py-2.5 text-sm text-ink focus:border-gold"
+                className="w-[100px] shrink-0 border border-gold/25 bg-parchment px-2 py-2.5 text-sm text-ink focus:border-gold"
                 options={countryCodes.map((c) => ({
                   value: c.dialCode,
                   label: `${c.flag} ${c.dialCode}`,
@@ -352,7 +352,7 @@ function KayitOlContent() {
                 maxLength={10}
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, ""))}
-                className="w-full rounded-lg border border-gold/25 bg-parchment px-4 py-2.5 text-ink outline-none transition-colors focus:border-gold"
+                className="w-full border border-gold/25 bg-parchment px-4 py-2.5 text-ink outline-none transition-colors focus:border-gold"
               />
             </div>
             <p className="mt-1.5 text-xs text-ink-soft">
@@ -374,7 +374,7 @@ function KayitOlContent() {
               autoComplete="new-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="mt-1.5 w-full rounded-lg border border-gold/25 bg-parchment px-4 py-2.5 text-ink outline-none transition-colors focus:border-gold"
+              className="mt-1.5 w-full border border-gold/25 bg-parchment px-4 py-2.5 text-ink outline-none transition-colors focus:border-gold"
             />
             <p className="mt-1.5 text-xs text-ink-soft">
               En az {MIN_PASSWORD_LENGTH} karakter.
@@ -393,7 +393,7 @@ function KayitOlContent() {
               autoComplete="new-password"
               value={passwordConfirm}
               onChange={(e) => setPasswordConfirm(e.target.value)}
-              className="mt-1.5 w-full rounded-lg border border-gold/25 bg-parchment px-4 py-2.5 text-ink outline-none transition-colors focus:border-gold"
+              className="mt-1.5 w-full border border-gold/25 bg-parchment px-4 py-2.5 text-ink outline-none transition-colors focus:border-gold"
             />
           </div>
 

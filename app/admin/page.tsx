@@ -146,7 +146,7 @@ function PlanRow({ plan }: { plan: AdminPlan }) {
           step="0.01"
           value={priceTRY}
           onChange={(e) => setPriceTRY(e.target.value)}
-          className="w-28 rounded-lg border border-gold/25 bg-parchment px-2.5 py-1.5 text-ink outline-none focus:border-gold"
+          className="w-28 border border-gold/25 bg-parchment px-2.5 py-1.5 text-ink outline-none focus:border-gold"
         />
       </td>
       <td className="px-4 py-3">
@@ -157,7 +157,7 @@ function PlanRow({ plan }: { plan: AdminPlan }) {
             placeholder="Sınırsız"
             value={transactionLimit}
             onChange={(e) => setTransactionLimit(e.target.value)}
-            className="w-28 rounded-lg border border-gold/25 bg-parchment px-2.5 py-1.5 text-ink outline-none focus:border-gold"
+            className="w-28 border border-gold/25 bg-parchment px-2.5 py-1.5 text-ink outline-none focus:border-gold"
           />
         ) : (
           <input
@@ -166,7 +166,7 @@ function PlanRow({ plan }: { plan: AdminPlan }) {
             placeholder="Sınırsız"
             value={clientLimit}
             onChange={(e) => setClientLimit(e.target.value)}
-            className="w-28 rounded-lg border border-gold/25 bg-parchment px-2.5 py-1.5 text-ink outline-none focus:border-gold"
+            className="w-28 border border-gold/25 bg-parchment px-2.5 py-1.5 text-ink outline-none focus:border-gold"
           />
         )}
       </td>
@@ -214,7 +214,7 @@ function PlansSection({ plans }: { plans: AdminPlan[] }) {
           rows.length > 0 && (
             <div key={title} className="mt-8">
               <h2 className="font-serif text-xl font-semibold text-ink">{title}</h2>
-              <div className="mt-4 overflow-x-auto rounded-xl border border-gold/20">
+              <div className="mt-4 overflow-x-auto border border-gold/20">
                 <table className="w-full min-w-[640px] text-left text-sm">
                   <thead>
                     <tr className="border-b border-gold/20 bg-parchment text-xs font-semibold tracking-wide text-ink-soft uppercase">
@@ -288,10 +288,10 @@ function SalesStatsSection() {
   const totalUpgradeCount = rows.reduce((sum, r) => sum + r.upgradeCount, 0);
 
   return (
-    <div className="rounded-2xl border border-gold/20 bg-parchment p-5">
+    <div className="border border-gold/20 bg-parchment p-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 className="font-serif text-lg font-semibold text-ink">Ciro istatistiği</h2>
-        <div className="flex overflow-hidden rounded-lg border border-gold/25">
+        <div className="flex overflow-hidden border border-gold/25">
           {PERIOD_TABS.map((t) => (
             <button
               key={t.value}
@@ -331,7 +331,7 @@ function SalesStatsSection() {
               kadarı plan yükseltmesi — yeni/yenileme satışı değil.
             </p>
           )}
-          <div className="mt-4 max-h-64 overflow-y-auto rounded-xl border border-gold/15">
+          <div className="mt-4 max-h-64 overflow-y-auto border border-gold/15">
             <table className="w-full text-left text-sm">
               <thead>
                 <tr className="border-b border-gold/15 bg-cream text-xs font-semibold tracking-wide text-ink-soft uppercase">
@@ -413,7 +413,7 @@ function PaymentsSection() {
     <div className="flex flex-col gap-6">
       <SalesStatsSection />
 
-      <div className="flex w-fit overflow-hidden rounded-xl border border-gold/25">
+      <div className="flex w-fit overflow-hidden border border-gold/25">
         {PAYMENT_STATUS_TABS.map((tab) => (
           <button
             key={tab.value}
@@ -430,7 +430,7 @@ function PaymentsSection() {
         ))}
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-gold/20">
+      <div className="overflow-hidden border border-gold/20">
         {loading ? (
           <p className="p-6 text-sm text-ink-soft">Yükleniyor…</p>
         ) : payments.length === 0 ? (
@@ -683,7 +683,7 @@ function UserDetailPanel({
               </div>
 
               {user.reports.length > 0 && (
-                <div className="rounded-xl border border-gold/15 bg-parchment p-3">
+                <div className="border border-gold/15 bg-parchment p-3">
                   <p className="text-xs font-semibold tracking-wide text-ink-soft uppercase">
                     İndirdiği raporlar
                   </p>
@@ -707,7 +707,7 @@ function UserDetailPanel({
                 <input
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="mt-1.5 w-full rounded-lg border border-gold/25 bg-parchment px-3 py-2 text-sm text-ink outline-none focus:border-gold"
+                  className="mt-1.5 w-full border border-gold/25 bg-parchment px-3 py-2 text-sm text-ink outline-none focus:border-gold"
                 />
               </div>
               <div>
@@ -717,11 +717,11 @@ function UserDetailPanel({
                 <input
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="mt-1.5 w-full rounded-lg border border-gold/25 bg-parchment px-3 py-2 text-sm text-ink outline-none focus:border-gold"
+                  className="mt-1.5 w-full border border-gold/25 bg-parchment px-3 py-2 text-sm text-ink outline-none focus:border-gold"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3 rounded-xl border border-gold/15 bg-parchment p-3 text-xs text-ink-soft">
+              <div className="grid grid-cols-2 gap-3 border border-gold/15 bg-parchment p-3 text-xs text-ink-soft">
                 <span>Borsa: {user._count.exchangeConnections}</span>
                 <span>Cüzdan: {user._count.walletAddresses}</span>
                 <span>CSV: {user._count.csvImports}</span>
@@ -740,7 +740,7 @@ function UserDetailPanel({
                 <input
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  className="mt-1.5 w-full rounded-lg border border-gold/25 bg-parchment px-3 py-2 text-sm text-ink outline-none focus:border-gold"
+                  className="mt-1.5 w-full border border-gold/25 bg-parchment px-3 py-2 text-sm text-ink outline-none focus:border-gold"
                 />
               </div>
               <div>
@@ -750,7 +750,7 @@ function UserDetailPanel({
                 <input
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  className="mt-1.5 w-full rounded-lg border border-gold/25 bg-parchment px-3 py-2 text-sm text-ink outline-none focus:border-gold"
+                  className="mt-1.5 w-full border border-gold/25 bg-parchment px-3 py-2 text-sm text-ink outline-none focus:border-gold"
                 />
               </div>
               <div>
@@ -760,7 +760,7 @@ function UserDetailPanel({
                 <CustomSelect
                   value={role}
                   onChange={(v) => setRole(v as UserRole)}
-                  className="mt-1.5 w-full rounded-lg border border-gold/25 bg-parchment px-3 py-2 text-sm text-ink focus:border-gold"
+                  className="mt-1.5 w-full border border-gold/25 bg-parchment px-3 py-2 text-sm text-ink focus:border-gold"
                   options={[
                     { value: "INDIVIDUAL", label: "Bireysel" },
                     { value: "ACCOUNTANT", label: "Mali Müşavir" },
@@ -876,7 +876,7 @@ function UsersSection() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="E-posta, kullanıcı adı veya isim ara…"
-          className="min-w-[220px] flex-1 rounded-lg border border-gold/25 bg-parchment px-3 py-2 text-sm text-ink outline-none focus:border-gold"
+          className="min-w-[220px] flex-1 border border-gold/25 bg-parchment px-3 py-2 text-sm text-ink outline-none focus:border-gold"
         />
         <CustomSelect
           value={roleFilter}
@@ -884,14 +884,14 @@ function UsersSection() {
             setRoleFilter(v as UserRole | "ALL");
             setPage(1);
           }}
-          className="w-40 rounded-lg border border-gold/25 bg-parchment px-3 py-2 text-sm text-ink focus:border-gold"
+          className="w-40 border border-gold/25 bg-parchment px-3 py-2 text-sm text-ink focus:border-gold"
           options={[
             { value: "ALL", label: "Tüm roller" },
             { value: "INDIVIDUAL", label: "Bireysel" },
             { value: "ACCOUNTANT", label: "Mali Müşavir" },
           ]}
         />
-        <label className="flex items-center gap-2 rounded-lg border border-gold/25 bg-parchment px-3 py-2 text-sm text-ink-soft">
+        <label className="flex items-center gap-2 border border-gold/25 bg-parchment px-3 py-2 text-sm text-ink-soft">
           <input
             type="checkbox"
             checked={staffOnly}
@@ -913,7 +913,7 @@ function UsersSection() {
 
       <p className="text-xs text-ink-soft">{pagination.total} kullanıcı</p>
 
-      <div className="overflow-x-auto rounded-2xl border border-gold/20">
+      <div className="overflow-x-auto border border-gold/20">
         {loading ? (
           <p className="p-6 text-sm text-ink-soft">Yükleniyor…</p>
         ) : users.length === 0 ? (
@@ -1031,7 +1031,7 @@ function ReportsSection() {
         {rows.length} rapor indirme · en son 200 kayıt
       </p>
 
-      <div className="overflow-x-auto rounded-2xl border border-gold/20">
+      <div className="overflow-x-auto border border-gold/20">
         {loading ? (
           <p className="p-6 text-sm text-ink-soft">Yükleniyor…</p>
         ) : rows.length === 0 ? (
@@ -1158,15 +1158,15 @@ function OverviewSection() {
       <div>
         <h2 className="font-serif text-lg font-semibold text-ink">Site trafiği</h2>
         <div className="mt-3 grid grid-cols-3 gap-3 sm:w-[28rem]">
-          <div className="rounded-xl border border-gold/20 bg-parchment p-4">
+          <div className="border border-gold/20 bg-parchment p-4">
             <p className="text-xs text-ink-soft">Bugün</p>
             <p className="mt-1 font-serif text-2xl font-semibold text-ink">{visitors?.today ?? 0}</p>
           </div>
-          <div className="rounded-xl border border-gold/20 bg-parchment p-4">
+          <div className="border border-gold/20 bg-parchment p-4">
             <p className="text-xs text-ink-soft">Bu hafta</p>
             <p className="mt-1 font-serif text-2xl font-semibold text-ink">{visitors?.week ?? 0}</p>
           </div>
-          <div className="rounded-xl border border-gold/20 bg-parchment p-4">
+          <div className="border border-gold/20 bg-parchment p-4">
             <p className="text-xs text-ink-soft">Bu ay</p>
             <p className="mt-1 font-serif text-2xl font-semibold text-ink">{visitors?.month ?? 0}</p>
           </div>
@@ -1176,15 +1176,15 @@ function OverviewSection() {
       <div>
         <h2 className="font-serif text-lg font-semibold text-ink">Kullanıcı dağılımı</h2>
         <div className="mt-3 grid grid-cols-3 gap-3 sm:w-[28rem]">
-          <div className="rounded-xl border border-gold/20 bg-parchment p-4">
+          <div className="border border-gold/20 bg-parchment p-4">
             <p className="text-xs text-ink-soft">Admin/Staff</p>
             <p className="mt-1 font-serif text-2xl font-semibold text-ink">{roles?.staff ?? 0}</p>
           </div>
-          <div className="rounded-xl border border-gold/20 bg-parchment p-4">
+          <div className="border border-gold/20 bg-parchment p-4">
             <p className="text-xs text-ink-soft">Mali Müşavir</p>
             <p className="mt-1 font-serif text-2xl font-semibold text-ink">{roles?.accountant ?? 0}</p>
           </div>
-          <div className="rounded-xl border border-gold/20 bg-parchment p-4">
+          <div className="border border-gold/20 bg-parchment p-4">
             <p className="text-xs text-ink-soft">Bireysel</p>
             <p className="mt-1 font-serif text-2xl font-semibold text-ink">{roles?.individual ?? 0}</p>
           </div>
@@ -1249,7 +1249,7 @@ function AnnouncementsSection() {
         <CustomSelect
           value={role}
           onChange={(v) => setRole(v as UserRole | "ALL")}
-          className="mt-1.5 w-56 rounded-lg border border-gold/25 bg-parchment px-3 py-2 text-sm text-ink focus:border-gold"
+          className="mt-1.5 w-56 border border-gold/25 bg-parchment px-3 py-2 text-sm text-ink focus:border-gold"
           options={[
             { value: "ALL", label: "Herkes" },
             { value: "INDIVIDUAL", label: "Sadece bireysel" },
@@ -1267,7 +1267,7 @@ function AnnouncementsSection() {
           onChange={(e) => setMessage(e.target.value)}
           rows={4}
           maxLength={500}
-          className="mt-1.5 w-full rounded-lg border border-gold/25 bg-parchment px-3 py-2 text-sm text-ink outline-none focus:border-gold"
+          className="mt-1.5 w-full border border-gold/25 bg-parchment px-3 py-2 text-sm text-ink outline-none focus:border-gold"
         />
       </div>
 
@@ -1377,7 +1377,7 @@ function SiteContentSection() {
                     value={values[f.key] ?? ""}
                     onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))}
                     rows={3}
-                    className="mt-1.5 w-full rounded-lg border border-gold/25 bg-parchment px-3 py-2 text-sm text-ink outline-none focus:border-gold"
+                    className="mt-1.5 w-full border border-gold/25 bg-parchment px-3 py-2 text-sm text-ink outline-none focus:border-gold"
                   />
                 ) : (
                   <input
@@ -1385,7 +1385,7 @@ function SiteContentSection() {
                     value={values[f.key] ?? ""}
                     onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))}
                     placeholder={f.placeholder}
-                    className="mt-1.5 w-full rounded-lg border border-gold/25 bg-parchment px-3 py-2 text-sm text-ink outline-none focus:border-gold"
+                    className="mt-1.5 w-full border border-gold/25 bg-parchment px-3 py-2 text-sm text-ink outline-none focus:border-gold"
                   />
                 )}
               </div>
@@ -1477,7 +1477,7 @@ function SupportSection() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex w-fit overflow-hidden rounded-xl border border-gold/25">
+      <div className="flex w-fit overflow-hidden border border-gold/25">
         {SUPPORT_STATUS_TABS.map((s) => (
           <button
             key={s}
@@ -1492,7 +1492,7 @@ function SupportSection() {
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_1.3fr]">
-        <div className="overflow-hidden rounded-2xl border border-gold/20">
+        <div className="overflow-hidden border border-gold/20">
           {loading ? (
             <p className="p-6 text-sm text-ink-soft">Yükleniyor…</p>
           ) : tickets.length === 0 ? (
@@ -1518,7 +1518,7 @@ function SupportSection() {
           )}
         </div>
 
-        <div className="rounded-2xl border border-gold/20 bg-parchment p-4">
+        <div className="border border-gold/20 bg-parchment p-4">
           {!openTicket ? (
             <p className="text-sm text-ink-soft">Soldan bir bilet seç.</p>
           ) : (
@@ -1534,7 +1534,7 @@ function SupportSection() {
                   value={openTicket.status}
                   onChange={(v) => handleStatusChange(v as SupportTicketStatus)}
                   disabled={busy}
-                  className="w-36 rounded-lg border border-gold/25 bg-cream px-3 py-1.5 text-xs text-ink focus:border-gold"
+                  className="w-36 border border-gold/25 bg-cream px-3 py-1.5 text-xs text-ink focus:border-gold"
                   options={SUPPORT_STATUS_TABS.map((s) => ({
                     value: s,
                     label: SUPPORT_STATUS_LABELS[s],
@@ -1565,7 +1565,7 @@ function SupportSection() {
                   value={reply}
                   onChange={(e) => setReply(e.target.value)}
                   placeholder="Yanıt yaz…"
-                  className="flex-1 rounded-lg border border-gold/25 bg-cream px-3 py-2 text-sm text-ink outline-none focus:border-gold"
+                  className="flex-1 border border-gold/25 bg-cream px-3 py-2 text-sm text-ink outline-none focus:border-gold"
                 />
                 <button
                   onClick={handleReply}
@@ -1630,7 +1630,7 @@ function AccountantVerificationsSection() {
         Müşavirlik belgesi ve/veya vergi levhası ya da SGK dökümanı yüklenmiş, henüz onaylanmamış hesaplar.
       </p>
 
-      <div className="mt-4 overflow-hidden rounded-2xl border border-gold/20">
+      <div className="mt-4 overflow-hidden border border-gold/20">
         {loading ? (
           <p className="p-6 text-sm text-ink-soft">Yükleniyor…</p>
         ) : rows.length === 0 ? (
@@ -1731,7 +1731,7 @@ function BusinessVerificationsSection() {
         Vergi levhası ve/veya imza sirküsü yüklenmiş, henüz onaylanmamış işletme hesapları.
       </p>
 
-      <div className="mt-4 overflow-hidden rounded-2xl border border-gold/20">
+      <div className="mt-4 overflow-hidden border border-gold/20">
         {loading ? (
           <p className="p-6 text-sm text-ink-soft">Yükleniyor…</p>
         ) : rows.length === 0 ? (
@@ -1830,11 +1830,11 @@ function CouponsSection() {
       </p>
 
       <div className="mt-4 grid grid-cols-2 gap-3 sm:w-96">
-        <div className="rounded-xl border border-gold/20 bg-parchment p-4">
+        <div className="border border-gold/20 bg-parchment p-4">
           <p className="text-xs text-ink-soft">Toplam kullanım</p>
           <p className="mt-1 font-serif text-2xl font-semibold text-ink">{totalRedemptions}</p>
         </div>
-        <div className="rounded-xl border border-gold/20 bg-parchment p-4">
+        <div className="border border-gold/20 bg-parchment p-4">
           <p className="text-xs text-ink-soft">Toplam verilen indirim</p>
           <p className="mt-1 font-serif text-2xl font-semibold text-ink">
             {totalDiscount.toLocaleString("tr-TR")} ₺
@@ -1842,7 +1842,7 @@ function CouponsSection() {
         </div>
       </div>
 
-      <div className="mt-4 overflow-x-auto rounded-2xl border border-gold/20">
+      <div className="mt-4 overflow-x-auto border border-gold/20">
         {loading ? (
           <p className="p-6 text-sm text-ink-soft">Yükleniyor…</p>
         ) : rows.length === 0 ? (
@@ -1962,7 +1962,7 @@ export default function AdminPage() {
           Yönetim paneli
         </h1>
 
-        <div className="mt-6 flex flex-wrap gap-1.5 rounded-xl border border-gold/20 bg-parchment p-1.5">
+        <div className="mt-6 flex flex-wrap gap-1.5 border border-gold/20 bg-parchment p-1.5">
           {TABS.map((t) => (
             <button
               key={t.id}

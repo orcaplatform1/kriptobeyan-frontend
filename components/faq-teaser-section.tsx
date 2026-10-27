@@ -32,7 +32,7 @@ export function FaqTeaserSection() {
           {faqs.map((faq) => (
             <div
               key={faq.q}
-              className="rounded-2xl border border-gold/15 bg-cream p-6"
+              className="border border-gold/15 bg-cream p-6"
             >
               <h3 className="font-semibold text-ink">{faq.q}</h3>
               <p className="mt-2 text-sm leading-relaxed text-ink-soft">

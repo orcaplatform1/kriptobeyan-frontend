@@ -89,7 +89,7 @@ function EmailDogrulaContent() {
             </p>
 
             {resendState === "sent" ? (
-              <p className="mt-6 rounded-lg border border-gold/25 bg-parchment px-4 py-3 text-sm text-ink-soft">
+              <p className="mt-6 border border-gold/25 bg-parchment px-4 py-3 text-sm text-ink-soft">
                 Eğer bu e-posta ile bir hesap varsa, yeni bir doğrulama
                 bağlantısı gönderildi.
               </p>
@@ -109,7 +109,7 @@ function EmailDogrulaContent() {
                     autoComplete="email"
                     value={resendEmail}
                     onChange={(e) => setResendEmail(e.target.value)}
-                    className="mt-1.5 w-full rounded-lg border border-gold/25 bg-parchment px-4 py-2.5 text-ink outline-none transition-colors focus:border-gold"
+                    className="mt-1.5 w-full border border-gold/25 bg-parchment px-4 py-2.5 text-ink outline-none transition-colors focus:border-gold"
                   />
                 </div>
                 {resendState === "error" && (

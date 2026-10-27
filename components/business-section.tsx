@@ -34,7 +34,7 @@ export function BusinessSection() {
           {points.map((point) => (
             <li
               key={point}
-              className="rounded-2xl border border-gold/20 bg-cream p-5 text-sm leading-relaxed text-ink-soft"
+              className="border border-gold/20 bg-cream p-5 text-sm leading-relaxed text-ink-soft"
             >
               {point}
             </li>

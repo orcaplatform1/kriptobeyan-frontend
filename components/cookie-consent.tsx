@@ -64,7 +64,7 @@ export function CookieConsent() {
 
   return (
     <div className="fixed inset-x-0 bottom-0 z-50 p-4 sm:p-6">
-      <div className="mx-auto max-w-3xl rounded-2xl border border-gold/20 bg-parchment p-5 shadow-[0_24px_60px_-20px_rgba(28,32,25,0.35)]">
+      <div className="mx-auto max-w-3xl border border-gold/20 bg-parchment p-5 shadow-[0_24px_60px_-20px_rgba(28,32,25,0.35)]">
         {!showPreferences ? (
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
             <div className="text-sm text-ink-soft">
@@ -120,7 +120,7 @@ export function CookieConsent() {
               </p>
             </div>
 
-            <div className="flex flex-col gap-3 rounded-xl border border-gold/20 bg-cream/60 p-4">
+            <div className="flex flex-col gap-3 border border-gold/20 bg-cream/60 p-4">
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <p className="text-sm font-semibold text-ink">🌐 Zorunlu Çerezler (Her Zaman Aktif)</p>

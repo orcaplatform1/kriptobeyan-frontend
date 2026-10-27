@@ -78,7 +78,7 @@ export function CustomSelect({
       {open && (
         <ul
           role="listbox"
-          className="absolute z-30 mt-1.5 max-h-64 w-full min-w-max overflow-y-auto rounded-lg border border-gold/25 bg-parchment py-1 shadow-lg"
+          className="absolute z-30 mt-1.5 max-h-64 w-full min-w-max overflow-y-auto border border-gold/25 bg-parchment py-1 shadow-lg"
         >
           {options.map((option) => (
             <li key={option.value}>

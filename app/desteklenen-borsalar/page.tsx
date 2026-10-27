@@ -53,7 +53,7 @@ export default function DesteklenenBorsalarPage() {
             {LIVE_EXCHANGES.map((name) => (
               <span
                 key={name}
-                className="flex items-center justify-center rounded-xl border border-gold/25 bg-parchment p-2"
+                className="flex items-center justify-center border border-gold/25 bg-parchment p-2"
               >
                 <ExchangeLogoBox name={name} />
               </span>
@@ -86,7 +86,7 @@ export default function DesteklenenBorsalarPage() {
             {WALLET_NETWORKS.map((w) => (
               <div
                 key={w.name}
-                className="rounded-xl border border-gold/25 bg-parchment p-5"
+                className="border border-gold/25 bg-parchment p-5"
               >
                 <p className="font-serif text-lg font-semibold text-ink">{w.name}</p>
                 <p className="mt-1 text-sm text-ink-soft/80">{w.desc}</p>
@@ -96,7 +96,7 @@ export default function DesteklenenBorsalarPage() {
         </div>
 
         {/* CSV */}
-        <div className="mt-16 rounded-2xl border border-gold/25 bg-parchment p-8 lg:p-10">
+        <div className="mt-16 border border-gold/25 bg-parchment p-8 lg:p-10">
           <h2 className="font-serif text-xl font-semibold text-ink">
             CSV/Excel ile sınırsız destek
           </h2>

@@ -54,7 +54,7 @@ function pollAfterSync(onChanged: () => void) {
 
 function Card({ children }: { children: React.ReactNode }) {
   return (
-    <div className="rounded-xl border border-gold/20 bg-parchment p-5">
+    <div className="border border-gold/20 bg-parchment p-5">
       {children}
     </div>
   );
@@ -69,7 +69,7 @@ function FieldLabel({ children }: { children: React.ReactNode }) {
 }
 
 const inputClass =
-  "mt-1.5 w-full rounded-lg border border-gold/25 bg-cream px-3 py-2 text-sm text-ink outline-none focus:border-gold";
+  "mt-1.5 w-full border border-gold/25 bg-cream px-3 py-2 text-sm text-ink outline-none focus:border-gold";
 
 function ExchangeConnectionForm({ onAdded }: { onAdded: () => void }) {
   const [provider, setProvider] = useState<ExchangeProvider>("BINANCE");
@@ -219,7 +219,7 @@ function ExchangeConnectionList({
       {connections.map((c) => (
         <li
           key={c.id}
-          className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-gold/15 bg-cream px-3.5 py-2.5 text-sm"
+          className="flex flex-wrap items-center justify-between gap-2 border border-gold/15 bg-cream px-3.5 py-2.5 text-sm"
         >
           <div>
             <p className="font-medium text-ink">
@@ -361,7 +361,7 @@ function WalletAddressList({
       {wallets.map((w) => (
         <li
           key={w.id}
-          className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-gold/15 bg-cream px-3.5 py-2.5 text-sm"
+          className="flex flex-wrap items-center justify-between gap-2 border border-gold/15 bg-cream px-3.5 py-2.5 text-sm"
         >
           <div>
             <p className="font-medium text-ink">
@@ -430,7 +430,7 @@ function CsvImportForm({ onAdded }: { onAdded: () => void }) {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-      <div className="rounded-lg border border-gold/20 bg-cream px-3.5 py-3 text-xs text-ink-soft">
+      <div className="border border-gold/20 bg-cream px-3.5 py-3 text-xs text-ink-soft">
         <p>
           Crypto.com ve Bitexen gibi API ile canlı senkronize edemediğimiz
           borsalar için işlem geçmişini CSV olarak dışa aktarıp buradan

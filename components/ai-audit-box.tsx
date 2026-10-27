@@ -57,7 +57,7 @@ export function AiAuditBox({ taxYear }: { taxYear: number }) {
   }, [taxYear]);
 
   return (
-    <div className="mt-10 rounded-xl border border-gold/20 bg-cream p-5">
+    <div className="mt-10 border border-gold/20 bg-cream p-5">
       <div className="flex items-center gap-2">
         <span className="text-lg" aria-hidden>
           🤖
@@ -109,7 +109,7 @@ export function AiAuditBox({ taxYear }: { taxYear: number }) {
               )}
             </div>
           ) : (
-            <div className="rounded-lg border border-gold/25 bg-parchment p-4">
+            <div className="border border-gold/25 bg-parchment p-4">
               <p className="text-sm text-ink">
                 {result.aiConfigured
                   ? "Otomatik kontrol bazı noktalar tespit etti, ama Türkçe özet şu an oluşturulamadı — aşağıdaki bulguları gözden geçirmen önerilir."

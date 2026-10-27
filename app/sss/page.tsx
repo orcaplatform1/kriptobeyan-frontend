@@ -45,7 +45,7 @@ export default function SssPage() {
                   <details
                     key={item.id}
                     id={item.id}
-                    className="group scroll-mt-24 rounded-xl border border-gold/20 bg-parchment px-5 py-4 open:bg-parchment"
+                    className="group scroll-mt-24 border border-gold/20 bg-parchment px-5 py-4 open:bg-parchment"
                   >
                     <summary className="cursor-pointer list-none text-base font-semibold text-ink marker:content-none">
                       {item.q}

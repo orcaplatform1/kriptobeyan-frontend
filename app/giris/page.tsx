@@ -78,7 +78,7 @@ function GirisContent() {
         <form onSubmit={handleSubmit} className="mt-8 space-y-4" noValidate>
           <div>
             <span className="block text-sm font-medium text-ink">Giriş Yöntemi</span>
-            <div className="mt-1.5 grid grid-cols-3 gap-1 rounded-xl border border-gold/25 bg-parchment p-1">
+            <div className="mt-1.5 grid grid-cols-3 gap-1 border border-gold/25 bg-parchment p-1">
               {METHODS.map((m) => (
                 <button
                   key={m.value}
@@ -110,7 +110,7 @@ function GirisContent() {
                   value={phoneCountryCode}
                   onChange={setPhoneCountryCode}
                   disabled={needsTwoFactor}
-                  className="w-[100px] shrink-0 rounded-lg border border-gold/25 bg-parchment px-2 py-2.5 text-sm text-ink focus:border-gold"
+                  className="w-[100px] shrink-0 border border-gold/25 bg-parchment px-2 py-2.5 text-sm text-ink focus:border-gold"
                   options={countryCodes.map((c) => ({
                     value: c.dialCode,
                     label: `${c.flag} ${c.dialCode}`,
@@ -124,7 +124,7 @@ function GirisContent() {
                   disabled={needsTwoFactor}
                   value={identifier}
                   onChange={(e) => setIdentifier(e.target.value.replace(/\D/g, ""))}
-                  className="w-full rounded-lg border border-gold/25 bg-parchment px-4 py-2.5 text-ink outline-none transition-colors focus:border-gold disabled:opacity-60"
+                  className="w-full border border-gold/25 bg-parchment px-4 py-2.5 text-ink outline-none transition-colors focus:border-gold disabled:opacity-60"
                 />
               </div>
             ) : (
@@ -136,7 +136,7 @@ function GirisContent() {
                 disabled={needsTwoFactor}
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
-                className="mt-1.5 w-full rounded-lg border border-gold/25 bg-parchment px-4 py-2.5 text-ink outline-none transition-colors focus:border-gold disabled:opacity-60"
+                className="mt-1.5 w-full border border-gold/25 bg-parchment px-4 py-2.5 text-ink outline-none transition-colors focus:border-gold disabled:opacity-60"
               />
             )}
           </div>
@@ -163,7 +163,7 @@ function GirisContent() {
               disabled={needsTwoFactor}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="mt-1.5 w-full rounded-lg border border-gold/25 bg-parchment px-4 py-2.5 text-ink outline-none transition-colors focus:border-gold disabled:opacity-60"
+              className="mt-1.5 w-full border border-gold/25 bg-parchment px-4 py-2.5 text-ink outline-none transition-colors focus:border-gold disabled:opacity-60"
             />
           </div>
 
@@ -185,7 +185,7 @@ function GirisContent() {
                 value={totpCode}
                 onChange={(e) => setTotpCode(e.target.value)}
                 placeholder="123456"
-                className="mt-1.5 w-full rounded-lg border border-gold/25 bg-parchment px-4 py-2.5 text-ink outline-none transition-colors focus:border-gold"
+                className="mt-1.5 w-full border border-gold/25 bg-parchment px-4 py-2.5 text-ink outline-none transition-colors focus:border-gold"
               />
               <p className="mt-1.5 text-xs text-ink-soft">
                 Kimlik doğrulama uygulamandaki 6 haneli kodu gir.

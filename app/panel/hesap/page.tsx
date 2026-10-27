@@ -126,7 +126,7 @@ export default function HesapAyarlariPage() {
           Hesap Ayarları
         </h1>
 
-        <div className="mt-8 rounded-2xl border border-gold/20 bg-parchment p-6">
+        <div className="mt-8 border border-gold/20 bg-parchment p-6">
           <h2 className="font-serif text-lg font-semibold text-ink">İletişim Bilgileri</h2>
 
           <div className="mt-4 flex flex-col gap-4">
@@ -137,7 +137,7 @@ export default function HesapAyarlariPage() {
                 </label>
                 {profile && <VerifyBadge verified={profile.emailVerified} />}
               </div>
-              <p className="mt-1.5 rounded-lg border border-gold/25 bg-cream px-3 py-2 text-sm text-ink-soft">
+              <p className="mt-1.5 border border-gold/25 bg-cream px-3 py-2 text-sm text-ink-soft">
                 {profile?.email ?? "—"}
               </p>
             </div>
@@ -149,7 +149,7 @@ export default function HesapAyarlariPage() {
                 </label>
                 {profile?.phone && <VerifyBadge verified={profile.phoneVerified} />}
               </div>
-              <p className="mt-1.5 rounded-lg border border-gold/25 bg-cream px-3 py-2 text-sm text-ink-soft">
+              <p className="mt-1.5 border border-gold/25 bg-cream px-3 py-2 text-sm text-ink-soft">
                 {profile?.phone ?? "—"}
               </p>
             </div>
@@ -167,7 +167,7 @@ export default function HesapAyarlariPage() {
         </div>
 
         {profile?.taxpayerType === "BUSINESS" && (
-          <div className="mt-6 rounded-2xl border border-gold/20 bg-parchment p-6">
+          <div className="mt-6 border border-gold/20 bg-parchment p-6">
             <div className="flex items-center justify-between gap-2">
               <h2 className="font-serif text-lg font-semibold text-ink">
                 İşletme Doğrulama
@@ -248,7 +248,7 @@ export default function HesapAyarlariPage() {
           </div>
         )}
 
-        <div className="mt-6 rounded-2xl border border-gold/20 bg-parchment p-6">
+        <div className="mt-6 border border-gold/20 bg-parchment p-6">
           <h2 className="font-serif text-lg font-semibold text-ink">Şifre Değiştir</h2>
           <p className="mt-1 text-sm text-ink-soft">
             Hesap güvenliğin için şifreni düzenli olarak güncelle.
@@ -263,7 +263,7 @@ export default function HesapAyarlariPage() {
                 type="password"
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
-                className="mt-1.5 w-full rounded-lg border border-gold/25 bg-cream px-3 py-2 text-sm text-ink outline-none focus:border-gold"
+                className="mt-1.5 w-full border border-gold/25 bg-cream px-3 py-2 text-sm text-ink outline-none focus:border-gold"
               />
             </div>
             <div>
@@ -274,7 +274,7 @@ export default function HesapAyarlariPage() {
                 type="password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                className="mt-1.5 w-full rounded-lg border border-gold/25 bg-cream px-3 py-2 text-sm text-ink outline-none focus:border-gold"
+                className="mt-1.5 w-full border border-gold/25 bg-cream px-3 py-2 text-sm text-ink outline-none focus:border-gold"
               />
             </div>
             <div>
@@ -285,7 +285,7 @@ export default function HesapAyarlariPage() {
                 type="password"
                 value={newPasswordConfirm}
                 onChange={(e) => setNewPasswordConfirm(e.target.value)}
-                className="mt-1.5 w-full rounded-lg border border-gold/25 bg-cream px-3 py-2 text-sm text-ink outline-none focus:border-gold"
+                className="mt-1.5 w-full border border-gold/25 bg-cream px-3 py-2 text-sm text-ink outline-none focus:border-gold"
               />
             </div>
           </div>

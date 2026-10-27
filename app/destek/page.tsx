@@ -258,7 +258,7 @@ function DestekPageInner() {
           )}
 
           {totalResults === 0 && isSearching ? (
-            <div className="rounded-2xl border border-gold/20 bg-parchment p-8 text-center">
+            <div className="border border-gold/20 bg-parchment p-8 text-center">
               <p className="text-ink-soft">
                 Aradığın konuyu bulamadık. Aşağıdan doğrudan destek ekibimize
                 yazabilirsin.
@@ -279,7 +279,7 @@ function DestekPageInner() {
                         <details
                           key={item.id}
                           open={isSearching}
-                          className="group rounded-xl border border-gold/20 bg-parchment px-5 py-4 open:bg-parchment"
+                          className="group border border-gold/20 bg-parchment px-5 py-4 open:bg-parchment"
                         >
                           <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-base font-semibold text-ink marker:content-none">
                             {item.q}
@@ -306,7 +306,7 @@ function DestekPageInner() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="flex flex-col items-center gap-2 rounded-xl border border-gold/20 bg-parchment px-3 py-5 text-center transition-colors hover:border-gold/40"
+                className="flex flex-col items-center gap-2 border border-gold/20 bg-parchment px-3 py-5 text-center transition-colors hover:border-gold/40"
               >
                 <link.icon className="size-5 text-gold-deep" />
                 <span className="text-xs font-semibold text-ink">{link.title}</span>
@@ -326,7 +326,7 @@ function DestekPageInner() {
           </p>
 
           {notAuthenticated ? (
-            <div className="mt-6 rounded-2xl border border-gold/20 bg-parchment p-6 text-sm text-ink-soft">
+            <div className="mt-6 border border-gold/20 bg-parchment p-6 text-sm text-ink-soft">
               Bilet oluşturmak veya mevcut biletlerini görmek için{" "}
               <Link href="/giris?redirect=/destek" className="font-semibold text-gold-deep underline">
                 giriş yapmalısın
@@ -361,7 +361,7 @@ function DestekPageInner() {
         {error && <p className="mt-4 text-sm text-red-700">{error}</p>}
 
         {openTicket ? (
-          <div className="mt-8 rounded-2xl border border-gold/20 bg-parchment p-6">
+          <div className="mt-8 border border-gold/20 bg-parchment p-6">
             <button
               onClick={() => setOpenTicket(null)}
               className="text-sm text-ink-soft hover:text-ink"
@@ -413,7 +413,7 @@ function DestekPageInner() {
                   value={reply}
                   onChange={(e) => setReply(e.target.value)}
                   placeholder="Mesaj yaz…"
-                  className="min-w-0 flex-1 rounded-lg border border-gold/25 bg-cream px-3 py-2 text-sm text-ink outline-none focus:border-gold"
+                  className="min-w-0 flex-1 border border-gold/25 bg-cream px-3 py-2 text-sm text-ink outline-none focus:border-gold"
                 />
                 <button
                   onClick={handleReply}
@@ -435,7 +435,7 @@ function DestekPageInner() {
             )}
           </div>
         ) : view === "new" ? (
-          <div className="mt-6 rounded-2xl border border-gold/20 bg-parchment p-6">
+          <div className="mt-6 border border-gold/20 bg-parchment p-6">
             <div>
               <label className="block text-xs font-semibold tracking-wide text-ink-soft uppercase">
                 Kategori
@@ -443,7 +443,7 @@ function DestekPageInner() {
               <CustomSelect
                 value={category}
                 onChange={(v) => setCategory(v as SupportTicketCategory)}
-                className="mt-1.5 w-full rounded-lg border border-gold/25 bg-cream px-3 py-2 text-sm text-ink focus:border-gold"
+                className="mt-1.5 w-full border border-gold/25 bg-cream px-3 py-2 text-sm text-ink focus:border-gold"
                 options={CATEGORY_OPTIONS}
               />
             </div>
@@ -455,7 +455,7 @@ function DestekPageInner() {
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
                 maxLength={150}
-                className="mt-1.5 w-full rounded-lg border border-gold/25 bg-cream px-3 py-2 text-sm text-ink outline-none focus:border-gold"
+                className="mt-1.5 w-full border border-gold/25 bg-cream px-3 py-2 text-sm text-ink outline-none focus:border-gold"
               />
             </div>
             <div className="mt-4">
@@ -467,7 +467,7 @@ function DestekPageInner() {
                 onChange={(e) => setBody(e.target.value)}
                 rows={5}
                 maxLength={4000}
-                className="mt-1.5 w-full rounded-lg border border-gold/25 bg-cream px-3 py-2 text-sm text-ink outline-none focus:border-gold"
+                className="mt-1.5 w-full border border-gold/25 bg-cream px-3 py-2 text-sm text-ink outline-none focus:border-gold"
               />
             </div>
             <button
@@ -490,7 +490,7 @@ function DestekPageInner() {
                   <li key={t.id}>
                     <button
                       onClick={() => setOpenTicket(t)}
-                      className="flex w-full items-center justify-between rounded-xl border border-gold/20 bg-parchment px-4 py-3 text-left text-sm hover:border-gold/40"
+                      className="flex w-full items-center justify-between border border-gold/20 bg-parchment px-4 py-3 text-left text-sm hover:border-gold/40"
                     >
                       <div>
                         <p className="font-medium text-ink">{t.subject}</p>

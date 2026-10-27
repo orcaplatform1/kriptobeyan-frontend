@@ -232,7 +232,7 @@ export default function MusavirPaneliPage() {
         </div>
 
         {verification && !verification.verified && (
-          <div className="mt-10 rounded-xl border border-gold/30 bg-gold/10 p-5">
+          <div className="mt-10 border border-gold/30 bg-gold/10 p-5">
             <h2 className="font-serif text-lg font-semibold text-ink">
               Kimlik doğrulama gerekli
             </h2>
@@ -307,7 +307,7 @@ export default function MusavirPaneliPage() {
         )}
 
         {verification?.verified && (
-          <div className="mt-10 rounded-xl border border-gold/20 bg-parchment p-5">
+          <div className="mt-10 border border-gold/20 bg-parchment p-5">
             <h2 className="font-serif text-lg font-semibold text-ink">
               İndirim kuponun
             </h2>
@@ -349,7 +349,7 @@ export default function MusavirPaneliPage() {
           </div>
         )}
 
-        <div className="mt-10 rounded-xl border border-gold/20 bg-parchment p-5">
+        <div className="mt-10 border border-gold/20 bg-parchment p-5">
           <h2 className="font-serif text-lg font-semibold text-ink">
             Yeni müşteri davet et
           </h2>
@@ -369,7 +369,7 @@ export default function MusavirPaneliPage() {
                   placeholder="musteri@ornek.com"
                   value={inviteEmail}
                   onChange={(e) => setInviteEmail(e.target.value)}
-                  className="flex-1 rounded-lg border border-gold/25 bg-cream px-4 py-2.5 text-ink outline-none transition-colors focus:border-gold"
+                  className="flex-1 border border-gold/25 bg-cream px-4 py-2.5 text-ink outline-none transition-colors focus:border-gold"
                 />
                 <button
                   type="submit"
@@ -400,7 +400,7 @@ export default function MusavirPaneliPage() {
             </p>
           )}
           {!loading && !loadError && clients && clients.length > 0 && (
-            <div className="overflow-x-auto rounded-xl border border-gold/20">
+            <div className="overflow-x-auto border border-gold/20">
               <table className="w-full min-w-[720px] text-left text-sm">
                 <thead>
                   <tr className="border-b border-gold/20 bg-parchment text-xs font-semibold tracking-wide text-ink-soft uppercase">

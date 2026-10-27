@@ -4,12 +4,12 @@ import { ExchangeLogoBox } from "@/components/exchange-logo-box";
 export function ExchangesSection() {
   return (
     <section className="bg-parchment py-20 lg:py-28">
-      <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <div className="container-edit">
         <div className="max-w-2xl">
-          <p className="text-xs font-semibold tracking-wide text-gold-deep uppercase">
+          <p className="text-xs font-semibold tracking-[0.15em] text-gold-deep uppercase">
             Desteklenen borsalar
           </p>
-          <h2 className="mt-3 font-serif text-3xl font-semibold text-ink sm:text-4xl">
+          <h2 className="mt-3 font-heading text-3xl font-semibold text-ink sm:text-4xl">
             Türkiye&apos;nin ve Dünyanın Lider Borsaları
           </h2>
           <p className="mt-3 text-sm text-ink-soft/80">
@@ -22,7 +22,7 @@ export function ExchangesSection() {
           {LIVE_EXCHANGES.map((name) => (
             <span
               key={name}
-              className="flex items-center justify-center rounded-xl border border-gold/25 bg-cream p-2"
+              className="flex items-center justify-center border border-gold/20 bg-parchment p-2"
             >
               <ExchangeLogoBox name={name} />
             </span>
@@ -30,7 +30,7 @@ export function ExchangesSection() {
           {UPCOMING_EXCHANGES.map((name) => (
             <span
               key={name}
-              className="flex flex-col items-center gap-1 rounded-xl border border-ink/10 bg-cream/60 p-2"
+              className="flex flex-col items-center gap-1 border border-gold/10 bg-cream/60 p-2"
             >
               <ExchangeLogoBox name={name} />
               <span className="text-[0.65rem] font-semibold tracking-wide text-ink-soft/60 uppercase">

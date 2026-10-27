@@ -34,7 +34,7 @@ export function HeroSection({ content }: { content?: SiteContent | null }) {
             initial={{ opacity: 0, y: 18 }}
             animate={settled ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
             transition={{ ...revealTransition, delay: 0.08 }}
-            className="font-serif text-4xl leading-[1.1] font-semibold text-ink sm:text-5xl md:text-[3.4rem] xl:text-[3.9rem]"
+            className="font-heading text-4xl leading-[1.1] font-semibold text-ink sm:text-5xl md:text-[3.4rem] xl:text-[3.9rem]"
           >
             {c.heroTitlePrefix}
             <span className="text-gold-deep"> {c.heroTitleHighlight}</span> {c.heroTitleSuffix}
@@ -78,7 +78,7 @@ export function HeroSection({ content }: { content?: SiteContent | null }) {
               initial={{ opacity: 0, y: -10 }}
               animate={settled ? { opacity: 1, y: 0 } : { opacity: 0, y: -10 }}
               transition={revealTransition}
-              className="absolute top-3 left-3 inline-flex max-w-[calc(100%-1.5rem)] items-center gap-1.5 rounded-full border border-gold/30 bg-parchment/95 px-2.5 py-1 text-[10px] font-semibold tracking-wide whitespace-nowrap text-gold-deep uppercase shadow-sm backdrop-blur-sm sm:top-5 sm:left-5 sm:px-3.5 sm:py-1.5 sm:text-xs md:hidden"
+              className="absolute top-3 left-3 inline-flex max-w-[calc(100%-1.5rem)] items-center gap-1.5 border border-gold/30 bg-parchment/95 px-2.5 py-1 text-[10px] font-semibold tracking-[0.12em] whitespace-nowrap text-gold-deep uppercase shadow-sm backdrop-blur-sm sm:top-5 sm:left-5 sm:px-3.5 sm:py-1.5 sm:text-xs md:hidden"
             >
               {c.heroBadge}
             </motion.span>
@@ -95,10 +95,10 @@ export function HeroSection({ content }: { content?: SiteContent | null }) {
               transition={{ ...revealTransition, delay: 0.08 }}
               className="absolute top-1/2 left-3 hidden max-w-[calc(100%-1.5rem)] -translate-y-1/2 sm:left-5 md:block md:max-w-sm xl:max-w-md"
             >
-              <span className="mb-4 inline-flex items-center gap-1.5 rounded-full border border-gold/30 bg-parchment/95 px-3.5 py-1.5 text-xs font-semibold tracking-wide whitespace-nowrap text-gold-deep uppercase shadow-sm backdrop-blur-sm">
+              <span className="mb-4 inline-flex items-center gap-1.5 border border-gold/30 bg-parchment/95 px-3.5 py-1.5 text-xs font-semibold tracking-[0.12em] whitespace-nowrap text-gold-deep uppercase shadow-sm backdrop-blur-sm">
                 {c.heroBadge}
               </span>
-              <h2 className="font-serif text-xl leading-[1.15] font-semibold text-parchment drop-shadow-[0_2px_6px_rgba(36,32,26,0.55)] md:text-2xl xl:text-3xl">
+              <h2 className="font-heading text-xl leading-[1.15] font-semibold text-parchment drop-shadow-[0_2px_6px_rgba(36,32,26,0.55)] md:text-2xl xl:text-3xl">
                 {c.heroTitlePrefix}
                 <span className="text-gold-deep"> {c.heroTitleHighlight}</span> {c.heroTitleSuffix}
               </h2>

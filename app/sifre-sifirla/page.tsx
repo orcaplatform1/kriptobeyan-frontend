@@ -73,7 +73,7 @@ function RequestResetForm() {
             autoComplete="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="mt-1.5 w-full rounded-lg border border-gold/25 bg-parchment px-4 py-2.5 text-ink outline-none transition-colors focus:border-gold"
+            className="mt-1.5 w-full border border-gold/25 bg-parchment px-4 py-2.5 text-ink outline-none transition-colors focus:border-gold"
           />
         </div>
         {error && <p className="text-sm text-red-700">{error}</p>}
@@ -172,7 +172,7 @@ function SetNewPasswordForm({ token }: { token: string }) {
             autoComplete="new-password"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
-            className="mt-1.5 w-full rounded-lg border border-gold/25 bg-parchment px-4 py-2.5 text-ink outline-none transition-colors focus:border-gold"
+            className="mt-1.5 w-full border border-gold/25 bg-parchment px-4 py-2.5 text-ink outline-none transition-colors focus:border-gold"
           />
           <p className="mt-1.5 text-xs text-ink-soft">
             En az {MIN_PASSWORD_LENGTH} karakter.
@@ -192,7 +192,7 @@ function SetNewPasswordForm({ token }: { token: string }) {
             autoComplete="new-password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            className="mt-1.5 w-full rounded-lg border border-gold/25 bg-parchment px-4 py-2.5 text-ink outline-none transition-colors focus:border-gold"
+            className="mt-1.5 w-full border border-gold/25 bg-parchment px-4 py-2.5 text-ink outline-none transition-colors focus:border-gold"
           />
         </div>
         {error && <p className="text-sm text-red-700">{error}</p>}

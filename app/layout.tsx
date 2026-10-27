@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Playfair_Display, Inter } from "next/font/google";
+import { Plus_Jakarta_Sans, Inter } from "next/font/google";
 import { ScaleAnimationProvider } from "@/components/scale-animation-context";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
@@ -9,8 +9,8 @@ import { SITE_URL, SITE_NAME, SITE_DESCRIPTION, SITE_KEYWORDS } from "@/lib/site
 import { getSiteContent } from "@/lib/api";
 import "./globals.css";
 
-const displayFont = Playfair_Display({
-  variable: "--font-display",
+const jakartaFont = Plus_Jakarta_Sans({
+  variable: "--font-jakarta",
   subsets: ["latin"],
   weight: ["500", "600", "700"],
 });
@@ -53,7 +53,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="tr"
-      className={`${displayFont.variable} ${bodyFont.variable} h-full antialiased`}
+      className={`${jakartaFont.variable} ${bodyFont.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-sans">
         <ScaleAnimationProvider>

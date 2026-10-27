@@ -89,7 +89,7 @@ export default async function MaliMusavirlerPage() {
             {STEPS.map((step, i) => (
               <div
                 key={step.title}
-                className="rounded-2xl border border-gold/25 bg-parchment p-6"
+                className="border border-gold/25 bg-parchment p-6"
               >
                 <span className="flex h-8 w-8 items-center justify-center rounded-full bg-marble-dark text-sm font-bold text-cream">
                   {i + 1}
@@ -106,7 +106,7 @@ export default async function MaliMusavirlerPage() {
         </div>
 
         {/* Guvenlik / izolasyon */}
-        <div className="mt-20 rounded-2xl border border-gold/25 bg-marble-dark p-8 text-cream lg:p-10">
+        <div className="mt-20 border border-gold/25 bg-marble-dark p-8 text-cream lg:p-10">
           <h2 className="font-serif text-2xl font-semibold">
             Veri güvenliği ve izolasyon
           </h2>
@@ -151,7 +151,7 @@ export default async function MaliMusavirlerPage() {
                 return (
                   <div
                     key={plan.id}
-                    className="rounded-2xl border border-gold/20 bg-parchment p-7 text-ink"
+                    className="border border-gold/20 bg-parchment p-7 text-ink"
                   >
                     <div className="flex items-center justify-between gap-2">
                       <h3 className="text-sm font-semibold uppercase tracking-wide text-ink-soft">

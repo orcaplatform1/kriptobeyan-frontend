@@ -52,7 +52,7 @@ function SummaryCard({
         ? "text-red-700"
         : "text-ink";
   return (
-    <div className="rounded-xl border border-gold/20 bg-parchment p-5">
+    <div className="border border-gold/20 bg-parchment p-5">
       <p className="text-xs font-semibold tracking-wide text-ink-soft uppercase">
         {label}
       </p>
@@ -79,7 +79,7 @@ function PlanRequiredBanner({
 }) {
   const router = useRouter();
   return (
-    <div className="mt-4 rounded-xl border border-gold/30 bg-gold/10 px-5 py-4 text-sm text-ink">
+    <div className="mt-4 border border-gold/30 bg-gold/10 px-5 py-4 text-sm text-ink">
       <p>{notice.message}</p>
       {notice.recommendedPlanId && (
         <button
@@ -297,7 +297,7 @@ export default function PanelPage() {
             id="taxYear"
             value={String(taxYear)}
             onChange={(v) => setTaxYear(Number(v))}
-            className="w-20 rounded-lg border border-gold/25 bg-parchment px-3 py-1.5 text-sm text-ink focus:border-gold"
+            className="w-20 border border-gold/25 bg-parchment px-3 py-1.5 text-sm text-ink focus:border-gold"
             options={SELECTABLE_YEARS.map((year) => ({
               value: String(year),
               label: String(year),
@@ -337,7 +337,7 @@ export default function PanelPage() {
         {!loading && !error && overview && (
           <>
             {!hasSources && (
-              <div className="mt-10 rounded-xl border border-gold/25 bg-parchment px-5 py-4 text-sm text-ink-soft">
+              <div className="mt-10 border border-gold/25 bg-parchment px-5 py-4 text-sm text-ink-soft">
                 Henüz bir borsa hesabı, cüzdan veya CSV içe aktarımı
                 bağlamadın — bu yüzden aşağıdaki rakamlar sıfır görünüyor.
                 Aşağıdan bir kaynak bağlayabilirsin.
@@ -378,7 +378,7 @@ export default function PanelPage() {
             </div>
 
             <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2">
-              <div className="rounded-xl border border-gold/20 bg-parchment p-5">
+              <div className="border border-gold/20 bg-parchment p-5">
                 <ExemptionBar
                   label="Değer artışı istisnası"
                   used={overview.capitalGainsExemption.used}
@@ -386,7 +386,7 @@ export default function PanelPage() {
                   usedPercent={overview.capitalGainsExemption.usedPercent}
                 />
               </div>
-              <div className="rounded-xl border border-gold/20 bg-parchment p-5">
+              <div className="border border-gold/20 bg-parchment p-5">
                 <ExemptionBar
                   label="Arızi kazanç istisnası (staking/airdrop/LP)"
                   used={overview.occasionalIncomeExemption.used}
@@ -398,7 +398,7 @@ export default function PanelPage() {
 
             <AiAuditBox taxYear={taxYear} />
 
-            <div className="mt-14 rounded-xl border border-gold/20 bg-parchment p-5">
+            <div className="mt-14 border border-gold/20 bg-parchment p-5">
               <h2 className="font-serif text-lg font-semibold text-ink">
                 Vergi raporu indir
               </h2>
@@ -410,7 +410,7 @@ export default function PanelPage() {
                 <CustomSelect
                   value={reportFormat}
                   onChange={(v) => setReportFormat(v as ReportFormat)}
-                  className="w-32 rounded-lg border border-gold/25 bg-cream px-3 py-2 text-sm text-ink focus:border-gold"
+                  className="w-32 border border-gold/25 bg-cream px-3 py-2 text-sm text-ink focus:border-gold"
                   options={[
                     { value: "PDF", label: "PDF" },
                     { value: "EXCEL", label: "Excel" },
@@ -436,7 +436,7 @@ export default function PanelPage() {
                     {reports.map((r) => (
                       <li
                         key={r.id}
-                        className="flex items-center justify-between gap-2 rounded-lg border border-gold/15 bg-cream px-3 py-2 text-sm"
+                        className="flex items-center justify-between gap-2 border border-gold/15 bg-cream px-3 py-2 text-sm"
                       >
                         <span className="text-ink">
                           {r.taxYear} · {r.format === "PDF" ? "PDF" : "Excel"} ·{" "}
@@ -462,7 +462,7 @@ export default function PanelPage() {
                 Elde tuttuğun pozisyonlar
               </h2>
               {positions && positions.length > 0 ? (
-                <div className="mt-4 overflow-x-auto rounded-xl border border-gold/20">
+                <div className="mt-4 overflow-x-auto border border-gold/20">
                   <table className="w-full min-w-[560px] text-left text-sm">
                     <thead>
                       <tr className="border-b border-gold/20 bg-parchment text-xs font-semibold tracking-wide text-ink-soft uppercase">

@@ -125,7 +125,7 @@ export function ErrorCard({
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-cream px-4">
-      <div className="flex w-full max-w-md flex-col items-center gap-4 rounded-2xl border border-gold/20 bg-parchment p-10 text-center">
+      <div className="flex w-full max-w-md flex-col items-center gap-4 border border-gold/20 bg-parchment p-10 text-center">
         <div className="flex size-16 items-center justify-center rounded-full bg-red-50">
           <Icon className="size-8 text-red-600" />
         </div>

@@ -1,14 +1,115 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
-import { useScaleAnimation } from "./scale-animation-context";
+import { usePathname } from "next/navigation";
 import { NotificationBell } from "./notification-bell";
 import { useRouter } from "next/navigation";
 import { adminListPlans, getCurrentUser, logout } from "@/lib/auth-client";
+
+// ─── İkonlar: 1.25px stroke, kare cap/join (traders.tr stili) ───
+const ICON = {
+  viewBox: "0 0 24 24",
+  fill: "none",
+  stroke: "currentColor",
+  strokeWidth: 1.25,
+  strokeLinecap: "square" as const,
+  strokeLinejoin: "miter" as const,
+  className: "h-[18px] w-[18px]",
+} as const;
+
+function IconHome() {
+  return (
+    <svg {...ICON}>
+      <path d="M3.5 10.5 12 3.5l8.5 7V20.5h-6v-6h-5v6h-6z" />
+    </svg>
+  );
+}
+
+function IconGuide() {
+  return (
+    <svg {...ICON}>
+      <path d="M4.5 3.5h15v17h-15z" />
+      <path d="M8.5 8.5h7M8.5 12h7M8.5 15.5h4" />
+    </svg>
+  );
+}
+
+function IconPricing() {
+  return (
+    <svg {...ICON}>
+      <rect x="2.5" y="6.5" width="19" height="13" rx="0" />
+      <path d="M2.5 10.5h19M7.5 14.5h2M12 14.5h4" />
+    </svg>
+  );
+}
+
+function IconFaq() {
+  return (
+    <svg {...ICON}>
+      <circle cx="12" cy="12" r="9" strokeLinecap="square" />
+      <path d="M12 8.5c0-1.1.9-2 2-2s2 .9 2 2-2 2-2 3.5M12 17h.01" />
+    </svg>
+  );
+}
+
+function IconUser() {
+  return (
+    <svg {...ICON}>
+      <circle cx="12" cy="7.5" r="3.5" />
+      <path d="M4.5 20.5c0-4.1 3.4-7.5 7.5-7.5s7.5 3.4 7.5 7.5" />
+    </svg>
+  );
+}
+
+function IconMenu({ open }: { open: boolean }) {
+  return (
+    <span className="flex flex-col gap-[4px]">
+      <span
+        className={`h-px w-4 bg-current transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${open ? "translate-y-[2.5px] rotate-45" : ""}`}
+      />
+      <span
+        className={`h-px w-4 bg-current transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${open ? "-translate-y-[2.5px] -rotate-45" : ""}`}
+      />
+    </span>
+  );
+}
+
+// ─── DockLabel: ikon + mono etiket + aktif alt çizgi ───
+function DockLabel({
+  icon,
+  label,
+  selected,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  selected: boolean;
+}) {
+  return (
+    <>
+      <span
+        aria-hidden
+        className={`mb-0.5 flex h-5 items-center transition-all duration-200 ${selected ? "-translate-y-0.5 opacity-100" : "opacity-50"}`}
+      >
+        {icon}
+      </span>
+      <span
+        className={`font-mono text-[8px] uppercase tracking-widest transition-colors duration-200 ${
+          selected ? "font-bold text-ink" : "text-ink-soft"
+        }`}
+      >
+        {label}
+      </span>
+      {selected && (
+        <span className="absolute bottom-0 h-[2px] w-7 bg-ink" />
+      )}
+    </>
+  );
+}
+
+const noopSubscribe = () => () => {};
 
 const navLinks = [
   { href: "/nasil-calisir", label: "Nasıl Çalışır" },
@@ -20,34 +121,55 @@ const navLinks = [
 
 export function SiteHeader() {
   const router = useRouter();
-  const { settled } = useScaleAnimation();
+  const pathname = usePathname();
   const [loggedIn, setLoggedIn] = useState(false);
   const [isAccountant, setIsAccountant] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  // Mobil cekmece document.body'e portal'lanir (asagida) — header'in kendisi
-  // "sticky" oldugu icin bazi mobil tarayicilarda "fixed" torunlar icin
-  // beklenmedik bir containing block olusturabiliyordu, cekmece tam ekran
-  // yerine sadece header yuksekliginde/dar bir seritte goruntuleniyordu.
-  // Portal SSR'da document olmadigi icin sadece mount sonrasi render edilir.
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const [pillVisible, setPillVisible] = useState(true);
+  const lastY = useRef(0);
+  const mounted = useSyncExternalStore(noopSubscribe, () => true, () => false);
 
   useEffect(() => {
     getCurrentUser().then((user) => {
       setLoggedIn(!!user);
       setIsAccountant(user?.role === "ACCOUNTANT");
     });
-    // Admin olup olmadigini ogrenmenin tek yolu su an admin ucuna gercekten
-    // istek atmak — ayri bir "ben admin miyim" ucu yok. Sonuc yan etkisiz
-    // (GET), bu yuzden guvenli.
     adminListPlans()
       .then(() => setIsAdmin(true))
       .catch(() => setIsAdmin(false));
   }, []);
+
+  // Yukarı kaydırınca göster, aşağı kaydırınca gizle
+  useEffect(() => {
+    function onScroll() {
+      const y = window.scrollY;
+      if (y < 10) { setPillVisible(true); return; }
+      if (Math.abs(y - lastY.current) < 5) return;
+      setPillVisible(y < lastY.current);
+      lastY.current = y;
+    }
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // Menü açıkken body scroll kilitle
+  useEffect(() => {
+    if (!menuOpen) return;
+    const { overflow, position, top, width } = document.body.style;
+    const scrollY = window.scrollY;
+    document.body.style.overflow = "hidden";
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = "100%";
+    return () => {
+      document.body.style.overflow = overflow;
+      document.body.style.position = position;
+      document.body.style.top = top;
+      document.body.style.width = width;
+      window.scrollTo(0, scrollY);
+    };
+  }, [menuOpen]);
 
   async function handleLogout() {
     await logout();
@@ -56,201 +178,206 @@ export function SiteHeader() {
     router.push("/");
   }
 
+  // Pill nav sekmeleri
+  const tabs = [
+    { id: "home", href: "/", label: "Anasayfa", icon: <IconHome /> },
+    { id: "guide", href: "/nasil-calisir", label: "Nasıl Çalışır", icon: <IconGuide /> },
+    { id: "pricing", href: "/fiyatlandirma", label: "Fiyatlandırma", icon: <IconPricing /> },
+    { id: "faq", href: "/sss", label: "SSS", icon: <IconFaq /> },
+  ];
+
+  const activeTab = tabs.find((tab) =>
+    tab.href === "/" ? pathname === "/" : pathname.startsWith(tab.href)
+  )?.id;
+
+  const panelHref = isAccountant ? "/musavir-paneli" : "/panel";
+  const panelLabel = isAccountant ? "Müşavir" : "Panel";
+
+  const itemClass =
+    "relative flex h-full flex-1 flex-col items-center justify-center transition-all duration-100 active:scale-95";
+
   return (
-    <header className="sticky top-0 z-50 border-b border-gold/15 bg-cream/85 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6 lg:px-10">
-        <Link href="/" className="flex items-center gap-2.5" aria-label="KriptoBeyan anasayfa">
-          <motion.span
-            initial={{ opacity: 0, scale: 0.85 }}
-            animate={settled ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.85 }}
-            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-            className="relative h-8 w-8 shrink-0"
+    <>
+      {/* ─── Üst bar: sayfa başında transparan, logo + sağ bilgi ─── */}
+      <header className="absolute inset-x-0 top-0 z-40 bg-transparent">
+        <div className="container-edit flex items-center justify-between py-4">
+          <Link
+            href="/"
+            className="flex items-center gap-2.5"
+            aria-label="KriptoBeyan anasayfa"
           >
-            <Image
-              src="/logo.png"
-              alt="KriptoBeyan"
-              fill
-              sizes="32px"
-              className="object-contain"
-              priority
-            />
-          </motion.span>
-          <motion.span
-            initial={{ opacity: 0, x: -6 }}
-            animate={settled ? { opacity: 1, x: 0 } : { opacity: 0, x: -6 }}
-            transition={{ duration: 0.5, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
-            className="font-serif text-lg font-semibold tracking-tight text-ink"
-          >
-            KriptoBeyan
-          </motion.span>
-        </Link>
-
-        <nav className="hidden items-center gap-8 lg:flex">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="text-sm font-medium text-ink-soft transition-colors hover:text-gold-deep"
-            >
-              {link.label}
-            </Link>
-          ))}
-        </nav>
-
-        <div className="flex items-center gap-3">
-          {loggedIn ? (
-            <>
-              <NotificationBell />
-              {isAdmin && (
-                <span className="btn-indigo-comet relative hidden sm:inline-flex">
-                  <Link
-                    href="/admin"
-                    className="inline-flex items-center justify-center rounded-full bg-[#0f1230] px-4 py-2 text-sm font-semibold text-white transition-transform hover:scale-[1.03]"
-                  >
-                    M Dashboard
-                  </Link>
-                </span>
-              )}
-              <Link
-                href={isAccountant ? "/musavir-paneli" : "/panel"}
-                className="hidden rounded-full bg-marble-dark px-4 py-2 text-sm font-semibold text-cream transition-colors hover:bg-marble-dark-2 sm:inline-flex"
-              >
-                {isAccountant ? "Müşavir Paneli" : "Panele git"}
-              </Link>
-            </>
-          ) : (
-            <Link
-              href="/giris"
-              className="hidden rounded-full bg-ink px-4 py-2 text-sm font-semibold text-cream transition-colors hover:bg-ink/85 sm:inline-flex"
-            >
-              Giriş Yap
-            </Link>
-          )}
-
-          <button
-            type="button"
-            onClick={() => setMenuOpen((v) => !v)}
-            aria-label={menuOpen ? "Menüyü kapat" : "Menüyü aç"}
-            aria-expanded={menuOpen}
-            className="flex h-9 w-9 items-center justify-center rounded-full border border-gold/25 text-ink transition-colors hover:border-gold/50 lg:hidden"
-          >
-            <span className="relative flex h-4 w-4 flex-col items-center justify-center">
-              <span
-                className={`absolute h-[1.5px] w-4 bg-current transition-transform ${menuOpen ? "translate-y-0 rotate-45" : "-translate-y-1.5"}`}
-              />
-              <span
-                className={`absolute h-[1.5px] w-4 bg-current transition-opacity ${menuOpen ? "opacity-0" : "opacity-100"}`}
-              />
-              <span
-                className={`absolute h-[1.5px] w-4 bg-current transition-transform ${menuOpen ? "translate-y-0 -rotate-45" : "translate-y-1.5"}`}
+            <span className="relative h-8 w-8 shrink-0">
+              <Image
+                src="/logo.png"
+                alt="KriptoBeyan"
+                fill
+                sizes="32px"
+                className="object-contain"
+                priority
               />
             </span>
-          </button>
+            <span className="font-heading text-base font-semibold tracking-tight text-ink">
+              KriptoBeyan
+            </span>
+          </Link>
+
+          <div className="hidden items-center gap-6 lg:flex">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="text-sm font-medium text-ink-soft transition-colors hover:text-gold-deep"
+              >
+                {link.label}
+              </Link>
+            ))}
+            {loggedIn ? (
+              <>
+                <NotificationBell />
+                {isAdmin && (
+                  <span className="btn-indigo-comet relative">
+                    <Link
+                      href="/admin"
+                      className="inline-flex items-center justify-center rounded-full bg-[#0f1230] px-4 py-2 text-sm font-semibold text-white transition-transform hover:scale-[1.03]"
+                    >
+                      M Dashboard
+                    </Link>
+                  </span>
+                )}
+                <Link
+                  href={panelHref}
+                  className="border border-ink px-4 py-2 text-sm font-semibold text-ink transition-colors hover:bg-ink hover:text-cream"
+                >
+                  {panelLabel}
+                </Link>
+              </>
+            ) : (
+              <Link
+                href="/giris"
+                className="border border-ink px-4 py-2 text-sm font-semibold text-ink transition-colors hover:bg-ink hover:text-cream"
+              >
+                Giriş Yap
+              </Link>
+            )}
+          </div>
+
+          {/* Mobil: bildirim varsa göster */}
+          <div className="flex items-center gap-2 lg:hidden">
+            {loggedIn && <NotificationBell />}
+          </div>
         </div>
+      </header>
+
+      {/* ─── Yüzen alt navigasyon pill'i ─── */}
+      <div
+        className={`fixed bottom-5 left-1/2 z-50 w-[92vw] max-w-sm -translate-x-1/2 transition-all duration-[400ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
+          pillVisible
+            ? "translate-y-0 scale-100 opacity-100"
+            : "pointer-events-none translate-y-12 scale-95 opacity-0"
+        }`}
+      >
+        <nav
+          aria-label="Ana menü"
+          className="flex h-14 select-none items-center justify-around border border-gold/20 bg-cream/85 px-2 shadow-[0_12px_40px_rgba(36,32,26,0.06)] backdrop-blur-lg transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] active:scale-[0.96]"
+        >
+          {tabs.map((tab) => (
+            <Link
+              key={tab.id}
+              href={tab.href}
+              aria-current={activeTab === tab.id ? "page" : undefined}
+              className={itemClass}
+            >
+              <DockLabel
+                icon={tab.icon}
+                label={tab.label}
+                selected={activeTab === tab.id}
+              />
+            </Link>
+          ))}
+
+          {/* Kullanıcı oturumu açıksa panel, yoksa menü */}
+          {loggedIn ? (
+            <Link href={panelHref} className={itemClass}>
+              <DockLabel
+                icon={<IconUser />}
+                label={panelLabel}
+                selected={pathname.startsWith(panelHref)}
+              />
+            </Link>
+          ) : (
+            <button
+              type="button"
+              aria-label={menuOpen ? "Menüyü kapat" : "Menüyü aç"}
+              aria-expanded={menuOpen}
+              onClick={() => setMenuOpen((v) => !v)}
+              className={itemClass}
+            >
+              <DockLabel
+                icon={<IconMenu open={menuOpen} />}
+                label="Menü"
+                selected={menuOpen}
+              />
+            </button>
+          )}
+        </nav>
       </div>
 
+      {/* ─── Tam ekran kinetik menü ─── */}
       {mounted &&
         createPortal(
-          <AnimatePresence>
-            {menuOpen && (
-              <>
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.2 }}
+          <div
+            className={`fixed inset-0 z-40 bg-cream/92 backdrop-blur-xl transition-opacity duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+              menuOpen
+                ? "kinetic-menu-open opacity-100"
+                : "pointer-events-none opacity-0"
+            }`}
+          >
+            <nav className="flex h-full flex-col items-center justify-center gap-1 px-5">
+              {navLinks.map((link, i) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
                   onClick={() => setMenuOpen(false)}
-                  className="fixed inset-0 z-40 bg-ink/40 lg:hidden"
-                />
-                <motion.div
-                  initial={{ x: "100%" }}
-                  animate={{ x: 0 }}
-                  exit={{ x: "100%" }}
-                  transition={{ type: "spring", stiffness: 320, damping: 34 }}
-                  className="fixed inset-y-0 right-0 z-50 flex w-[82vw] max-w-[320px] flex-col overflow-y-auto border-l border-gold/15 bg-cream px-6 py-5 shadow-2xl lg:hidden"
+                  className="kinetic-menu-item flex min-h-12 items-center text-3xl font-semibold tracking-tight text-ink"
+                  style={
+                    {
+                      "--burst-from": `${((navLinks.length - 1) / 2 - i) * 56}px`,
+                      transitionDelay: menuOpen ? `${i * 30}ms` : "0ms",
+                    } as React.CSSProperties
+                  }
                 >
-                  <div className="flex items-center justify-between">
-                    <span className="font-serif text-lg font-semibold text-ink">Menü</span>
-                    <button
-                      type="button"
-                      onClick={() => setMenuOpen(false)}
-                      aria-label="Menüyü kapat"
-                      className="flex h-9 w-9 items-center justify-center rounded-full border border-gold/25 text-ink transition-colors hover:border-gold/50"
-                    >
-                      <span className="relative flex h-4 w-4 items-center justify-center">
-                        <span className="absolute h-[1.5px] w-4 rotate-45 bg-current" />
-                        <span className="absolute h-[1.5px] w-4 -rotate-45 bg-current" />
-                      </span>
-                    </button>
-                  </div>
+                  {link.label}
+                </Link>
+              ))}
 
-                  <nav className="mt-6 flex flex-col gap-1">
-                    {navLinks.map((link) => (
-                      <Link
-                        key={link.href}
-                        href={link.href}
-                        onClick={() => setMenuOpen(false)}
-                        className="rounded-lg px-3 py-2.5 text-sm font-medium text-ink-soft transition-colors hover:bg-parchment hover:text-gold-deep"
-                      >
-                        {link.label}
-                      </Link>
-                    ))}
-                  </nav>
-
-                  <div className="mt-3 flex flex-col gap-2 border-t border-gold/15 pt-3">
-                    {loggedIn ? (
-                      <>
-                        {isAdmin && (
-                          <span className="btn-indigo-comet relative w-full">
-                            <Link
-                              href="/admin"
-                              onClick={() => setMenuOpen(false)}
-                              className="flex w-full items-center justify-center rounded-full bg-[#0f1230] px-4 py-2.5 text-center text-sm font-semibold text-white"
-                            >
-                              M Dashboard
-                            </Link>
-                          </span>
-                        )}
-                        <Link
-                          href={isAccountant ? "/musavir-paneli" : "/panel"}
-                          onClick={() => setMenuOpen(false)}
-                          className="rounded-full bg-marble-dark px-4 py-2.5 text-center text-sm font-semibold text-cream transition-colors hover:bg-marble-dark-2"
-                        >
-                          {isAccountant ? "Müşavir Paneli" : "Panele git"}
-                        </Link>
-                        <button
-                          type="button"
-                          onClick={handleLogout}
-                          className="rounded-full bg-ink px-4 py-2.5 text-center text-sm font-semibold text-cream transition-colors hover:bg-ink/85"
-                        >
-                          Çıkış Yap
-                        </button>
-                      </>
-                    ) : (
-                      <>
-                        <Link
-                          href="/giris"
-                          onClick={() => setMenuOpen(false)}
-                          className="rounded-full bg-ink px-4 py-2.5 text-center text-sm font-semibold text-cream transition-colors hover:bg-ink/85"
-                        >
-                          Giriş Yap
-                        </Link>
-                        <Link
-                          href="/kayit-ol"
-                          onClick={() => setMenuOpen(false)}
-                          className="rounded-full bg-ink px-4 py-2.5 text-center text-sm font-semibold text-cream transition-colors hover:bg-ink/85"
-                        >
-                          Kayıt Ol
-                        </Link>
-                      </>
-                    )}
-                  </div>
-                </motion.div>
-              </>
-            )}
-          </AnimatePresence>,
+              <div
+                className="kinetic-menu-item mt-6 flex items-center gap-3"
+                style={
+                  {
+                    "--burst-from": `${((navLinks.length - 1) / 2 - navLinks.length) * 56}px`,
+                    transitionDelay: menuOpen ? `${navLinks.length * 30}ms` : "0ms",
+                  } as React.CSSProperties
+                }
+              >
+                <Link
+                  href="/giris"
+                  onClick={() => setMenuOpen(false)}
+                  className="border border-ink px-6 py-2.5 text-sm font-semibold text-ink transition-colors hover:bg-ink hover:text-cream"
+                >
+                  Giriş Yap
+                </Link>
+                <Link
+                  href="/kayit-ol"
+                  onClick={() => setMenuOpen(false)}
+                  className="bg-ink px-6 py-2.5 text-sm font-semibold text-cream transition-colors hover:bg-marble-dark-2"
+                >
+                  Kayıt Ol
+                </Link>
+              </div>
+            </nav>
+          </div>,
           document.body,
         )}
-    </header>
+    </>
   );
 }

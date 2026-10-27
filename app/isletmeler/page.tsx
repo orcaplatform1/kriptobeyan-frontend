@@ -84,7 +84,7 @@ export default async function IsletmelerPage() {
             {FEATURES.map((f) => (
               <div
                 key={f.title}
-                className="rounded-2xl border border-gold/25 bg-parchment p-6"
+                className="border border-gold/25 bg-parchment p-6"
               >
                 <p className="font-serif text-lg font-semibold text-ink">
                   {f.title}

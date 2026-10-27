@@ -70,7 +70,7 @@ export function NotificationBell() {
       </button>
 
       {open && (
-        <div className="absolute right-0 z-40 mt-2 w-80 max-w-[90vw] overflow-hidden rounded-xl border border-gold/20 bg-cream shadow-xl">
+        <div className="absolute right-0 z-40 mt-2 w-80 max-w-[90vw] overflow-hidden border border-gold/20 bg-cream shadow-xl">
           <div className="border-b border-gold/15 px-4 py-3">
             <p className="text-sm font-semibold text-ink">Bildirimler</p>
           </div>
