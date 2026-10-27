@@ -96,7 +96,7 @@ function DockLabel({
         {icon}
       </span>
       <span
-        className={`font-mono text-[8px] uppercase tracking-widest transition-colors duration-200 ${
+        className={`font-mono text-[8px] uppercase tracking-wider transition-colors duration-200 ${
           selected ? "font-bold text-ink" : "text-ink-soft"
         }`}
       >
@@ -178,11 +178,11 @@ export function SiteHeader() {
     router.push("/");
   }
 
-  // Pill nav sekmeleri
+  // Pill nav sekmeleri — kısa etiketler (pill genişliğine sığsın)
   const tabs = [
-    { id: "home", href: "/", label: "Anasayfa", icon: <IconHome /> },
-    { id: "guide", href: "/nasil-calisir", label: "Nasıl Çalışır", icon: <IconGuide /> },
-    { id: "pricing", href: "/fiyatlandirma", label: "Fiyatlandırma", icon: <IconPricing /> },
+    { id: "home", href: "/", label: "Ana Sayfa", icon: <IconHome /> },
+    { id: "guide", href: "/nasil-calisir", label: "Rehber", icon: <IconGuide /> },
+    { id: "pricing", href: "/fiyatlandirma", label: "Fiyat", icon: <IconPricing /> },
     { id: "faq", href: "/sss", label: "SSS", icon: <IconFaq /> },
   ];
 
@@ -268,9 +268,9 @@ export function SiteHeader() {
         </div>
       </header>
 
-      {/* ─── Yüzen alt navigasyon pill'i ─── */}
+      {/* ─── Yüzen alt navigasyon pill'i — sadece mobil/tablet ─── */}
       <div
-        className={`fixed bottom-5 left-1/2 z-50 w-[92vw] max-w-sm -translate-x-1/2 transition-all duration-[400ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
+        className={`fixed bottom-5 left-1/2 z-50 w-[92vw] max-w-sm -translate-x-1/2 transition-all duration-[400ms] ease-[cubic-bezier(0.16,1,0.3,1)] lg:hidden ${
           pillVisible
             ? "translate-y-0 scale-100 opacity-100"
             : "pointer-events-none translate-y-12 scale-95 opacity-0"

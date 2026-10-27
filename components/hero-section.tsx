@@ -78,7 +78,7 @@ export function HeroSection({ content }: { content?: SiteContent | null }) {
               initial={{ opacity: 0, y: -10 }}
               animate={settled ? { opacity: 1, y: 0 } : { opacity: 0, y: -10 }}
               transition={revealTransition}
-              className="absolute top-3 left-3 inline-flex max-w-[calc(100%-1.5rem)] items-center gap-1.5 border border-gold/30 bg-parchment/95 px-2.5 py-1 text-[10px] font-semibold tracking-[0.12em] whitespace-nowrap text-gold-deep uppercase shadow-sm backdrop-blur-sm sm:top-5 sm:left-5 sm:px-3.5 sm:py-1.5 sm:text-xs md:hidden"
+              className="absolute top-20 left-3 inline-flex max-w-[calc(100%-1.5rem)] items-center gap-1.5 border border-gold/30 bg-parchment/95 px-2.5 py-1 text-[10px] font-semibold tracking-[0.12em] whitespace-nowrap text-gold-deep uppercase shadow-sm backdrop-blur-sm sm:top-24 sm:left-5 sm:px-3.5 sm:py-1.5 sm:text-xs md:hidden"
             >
               {c.heroBadge}
             </motion.span>

@@ -84,9 +84,15 @@ html {
 body {
   background: var(--bg-deep-velvet);
   color: var(--foreground);
-  /* Altta yüzen navigasyon için güvenlik payı */
-  padding-bottom: calc(80px + env(safe-area-inset-bottom));
   font-feature-settings: "ss01" on, "cv01" on;
+  /* Mobil: altta yüzen pill nav için güvenlik payı */
+  padding-bottom: calc(80px + env(safe-area-inset-bottom));
+}
+
+@media (min-width: 1024px) {
+  body {
+    padding-bottom: 0;
+  }
 }
 
 /* Başlıklar: Plus Jakarta Sans, gövde: Inter */
