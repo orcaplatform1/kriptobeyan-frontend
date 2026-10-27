@@ -11,7 +11,7 @@ function renderCopyrightWithBrandHighlight(text: string) {
     i === 0
       ? [part]
       : [
-          <span key={i} className="whitespace-nowrap">
+          <a key={i} href="https://traders.tr" target="_blank" rel="noopener noreferrer" className="whitespace-nowrap no-underline">
             <span className="text-traders-white">Traders</span>
             <span className="text-traders-blue">.TR</span>{" "}
             <img
@@ -20,7 +20,7 @@ function renderCopyrightWithBrandHighlight(text: string) {
               aria-hidden
               className="inline-block h-[1em] w-[1em] translate-y-[0.1em] object-contain align-baseline"
             />
-          </span>,
+          </a>,
           part,
         ],
   );
@@ -100,7 +100,7 @@ export function SiteFooter({ content }: { content?: SiteContent | null }) {
           </span>
           <Link
             href="/sitemap"
-            className="text-[12px] text-cream/35 transition-colors hover:text-cream/70"
+            className="text-[12px] text-cream/35"
           >
             Site Haritası
           </Link>
