@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
 import Link from "next/link";
@@ -126,8 +126,6 @@ export function SiteHeader() {
   const [isAccountant, setIsAccountant] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [pillVisible, setPillVisible] = useState(true);
-  const lastY = useRef(0);
   const mounted = useSyncExternalStore(noopSubscribe, () => true, () => false);
 
   useEffect(() => {
@@ -140,18 +138,6 @@ export function SiteHeader() {
       .catch(() => setIsAdmin(false));
   }, []);
 
-  // Yukarı kaydırınca göster, aşağı kaydırınca gizle
-  useEffect(() => {
-    function onScroll() {
-      const y = window.scrollY;
-      if (y < 10) { setPillVisible(true); return; }
-      if (Math.abs(y - lastY.current) < 5) return;
-      setPillVisible(y < lastY.current);
-      lastY.current = y;
-    }
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
 
   // Menü açıkken body scroll kilitle
   useEffect(() => {
@@ -269,13 +255,7 @@ export function SiteHeader() {
       </header>
 
       {/* ─── Tam genişlik alt navigasyon çubuğu — sadece mobil/tablet ─── */}
-      <div
-        className={`fixed bottom-0 left-0 right-0 z-50 transition-transform duration-[400ms] ease-[cubic-bezier(0.16,1,0.3,1)] lg:hidden ${
-          pillVisible
-            ? "translate-y-0"
-            : "pointer-events-none translate-y-full"
-        }`}
-      >
+      <div className="fixed bottom-0 left-0 right-0 z-50 lg:hidden">
         <nav
           aria-label="Ana menü"
           className="flex h-14 w-full select-none items-center justify-around border-t border-gold/20 bg-cream/92 px-1 pb-safe backdrop-blur-lg"

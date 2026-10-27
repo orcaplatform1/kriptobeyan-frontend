@@ -25,27 +25,27 @@ function ExchangeBadge({ name, upcoming }: ExchangeItem) {
 
 export function ExchangesSection() {
   return (
-    <section className="relative overflow-hidden bg-marble-dark py-20 lg:py-28">
+    <section className="relative overflow-hidden bg-marble-dark py-8 lg:py-28">
       {/* Arka plan ışıması */}
       <div className="pointer-events-none absolute right-1/4 top-1/2 h-96 w-96 -translate-y-1/2 rounded-full bg-gold/[0.04] blur-[100px]" />
 
-      <div className="container-edit relative">
-        <div className="max-w-2xl">
-          <p className="text-xs font-semibold tracking-[0.15em] text-gold-light uppercase">
-            Desteklenen borsalar
-          </p>
-          <h2 className="mt-3 font-heading text-3xl font-semibold text-cream sm:text-4xl">
-            Türkiye&apos;nin ve Dünyanın Lider Borsaları
-          </h2>
-          <p className="mt-3 text-sm text-cream/50">
-            {LIVE_EXCHANGES.length} borsa + 3 blockchain ağıyla canlı bağlantı,
-            üstüne CSV içe aktarma ile sınırsız borsa ve cüzdan desteği.
-          </p>
+      {/* Sonsuz marquee şeridi — başlık hemen üstünde */}
+      <div className="relative mt-0 overflow-hidden">
+        {/* Başlık: marquee'nin tam üstü */}
+        <div className="container-edit relative mb-4 lg:mb-8">
+          <div className="max-w-2xl">
+            <p className="text-xs font-semibold tracking-[0.15em] text-gold-light uppercase">
+              Desteklenen borsalar
+            </p>
+            <h2 className="mt-2 font-heading text-2xl font-semibold text-cream sm:text-3xl lg:text-4xl">
+              Türkiye&apos;nin ve Dünyanın Lider Borsaları
+            </h2>
+            <p className="mt-2 hidden text-sm text-cream/50 lg:block">
+              {LIVE_EXCHANGES.length} borsa + 3 blockchain ağıyla canlı bağlantı,
+              üstüne CSV içe aktarma ile sınırsız borsa ve cüzdan desteği.
+            </p>
+          </div>
         </div>
-      </div>
-
-      {/* Sonsuz marquee şeridi */}
-      <div className="relative mt-10 overflow-hidden">
         {/* Sol/sağ geçiş maskeleri */}
         <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-28 bg-gradient-to-r from-marble-dark to-transparent" />
         <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-28 bg-gradient-to-l from-marble-dark to-transparent" />
