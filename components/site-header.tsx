@@ -268,17 +268,17 @@ export function SiteHeader() {
         </div>
       </header>
 
-      {/* ─── Yüzen alt navigasyon pill'i — sadece mobil/tablet ─── */}
+      {/* ─── Tam genişlik alt navigasyon çubuğu — sadece mobil/tablet ─── */}
       <div
-        className={`fixed bottom-5 left-1/2 z-50 w-[92vw] max-w-sm -translate-x-1/2 transition-all duration-[400ms] ease-[cubic-bezier(0.16,1,0.3,1)] lg:hidden ${
+        className={`fixed bottom-0 left-0 right-0 z-50 transition-transform duration-[400ms] ease-[cubic-bezier(0.16,1,0.3,1)] lg:hidden ${
           pillVisible
-            ? "translate-y-0 scale-100 opacity-100"
-            : "pointer-events-none translate-y-12 scale-95 opacity-0"
+            ? "translate-y-0"
+            : "pointer-events-none translate-y-full"
         }`}
       >
         <nav
           aria-label="Ana menü"
-          className="flex h-14 select-none items-center justify-around border border-gold/20 bg-cream/85 px-2 shadow-[0_12px_40px_rgba(36,32,26,0.06)] backdrop-blur-lg transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] active:scale-[0.96]"
+          className="flex h-14 w-full select-none items-center justify-around border-t border-gold/20 bg-cream/92 px-1 pb-safe backdrop-blur-lg"
         >
           {tabs.map((tab) => (
             <Link

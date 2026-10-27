@@ -34,7 +34,7 @@ export function HeroSection({ content }: { content?: SiteContent | null }) {
             initial={{ opacity: 0, y: 18 }}
             animate={settled ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
             transition={{ ...revealTransition, delay: 0.08 }}
-            className="font-heading text-4xl leading-[1.1] font-semibold text-ink sm:text-5xl md:text-[3.4rem] xl:text-[3.9rem]"
+            className="font-heading text-2xl leading-[1.15] font-semibold text-ink sm:text-4xl md:text-[3.4rem] xl:text-[3.9rem]"
           >
             {c.heroTitlePrefix}
             <span className="text-gold-deep"> {c.heroTitleHighlight}</span> {c.heroTitleSuffix}
@@ -44,7 +44,7 @@ export function HeroSection({ content }: { content?: SiteContent | null }) {
             initial={{ opacity: 0, y: 18 }}
             animate={settled ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
             transition={{ ...revealTransition, delay: 0.16 }}
-            className="mt-6 max-w-lg text-lg leading-relaxed text-ink-soft"
+            className="mt-4 max-w-lg text-sm leading-relaxed text-ink-soft sm:text-lg"
           >
             {c.heroDescription}
           </motion.p>

@@ -597,6 +597,13 @@ select:-webkit-autofill {
   }
 }
 
+/* ─── Mobil alt nav için içerik kaydırma boşluğu ─── */
+@media (max-width: 1023px) {
+  body {
+    padding-bottom: 3.5rem; /* h-14 = 56px, nav arkasında içerik kalmasın */
+  }
+}
+
 /* ─── Sonsuz marquee ─── */
 @keyframes marquee {
   from { transform: translateX(0); }
