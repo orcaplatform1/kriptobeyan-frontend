@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import { HeroSection } from "@/components/hero-section";
 import { HowItWorksSection } from "@/components/how-it-works-section";
 import { ExchangesSection } from "@/components/exchanges-section";
-import { AccountantsSection } from "@/components/accountants-section";
-import { BusinessSection } from "@/components/business-section";
+import { TargetAudienceSection } from "@/components/target-audience-section";
 import { PricingTeaserSection } from "@/components/pricing-teaser-section";
 import { FaqTeaserSection } from "@/components/faq-teaser-section";
 import { FinalCtaSection } from "@/components/final-cta-section";
@@ -64,8 +63,7 @@ export default async function Home() {
         <HeroSection content={siteContent} />
         <ExchangesSection />
         <HowItWorksSection />
-        <BusinessSection />
-        <AccountantsSection />
+        <TargetAudienceSection />
         <PricingTeaserSection />
         <FaqTeaserSection />
         <FinalCtaSection />

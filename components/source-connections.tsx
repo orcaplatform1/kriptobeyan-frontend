@@ -54,22 +54,23 @@ function pollAfterSync(onChanged: () => void) {
 
 function Card({ children }: { children: React.ReactNode }) {
   return (
-    <div className="border border-gold/20 bg-parchment p-5">
-      {children}
+    <div className="relative overflow-hidden border border-gold/[0.12] bg-marble-dark/60 p-5 backdrop-blur-xl">
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold/20 to-transparent" />
+      <div className="relative">{children}</div>
     </div>
   );
 }
 
 function FieldLabel({ children }: { children: React.ReactNode }) {
   return (
-    <label className="block text-xs font-semibold tracking-wide text-ink-soft uppercase">
+    <label className="block text-xs font-semibold tracking-[0.1em] text-cream/50 uppercase">
       {children}
     </label>
   );
 }
 
 const inputClass =
-  "mt-1.5 w-full border border-gold/25 bg-cream px-3 py-2 text-sm text-ink outline-none focus:border-gold";
+  "mt-1.5 w-full border border-gold/[0.15] bg-marble-dark-2/70 px-3 py-2 text-sm text-cream placeholder:text-cream/30 outline-none focus:border-gold/50 backdrop-blur-sm";
 
 function ExchangeConnectionForm({ onAdded }: { onAdded: () => void }) {
   const [provider, setProvider] = useState<ExchangeProvider>("BINANCE");
@@ -167,17 +168,17 @@ function ExchangeConnectionForm({ onAdded }: { onAdded: () => void }) {
           />
         </div>
       )}
-      <label className="mt-1 flex items-start gap-2 text-sm text-ink-soft">
+      <label className="mt-1 flex items-start gap-2 text-sm text-cream/60">
         <input
           type="checkbox"
           checked={confirmed}
           onChange={(e) => setConfirmed(e.target.checked)}
           className="mt-0.5 h-4 w-4 rounded border-gold/40 accent-gold-deep"
         />
-        Bu API key&apos;in <strong className="text-ink">salt-okunur (read-only)</strong>{" "}
+        Bu API key&apos;in <strong className="text-cream">salt-okunur (read-only)</strong>{" "}
         olduğunu, para çekme yetkisi olmadığını onaylıyorum.
       </label>
-      {error && <p className="text-sm text-red-700">{error}</p>}
+      {error && <p className="text-sm text-red-400">{error}</p>}
       <button
         type="submit"
         disabled={submitting}
@@ -211,7 +212,7 @@ function ExchangeConnectionList({
   }
 
   if (connections.length === 0) {
-    return <p className="text-sm text-ink-soft">Henüz bağlı borsa hesabın yok.</p>;
+    return <p className="text-sm text-cream/50">Henüz bağlı borsa hesabın yok.</p>;
   }
 
   return (
@@ -219,13 +220,13 @@ function ExchangeConnectionList({
       {connections.map((c) => (
         <li
           key={c.id}
-          className="flex flex-wrap items-center justify-between gap-2 border border-gold/15 bg-cream px-3.5 py-2.5 text-sm"
+          className="flex flex-wrap items-center justify-between gap-2 border border-gold/[0.1] bg-marble-dark-2/50 px-3.5 py-2.5 text-sm"
         >
           <div>
-            <p className="font-medium text-ink">
-              {c.label} <span className="text-ink-soft">· {EXCHANGE_PROVIDER_LABELS[c.provider]}</span>
+            <p className="font-medium text-cream">
+              {c.label} <span className="text-cream/50">· {EXCHANGE_PROVIDER_LABELS[c.provider]}</span>
             </p>
-            <p className="text-xs text-ink-soft">
+            <p className="text-xs text-cream/45">
               {c.apiKeyMasked} · {c.verifiedPermissionLevel === "UNVERIFIED" ? "izin doğrulanmadı" : c.verifiedPermissionLevel}
               {c.syncStatus === "SYNCING" && " · senkronize ediliyor…"}
               {c.lastSyncError && ` · hata: ${c.lastSyncError}`}
@@ -235,7 +236,7 @@ function ExchangeConnectionList({
             <button
               onClick={() => withBusy(c.id, () => verifyExchangeConnection(c.id))}
               disabled={busyId === c.id}
-              className="rounded-full border border-gold/30 px-3 py-1 text-xs font-semibold text-ink hover:bg-parchment disabled:opacity-60"
+              className="rounded-full border border-gold/30 px-3 py-1 text-xs font-semibold text-cream/70 hover:bg-marble-dark-2 hover:text-cream disabled:opacity-60"
             >
               İzni doğrula
             </button>
@@ -244,7 +245,7 @@ function ExchangeConnectionList({
                 withBusy(c.id, () => syncExchangeConnection(c.id)).then(() => pollAfterSync(onChanged))
               }
               disabled={busyId === c.id}
-              className="rounded-full border border-gold/30 px-3 py-1 text-xs font-semibold text-ink hover:bg-parchment disabled:opacity-60"
+              className="rounded-full border border-gold/30 px-3 py-1 text-xs font-semibold text-cream/70 hover:bg-marble-dark-2 hover:text-cream disabled:opacity-60"
             >
               Senkronize et
             </button>
@@ -319,7 +320,7 @@ function WalletAddressForm({ onAdded }: { onAdded: () => void }) {
           className={inputClass}
         />
       </div>
-      {error && <p className="text-sm text-red-700">{error}</p>}
+      {error && <p className="text-sm text-red-400">{error}</p>}
       <button
         type="submit"
         disabled={submitting}
@@ -353,7 +354,7 @@ function WalletAddressList({
   }
 
   if (wallets.length === 0) {
-    return <p className="text-sm text-ink-soft">Henüz eklenmiş cüzdanın yok.</p>;
+    return <p className="text-sm text-cream/50">Henüz eklenmiş cüzdanın yok.</p>;
   }
 
   return (
@@ -361,14 +362,14 @@ function WalletAddressList({
       {wallets.map((w) => (
         <li
           key={w.id}
-          className="flex flex-wrap items-center justify-between gap-2 border border-gold/15 bg-cream px-3.5 py-2.5 text-sm"
+          className="flex flex-wrap items-center justify-between gap-2 border border-gold/[0.1] bg-marble-dark-2/50 px-3.5 py-2.5 text-sm"
         >
           <div>
-            <p className="font-medium text-ink">
+            <p className="font-medium text-cream">
               {w.label ?? WALLET_CHAIN_LABELS[w.chain]}{" "}
-              <span className="text-ink-soft">· {WALLET_CHAIN_LABELS[w.chain]}</span>
+              <span className="text-cream/50">· {WALLET_CHAIN_LABELS[w.chain]}</span>
             </p>
-            <p className="text-xs text-ink-soft">
+            <p className="text-xs text-cream/45">
               {w.address.length > 16
                 ? `${w.address.slice(0, 8)}…${w.address.slice(-6)}`
                 : w.address}
@@ -381,7 +382,7 @@ function WalletAddressList({
                 withBusy(w.id, () => syncWalletAddress(w.id)).then(() => pollAfterSync(onChanged))
               }
               disabled={busyId === w.id}
-              className="rounded-full border border-gold/30 px-3 py-1 text-xs font-semibold text-ink hover:bg-parchment disabled:opacity-60"
+              className="rounded-full border border-gold/30 px-3 py-1 text-xs font-semibold text-cream/70 hover:bg-marble-dark-2 hover:text-cream disabled:opacity-60"
             >
               Senkronize et
             </button>
@@ -430,7 +431,7 @@ function CsvImportForm({ onAdded }: { onAdded: () => void }) {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-      <div className="border border-gold/20 bg-cream px-3.5 py-3 text-xs text-ink-soft">
+      <div className="border border-gold/20 bg-cream px-3.5 py-3 text-xs text-cream/45">
         <p>
           Crypto.com ve Bitexen gibi API ile canlı senkronize edemediğimiz
           borsalar için işlem geçmişini CSV olarak dışa aktarıp buradan
@@ -460,11 +461,11 @@ function CsvImportForm({ onAdded }: { onAdded: () => void }) {
           type="file"
           accept=".csv,text/csv"
           onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-          className="mt-1.5 w-full text-sm text-ink-soft file:mr-3 file:rounded-full file:border-0 file:bg-marble-dark file:px-4 file:py-2 file:text-xs file:font-semibold file:text-cream"
+          className="mt-1.5 w-full text-sm text-cream/60 file:mr-3 file:rounded-full file:border-0 file:bg-marble-dark file:px-4 file:py-2 file:text-xs file:font-semibold file:text-cream"
         />
       </div>
-      {error && <p className="text-sm text-red-700">{error}</p>}
-      {success && <p className="text-sm text-emerald-700">{success}</p>}
+      {error && <p className="text-sm text-red-400">{error}</p>}
+      {success && <p className="text-sm text-emerald-400">{success}</p>}
       <button
         type="submit"
         disabled={submitting}
@@ -518,7 +519,7 @@ export function SourceConnections({ onSourcesChanged }: { onSourcesChanged: () =
             className={`rounded-full px-4 py-1.5 text-sm font-semibold transition-colors ${
               tab === t.id
                 ? "bg-marble-dark text-cream"
-                : "border border-gold/25 text-ink-soft hover:bg-parchment"
+                : "border border-gold/25 text-cream/50 hover:bg-marble-dark-2 hover:text-cream"
             }`}
           >
             {t.label}
@@ -533,17 +534,17 @@ export function SourceConnections({ onSourcesChanged }: { onSourcesChanged: () =
           {tab === "csv" && <CsvImportForm onAdded={handleChanged} />}
         </Card>
         <Card>
-          <p className="mb-3 text-xs font-semibold tracking-wide text-ink-soft uppercase">
+          <p className="mb-3 text-xs font-semibold tracking-[0.1em] text-cream/50 uppercase">
             Bağlı {tab === "exchange" ? "borsa hesapları" : tab === "wallet" ? "cüzdanlar" : "kaynaklar"}
           </p>
           {loading ? (
-            <p className="text-sm text-ink-soft">Yükleniyor…</p>
+            <p className="text-sm text-cream/50">Yükleniyor…</p>
           ) : tab === "exchange" ? (
             <ExchangeConnectionList connections={connections} onChanged={handleChanged} />
           ) : tab === "wallet" ? (
             <WalletAddressList wallets={wallets} onChanged={handleChanged} />
           ) : (
-            <p className="text-sm text-ink-soft">
+            <p className="text-sm text-cream/50">
               Yüklediğin CSV dosyaları işlendikten sonra doğrudan pozisyon ve
               işlem verine eklenir, ayrıca listelenmez.
             </p>

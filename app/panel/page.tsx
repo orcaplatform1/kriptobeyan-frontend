@@ -47,16 +47,18 @@ function SummaryCard({
 }) {
   const toneClass =
     tone === "positive"
-      ? "text-emerald-700"
+      ? "text-emerald-400"
       : tone === "negative"
-        ? "text-red-700"
-        : "text-ink";
+        ? "text-red-400"
+        : "text-cream";
   return (
-    <div className="border border-gold/20 bg-parchment p-5">
-      <p className="text-xs font-semibold tracking-wide text-ink-soft uppercase">
+    <div className="relative overflow-hidden border border-gold/[0.12] bg-marble-dark/60 p-5 backdrop-blur-xl">
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold/20 to-transparent" />
+      <div className="pointer-events-none absolute -top-10 -right-10 h-28 w-28 rounded-full bg-gold/[0.05] blur-2xl" />
+      <p className="relative text-xs font-semibold tracking-[0.12em] text-cream/45 uppercase">
         {label}
       </p>
-      <p className={`mt-2 font-serif text-2xl font-semibold ${toneClass}`}>
+      <p className={`relative mt-2 font-heading text-2xl font-semibold ${toneClass}`}>
         {value}
       </p>
     </div>
