@@ -21,12 +21,11 @@ import {
 } from "@/lib/auth-client";
 import { formatTRY } from "@/lib/api";
 
-// NOT: Gercek sirket banka hesabi henuz kurulmadi (bkz. site-config.ts
-// COMPANY_INFO uyarisi) — asagidaki IBAN bilerek yer tutucudur, gercek
+// NOT: Gercek sirket banka hesabi henuz kurulmadi — asagidaki IBAN bilerek yer tutucudur, gercek
 // hesap acilinca degistirilmeli.
 const BANK_DETAILS = {
   bankName: "———— Bankası",
-  accountHolder: "KriptoBeyan Bilişim Teknolojileri Ltd. Şti.",
+  accountHolder: "Ahenk Zesta Art Design",
   iban: "TR00 0000 0000 0000 0000 0000 00",
 };
 

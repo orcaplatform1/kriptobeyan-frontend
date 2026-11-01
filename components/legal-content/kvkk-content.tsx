@@ -1,16 +1,8 @@
-import { LegalNotice } from "@/components/legal-notice";
 import { SITE_URL, KVKK_EMAIL, COMPANY_INFO } from "@/lib/site-config";
 
 export function KvkkContent() {
   return (
     <>
-      <LegalNotice>
-        <strong>Bu sayfadaki şirket kimlik bilgileri (unvan, adres, MERSİS,
-        vergi no) henüz gerçek/doğrulanmış değildir</strong> — herhangi bir
-        tescil sorgusu yapılmadan yer tutucu olarak girilmiştir. Sayfa
-        yayına alınmadan önce gerçek şirket/işletme bilgileriyle
-        güncellenmeli ve bir hukuk danışmanı tarafından onaylanmalıdır.
-      </LegalNotice>
 
       <h2>1. Veri Sorumlusunun Kimliği</h2>
       <p>
@@ -22,7 +14,8 @@ export function KvkkContent() {
         <li>Unvan: {COMPANY_INFO.unvan}</li>
         <li>Adres: {COMPANY_INFO.adres}</li>
         <li>MERSİS No: {COMPANY_INFO.mersisNo}</li>
-        <li>Vergi Dairesi / No: {COMPANY_INFO.vergiDairesi} / {COMPANY_INFO.vergiNo}</li>
+        <li>Vergi Dairesi: {COMPANY_INFO.vergiDairesi}</li>
+        <li>Vergi No: {COMPANY_INFO.vergiNo}</li>
         <li>
           E-posta: <a href={`mailto:${KVKK_EMAIL}`}>{KVKK_EMAIL}</a>
         </li>

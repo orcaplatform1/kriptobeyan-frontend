@@ -16,10 +16,7 @@ export default function MesafeliSatisSozlesmesiPage() {
       <LegalNotice>
         <strong>Önemli:</strong> Bu metin, 6502 sayılı Tüketicinin Korunması
         Hakkında Kanun ve Mesafeli Sözleşmeler Yönetmeliği&apos;ne genel
-        yapı olarak uyumlu bir taslaktır. Aşağıdaki satıcı kimlik bilgileri
-        (unvan, adres, MERSİS/vergi no) henüz gerçek/doğrulanmış değildir —
-        yer tutucu olarak girilmiştir ve bir hukuk danışmanı tarafından
-        onaylanmadan yürürlüğe konulmamalıdır. Ödeme akışı henüz gerçek bir
+        yapı olarak uyumlu bir taslaktır. Ödeme akışı henüz gerçek bir
         ödeme kuruluşuna bağlanmamıştır (bkz. Fiyatlandırma sayfası notu);
         bu sözleşme ödeme entegrasyonu canlıya alınmadan önce nihai hâline
         getirilmelidir.
@@ -30,7 +27,9 @@ export default function MesafeliSatisSozlesmesiPage() {
       <ul>
         <li>Unvan: {COMPANY_INFO.unvan}</li>
         <li>Adres: {COMPANY_INFO.adres}</li>
-        <li>Vergi/MERSİS No: {COMPANY_INFO.vergiNo} / {COMPANY_INFO.mersisNo}</li>
+        <li>Vergi Dairesi: {COMPANY_INFO.vergiDairesi}</li>
+        <li>Vergi No: {COMPANY_INFO.vergiNo}</li>
+        <li>MERSİS No: {COMPANY_INFO.mersisNo}</li>
         <li>Ticaret Sicil No: {COMPANY_INFO.ticaretSicilNo}</li>
         <li>E-posta: <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a></li>
       </ul>
