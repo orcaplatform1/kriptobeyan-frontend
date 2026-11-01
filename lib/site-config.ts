@@ -28,7 +28,7 @@ export const KVKK_EMAIL = "kvkk@kriptobeyan.com";
  */
 export const COMPANY_INFO = {
   unvan: "KriptoBeyan Bilişim Teknolojileri Limited Şirketi",
-  adres: "Barbaros Mahallesi, Begonya Sokak No:1, Ataşehir/İstanbul",
+  adres: "Yıldırım Kule, Cevizlidere Mahallesi Mevlana Bulvarı No: 221/109-3 Balgat, Çankaya/ANKARA",
   mersisNo: "0123456789000015",
   vergiDairesi: "Ataşehir Vergi Dairesi",
   vergiNo: "1234567890",

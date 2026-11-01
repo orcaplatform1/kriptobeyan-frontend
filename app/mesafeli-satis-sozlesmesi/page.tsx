@@ -96,10 +96,8 @@ export default function MesafeliSatisSozlesmesiPage() {
 
       <h2>7. Uyuşmazlıkların çözümü</h2>
       <p>
-        İşbu sözleşmeden doğan uyuşmazlıklarda, Ticaret Bakanlığı&apos;nca
-        her yıl belirlenen parasal sınırlar dahilinde Alıcı&apos;nın veya
-        Satıcı&apos;nın yerleşim yerindeki Tüketici Hakem Heyetleri ile
-        Tüketici Mahkemeleri yetkilidir.
+        Uyuşmazlıklarda Ankara Hukuk Mahkemeleri ve Ankara İcra Müdürlükleri yetkilidir.{" "}
+        Tüketici, 6502 sayılı Kanun kapsamında kendi yerleşim yerindeki Tüketici Hakem Heyeti veya Tüketici Mahkemesi&apos;ne de başvurabilir.
       </p>
 
       <h2>8. İletişim</h2>
