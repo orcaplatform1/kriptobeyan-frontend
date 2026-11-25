@@ -1,15 +1,15 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { getPlans, formatTRY } from "@/lib/api";
 import { AuthAwareCta } from "@/components/auth-aware-cta";
 import { JsonLd } from "@/components/json-ld";
 import { SITE_URL, SITE_NAME } from "@/lib/site-config";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Fiyatlandırma",
-  description:
-    "KriptoBeyan bireysel ve mali müşavir planları: işlem hacminize göre şeffaf, yıllık fiyatlandırma. Ücretsiz planla başlayın.",
-  alternates: { canonical: `${SITE_URL}/fiyatlandirma` },
-};
+  description: "KriptoBeyan bireysel ve mali müşavir planları: işlem hacminize göre şeffaf, yıllık fiyatlandırma. Ücretsiz planla başlayın.",
+  path: "/fiyatlandirma",
+});
 
 function PlanCard({
   planId,

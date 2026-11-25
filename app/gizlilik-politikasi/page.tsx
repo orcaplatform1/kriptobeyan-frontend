@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { LegalPageShell } from "@/components/legal-page-shell";
 import { GizlilikPolitikasiContent } from "@/components/legal-content/gizlilik-politikasi-content";
 import { SITE_URL } from "@/lib/site-config";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Gizlilik Politikası",
-  description:
-    "KriptoBeyan'ın hangi verileri topladığı, ne için kullandığı ve nasıl sakladığı hakkında gizlilik politikası.",
-  alternates: { canonical: `${SITE_URL}/gizlilik-politikasi` },
-};
+  description: "KriptoBeyan'ın hangi verileri topladığı, ne için kullandığı ve nasıl sakladığı hakkında gizlilik politikası.",
+  path: "/gizlilik-politikasi",
+});
 
 export default function GizlilikPolitikasiPage() {
   return (

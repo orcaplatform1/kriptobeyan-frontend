@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { LegalPageShell } from "@/components/legal-page-shell";
 import { LegalNotice } from "@/components/legal-notice";
 import { SITE_URL } from "@/lib/site-config";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Sorumluluk Reddi / Vergi Uyarısı",
-  description:
-    "KriptoBeyan bir vergi danışmanlık hizmeti değildir. Platformdaki hesaplamalar taslak/tahminidir; kesin beyan için mali müşavirinize danışın.",
-  alternates: { canonical: `${SITE_URL}/sorumluluk-reddi` },
-};
+  description: "KriptoBeyan bir vergi danışmanlık hizmeti değildir. Platformdaki hesaplamalar taslak/tahminidir; kesin beyan için mali müşavirinize danışın.",
+  path: "/sorumluluk-reddi",
+});
 
 export default function SorumlulukReddiPage() {
   return (

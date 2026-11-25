@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { LegalPageShell } from "@/components/legal-page-shell";
 import { SITE_URL, KVKK_EMAIL, COMPANY_INFO } from "@/lib/site-config";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "KVKK",
-  description:
-    "6698 sayılı Kişisel Verilerin Korunması Kanunu kapsamında veri sorumlusu, işleme amaçları ve veri sahibi hakları.",
-  alternates: { canonical: `${SITE_URL}/kvkk-aydinlatma-metni` },
-};
+  description: "6698 sayılı Kişisel Verilerin Korunması Kanunu kapsamında veri sorumlusu, işleme amaçları ve veri sahibi hakları.",
+  path: "/kvkk-aydinlatma-metni",
+});
 
 export default function KvkkAydinlatmaMetniPage() {
   return (

@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { LegalPageShell } from "@/components/legal-page-shell";
 import { AuthAwareCta } from "@/components/auth-aware-cta";
 import { SITE_URL } from "@/lib/site-config";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Nasıl Çalışır",
-  description:
-    "KriptoBeyan'a borsa API anahtarınızı ve cüzdanınızı nasıl bağlarsınız, verileriniz nasıl birleştirilir, FIFO vergi hesaplaması nasıl yapılır ve taslak raporda tam olarak neler olur — adım adım, ayrıntılı anlatım.",
-  alternates: { canonical: `${SITE_URL}/nasil-calisir` },
-};
+  description: "Borsa API anahtarınızı ve cüzdanınızı bağlayın; verileriniz birleştirilir, FIFO ile vergi hesaplanır ve taslak rapor hazırlanır. Adım adım anlatım.",
+  path: "/nasil-calisir",
+});
 
 export default function NasilCalisirPage() {
   return (

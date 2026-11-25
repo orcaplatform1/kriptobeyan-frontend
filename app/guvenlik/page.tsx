@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { LegalPageShell } from "@/components/legal-page-shell";
 import { SITE_URL, SUPPORT_EMAIL } from "@/lib/site-config";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Güvenlik",
-  description:
-    "KriptoBeyan'ın borsa API anahtarlarını nasıl şifrelediği, read-only zorunluluğu ve genel güvenlik önlemleri.",
-  alternates: { canonical: `${SITE_URL}/guvenlik` },
-};
+  description: "KriptoBeyan'ın borsa API anahtarlarını nasıl şifrelediği, read-only zorunluluğu ve genel güvenlik önlemleri.",
+  path: "/guvenlik",
+});
 
 export default function GuvenlikPage() {
   return (

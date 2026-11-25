@@ -1,15 +1,15 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { AuthAwareCta } from "@/components/auth-aware-cta";
 import { getPlans, formatTRY } from "@/lib/api";
 import { SITE_URL } from "@/lib/site-config";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "İşletmeler İçin",
-  description:
-    "KriptoBeyan işletme planları: yüksek işlem hacmi, ticari kazanç esaslı vergi hesabı ve tüm borsa/cüzdan verinizi tek panelde toplayan kripto muhasebe altyapısı.",
-  alternates: { canonical: `${SITE_URL}/isletmeler` },
-};
+  description: "KriptoBeyan işletme planları: yüksek işlem hacmi, ticari kazanç esaslı vergi hesabı ve tüm borsa/cüzdan verinizi tek panelde toplayan kripto muhasebe altyapısı.",
+  path: "/isletmeler",
+});
 
 const FEATURES = [
   {

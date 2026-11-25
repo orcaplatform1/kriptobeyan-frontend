@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { LIVE_EXCHANGES, UPCOMING_EXCHANGES } from "@/lib/exchanges";
 import { ExchangeLogoBox } from "@/components/exchange-logo-box";
 import { SITE_URL } from "@/lib/site-config";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Desteklenen Borsalar ve Cüzdanlar",
-  description:
-    "KriptoBeyan'ın canlı API ile bağlandığı borsalar, on-chain okuduğu cüzdan ağları ve CSV içe aktarma ile pratikte sınırsız borsa/cüzdan desteği.",
-  alternates: { canonical: `${SITE_URL}/desteklenen-borsalar` },
-};
+  description: "KriptoBeyan'ın canlı API ile bağlandığı borsalar, on-chain okuduğu cüzdan ağları ve CSV içe aktarma ile pratikte sınırsız borsa/cüzdan desteği.",
+  path: "/desteklenen-borsalar",
+});
 
 // WALLET_CHAIN_LABELS (lib/auth-client.ts) ile ayni ag isimleri — o dosya
 // "use client" API katmani oldugu icin buraya sade bir sabit olarak

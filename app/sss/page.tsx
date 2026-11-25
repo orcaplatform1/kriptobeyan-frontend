@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { JsonLd } from "@/components/json-ld";
 import { SITE_URL } from "@/lib/site-config";
 import { faqGroups } from "@/lib/faq-data";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Sık Sorulan Sorular",
-  description:
-    "KriptoBeyan hakkında sık sorulan sorular: vergi hesaplama, veri güvenliği, borsa bağlantıları, fiyatlandırma ve daha fazlası.",
-  alternates: { canonical: `${SITE_URL}/sss` },
-};
+  description: "KriptoBeyan hakkında sık sorulan sorular: vergi hesaplama, veri güvenliği, borsa bağlantıları, fiyatlandırma ve daha fazlası.",
+  path: "/sss",
+});
 
 export default function SssPage() {
   const jsonLd = {

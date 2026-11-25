@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { LegalPageShell } from "@/components/legal-page-shell";
 import { SITE_URL, SUPPORT_EMAIL } from "@/lib/site-config";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Çerez Politikası",
   description: "KriptoBeyan'ın kullandığı çerez türleri ve amaçları.",
-  alternates: { canonical: `${SITE_URL}/cerez-politikasi` },
-};
+  path: "/cerez-politikasi",
+});
 
 export default function CerezPolitikasiPage() {
   return (

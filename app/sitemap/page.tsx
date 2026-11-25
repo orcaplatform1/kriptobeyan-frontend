@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { SITE_URL } from "@/lib/site-config";
 import { getSitePagesByGroup } from "@/lib/site-pages";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Site Haritası",
   description: "KriptoBeyan'daki tüm sayfalara tek yerden ulaşın.",
-  alternates: { canonical: `${SITE_URL}/sitemap` },
-};
+  path: "/sitemap",
+});
 
 export default function SitemapPage() {
   const sections = getSitePagesByGroup();

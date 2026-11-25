@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { LegalPageShell } from "@/components/legal-page-shell";
 import { KullanimSartlariContent } from "@/components/legal-content/kullanim-sartlari-content";
 import { SITE_URL } from "@/lib/site-config";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Kullanım Şartları",
   description: "KriptoBeyan platformunu kullanırken geçerli olan kullanım şartları ve kullanıcı sözleşmesi.",
-  alternates: { canonical: `${SITE_URL}/kullanim-sartlari` },
-};
+  path: "/kullanim-sartlari",
+});
 
 export default function KullanimSartlariPage() {
   return (

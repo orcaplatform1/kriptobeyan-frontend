@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { SITE_URL, SUPPORT_EMAIL, KVKK_EMAIL } from "@/lib/site-config";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "İletişim",
   description: "KriptoBeyan ile iletişime geçin — destek, iş birliği ve KVKK talepleri.",
-  alternates: { canonical: `${SITE_URL}/iletisim` },
-};
+  path: "/iletisim",
+});
 
 export default function IletisimPage() {
   return (

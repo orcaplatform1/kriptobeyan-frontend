@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { SITE_URL } from "@/lib/site-config";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Güçlendiricilerimiz",
-  description:
-    "KriptoBeyan'ı ayakta tutan teknolojiler: altyapı, arayüz, güvenlik, piyasa/kur veri kaynakları ve Yapay Zeka Kontrolörü'nü besleyen Claude (Anthropic).",
-  alternates: { canonical: `${SITE_URL}/guclendiriciler` },
-};
+  description: "KriptoBeyan'ı ayakta tutan teknolojiler: altyapı, arayüz, güvenlik, piyasa/kur veri kaynakları ve Yapay Zeka Kontrolörü'nü besleyen Claude (Anthropic).",
+  path: "/guclendiriciler",
+});
 
 interface TechItem {
   name: string;

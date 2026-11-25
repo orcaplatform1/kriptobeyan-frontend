@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { LegalPageShell } from "@/components/legal-page-shell";
 import { LegalNotice } from "@/components/legal-notice";
 import { SITE_URL, SUPPORT_EMAIL, COMPANY_INFO } from "@/lib/site-config";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Mesafeli Satış Sözleşmesi",
-  description:
-    "KriptoBeyan ücretli abonelik satın alımlarında geçerli mesafeli satış sözleşmesi ve cayma hakkı koşulları.",
-  alternates: { canonical: `${SITE_URL}/mesafeli-satis-sozlesmesi` },
-};
+  description: "KriptoBeyan ücretli abonelik satın alımlarında geçerli mesafeli satış sözleşmesi ve cayma hakkı koşulları.",
+  path: "/mesafeli-satis-sozlesmesi",
+});
 
 export default function MesafeliSatisSozlesmesiPage() {
   return (

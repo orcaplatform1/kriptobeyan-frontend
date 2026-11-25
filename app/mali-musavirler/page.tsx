@@ -1,15 +1,15 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { AuthAwareCta } from "@/components/auth-aware-cta";
 import { getPlans, formatTRY } from "@/lib/api";
 import { SITE_URL } from "@/lib/site-config";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Mali Müşavirler İçin",
-  description:
-    "KriptoBeyan mali müşavir hesabı: kripto varlıklı müşterilerinizin portföyünü tek panelden yönetin, davet bazlı ve sıkı yetkilendirmeli erişimle.",
-  alternates: { canonical: `${SITE_URL}/mali-musavirler` },
-};
+  description: "KriptoBeyan mali müşavir hesabı: kripto varlıklı müşterilerinizin portföyünü tek panelden yönetin, davet bazlı ve sıkı yetkilendirmeli erişimle.",
+  path: "/mali-musavirler",
+});
 
 const STEPS = [
   {

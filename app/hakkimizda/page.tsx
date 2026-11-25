@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { SITE_URL } from "@/lib/site-config";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Hakkımızda",
-  description:
-    "KriptoBeyan, Türkiye'de kripto varlık yatırımcılarının vergi hesaplama sürecini otomatikleştiren öncü platformdur — hazırlıklarımıza kripto kazançlarına yönelik vergi düzenlemesi henüz yasalaşmadan önce başladık.",
-  alternates: { canonical: `${SITE_URL}/hakkimizda` },
-};
+  description: "KriptoBeyan, Türkiye'de kripto varlık yatırımcılarının vergi hesaplama sürecini otomatikleştiren öncü platformdur.",
+  path: "/hakkimizda",
+});
 
 export default function HakkimizdaPage() {
   return (

@@ -6,8 +6,10 @@ import { SiteFooter } from "@/components/site-footer";
 import { CookieConsent } from "@/components/cookie-consent";
 import { VisitorTracker } from "@/components/visitor-tracker";
 import { SITE_URL, SITE_NAME, SITE_DESCRIPTION, SITE_KEYWORDS } from "@/lib/site-config";
+import { HOME_TITLE, defaultCard } from "@/lib/seo";
 import { getSiteContent } from "@/lib/api";
 import "./globals.css";
+import { NoInstallPrompt } from "@/components/no-install-prompt";
 
 const jakartaFont = Plus_Jakarta_Sans({
   variable: "--font-jakarta",
@@ -25,27 +27,22 @@ export const viewport: Viewport = {
   colorScheme: "light",
 };
 
+const card = defaultCard();
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: `${SITE_NAME} — Kripto Vergi Hesaplama ve Beyan Asistanı`,
+    default: HOME_TITLE,
     template: `%s | ${SITE_NAME}`,
   },
-  description: SITE_DESCRIPTION,
+  description: card.description,
   keywords: SITE_KEYWORDS,
   applicationName: SITE_NAME,
   icons: {
     icon: "/icon.png",
   },
-  openGraph: {
-    type: "website",
-    locale: "tr_TR",
-    siteName: SITE_NAME,
-    url: SITE_URL,
-  },
-  twitter: {
-    card: "summary_large_image",
-  },
+  openGraph: card.openGraph,
+  twitter: card.twitter,
 };
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
@@ -56,6 +53,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       className={`${jakartaFont.variable} ${bodyFont.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-sans">
+        <NoInstallPrompt />
         <ScaleAnimationProvider>
           <SiteHeader />
           {children}
