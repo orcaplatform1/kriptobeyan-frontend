@@ -9,26 +9,23 @@ import { FinalCtaSection } from "@/components/final-cta-section";
 import { JsonLd } from "@/components/json-ld";
 import { SITE_URL, SITE_NAME, SITE_DESCRIPTION, SITE_KEYWORDS } from "@/lib/site-config";
 import { getSiteContent } from "@/lib/api";
+import { HOME_DESCRIPTION, HOME_TITLE, pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = {
-  title: "Kripto Vergi Hesaplama ve Beyan Asistanı",
-  description: SITE_DESCRIPTION,
+  ...pageMetadata({ title: HOME_TITLE, description: HOME_DESCRIPTION, path: "/", absoluteTitle: true }),
   keywords: SITE_KEYWORDS,
-  alternates: { canonical: SITE_URL },
-  openGraph: {
-    title: `${SITE_NAME} — Kripto Vergi Hesaplama ve Beyan Asistanı`,
-    description: SITE_DESCRIPTION,
-    url: SITE_URL,
-  },
-  twitter: {
-    title: `${SITE_NAME} — Kripto Vergi Hesaplama ve Beyan Asistanı`,
-    description: SITE_DESCRIPTION,
-  },
 };
 
 const jsonLd = {
   "@context": "https://schema.org",
   "@graph": [
+    // Arama sonuçlarındaki site adı
+    {
+      "@type": "WebSite",
+      name: SITE_NAME,
+      alternateName: "kriptobeyan.com",
+      url: `${SITE_URL}/`,
+    },
     {
       "@type": "Organization",
       "@id": `${SITE_URL}/#organization`,
